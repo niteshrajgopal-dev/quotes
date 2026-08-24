@@ -1,0 +1,33 @@
+{
+  "name": "quotes-coffee",
+  "version": "0.1.0",
+  "private": true,
+  "description": "quotes coffee co. — production web app built from the quotes Digital Design System.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "verify:shots": "node scripts/shots.mjs",
+    "verify:smoke": "node scripts/smoke.mjs",
+    "verify:sticky": "node scripts/check-sticky.mjs"
+  },
+  "dependencies": {
+    "next": "16.3.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zustand": "5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.2",
+    "playwright-core": "^1.62.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>quotes — Foundations & Tokens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Young+Serif&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   quotes — Foundations. Tokens bind brand-spec.md verbatim.
+   ============================================================ */
+:root{
+  /* core palette — verbatim from brand guide */
+  --espresso:#2F2322; --mocha:#4A3836; --latte:#CBB792; --cream:#F5F1E9; --ink:#000000;
+  /* six canonical ui tokens */
+  --bg:var(--cream);
+  --surface:#FCFAF5;
+  --fg:var(--espresso);
+  --muted:#7C6E62;
+  --border:#E7DFCE;
+  --accent:var(--latte);
+  /* semantic — muted to harmonize */
+  --success:#5E7355; --warning:#B98A3C; --error:#A5482E; --info:#5A6B73;
+  /* type */
+  --serif:"Young Serif","Recoleta",Georgia,"Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* radius */
+  --r-xs:4px; --r-sm:6px; --r-md:10px; --r-lg:16px; --r-xl:20px;
+  /* shadow */
+  --sh-sm:0 1px 2px rgba(47,35,34,.06);
+  --sh-md:0 6px 20px -8px rgba(47,35,34,.18);
+  --sh-lg:0 24px 60px -24px rgba(47,35,34,.28);
+  /* motion */
+  --m-fast:150ms; --m-std:260ms; --m-slow:400ms;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  /* layout */
+  --mx:clamp(20px,5vw,72px);
+  --maxw:1160px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--fg);
+  font:400 16px/1.6 var(--sans);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  letter-spacing:0;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.02em;line-height:1.05}
+::selection{background:var(--latte);color:var(--espresso)}
+
+/* --- bean symbol --- */
+.bean-body{fill:var(--accent)}
+.bean-crease{stroke:var(--fg);stroke-width:4;fill:none;stroke-linecap:round}
+.bean{width:1em;height:1.375em;flex:none}
+.on-dark .bean-crease{stroke:var(--espresso)}
+
+/* --- shell --- */
+.top{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;padding:14px var(--mx);
+  background:color-mix(in oklab,var(--cream),transparent 8%);
+  backdrop-filter:saturate(1.1) blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.top .brand{display:flex;align-items:center;gap:12px}
+.top .brand img{height:26px;width:auto}
+.top .brand .tag{font:500 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  padding:5px 9px;border:1px solid var(--border);border-radius:100px}
+.top nav{display:flex;gap:6px;flex-wrap:wrap}
+.top nav a{font-size:13.5px;color:var(--muted);padding:8px 12px;border-radius:var(--r-sm);transition:color var(--m-fast) var(--ease),background var(--m-fast) var(--ease)}
+.top nav a:hover{color:var(--fg);background:#EFE9DC}
+@media(max-width:900px){.top nav{display:none}}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--mx)}
+
+/* --- cover --- */
+.cover{padding:clamp(64px,10vw,132px) 0 clamp(48px,7vw,88px)}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font:500 12px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.eyebrow .bean{width:.9em;height:1.24em}
+.cover h1{font-size:clamp(52px,10vw,116px);margin:24px 0 0;letter-spacing:-.035em}
+.cover .lede{max-width:60ch;margin-top:28px;font-size:clamp(17px,2.2vw,21px);line-height:1.55;color:var(--mocha)}
+.cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
+.chip{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--border);border-radius:100px;padding:9px 14px;background:var(--surface)}
+
+/* --- section rhythm --- */
+section.blk{padding:clamp(52px,7vw,92px) 0;border-top:1px solid var(--border)}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:40px}
+.sec-num{font:500 13px/1 var(--mono);color:var(--accent);letter-spacing:.1em;padding-top:6px}
+.sec-head h2{font-size:clamp(30px,4.4vw,46px)}
+.sec-head .sub{margin-left:auto;max-width:34ch;font-size:14.5px;color:var(--muted);text-align:right;line-height:1.5}
+@media(max-width:760px){.sec-head{flex-wrap:wrap}.sec-head .sub{margin-left:0;text-align:left;order:3;width:100%}}
+
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:26px}
+.label{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--mono);font-size:12.5px}
+p.body{max-width:66ch;color:var(--mocha);line-height:1.7}
+.h3{font-family:var(--serif);font-size:22px;letter-spacing:-.01em;margin-bottom:8px}
+
+/* --- brand principles --- */
+.principles{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.principles .p{padding:28px 30px;border-bottom:1px solid var(--border)}
+.principles .p:nth-child(odd){border-right:1px solid var(--border)}
+.principles .p h3{font-size:20px;display:flex;align-items:center;gap:10px}
+.principles .p h3 .bean{width:.8em;height:1.1em}
+.principles .p p{margin-top:8px;font-size:14.5px;color:var(--muted);line-height:1.55}
+@media(max-width:640px){.principles{grid-template-columns:1fr}.principles .p:nth-child(odd){border-right:none}}
+
+/* --- logo lockups --- */
+.logo-row{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+@media(max-width:720px){.logo-row{grid-template-columns:1fr}}
+.logo-plate{border:1px solid var(--border);border-radius:var(--r-md);min-height:210px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.logo-plate img{height:52px;width:auto}
+.logo-plate .cs{position:absolute;left:12px;bottom:12px}
+.plate-cream{background:var(--cream)}
+.plate-espresso{background:var(--espresso)}
+.plate-espresso .cs{color:var(--latte)}
+.badge-mark{width:104px;height:104px;border-radius:50%;background:var(--espresso);display:grid;place-items:center}
+.badge-mark .bean{width:46px;height:63px}
+.clearspace{position:relative}
+.clearspace .box{position:absolute;inset:22px;border:1px dashed color-mix(in oklab,var(--muted),transparent 55%);border-radius:4px;pointer-events:none}
+.size-row{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap}
+.size-row .s{display:flex;flex-direction:column;align-items:center;gap:8px}
+.size-row .s img{width:auto}
+
+/* --- color --- */
+.swatch{border-radius:var(--r-md);border:1px solid var(--border);overflow:hidden;background:var(--surface)}
+.swatch .chipc{height:120px}
+.swatch .meta{padding:14px 16px}
+.swatch .meta .n{font-family:var(--serif);font-size:18px}
+.swatch .meta .v{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between;gap:8px}
+.scale{margin-top:10px}
+.scale h4{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px}
+.steps{display:grid;grid-template-columns:repeat(10,1fr);border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border)}
+.steps .st{height:64px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px}
+.steps .st span{font:500 10px/1 var(--mono)}
+@media(max-width:640px){.steps{grid-template-columns:repeat(5,1fr)}}
+.sem{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface)}
+.sem .dot{width:26px;height:26px;border-radius:6px;flex:none}
+.sem .t{font-size:13.5px}.sem .t b{font-weight:600}.sem .t .m{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* --- type --- */
+.specimen{border:1px solid var(--border);border-radius:var(--r-md);padding:28px 30px;background:var(--surface)}
+.specimen .big{font-family:var(--serif);font-size:clamp(40px,7vw,72px);line-height:1;letter-spacing:-.03em}
+.specimen .big.sans{font-family:var(--sans);font-weight:600}
+.specimen .big.mono{font-family:var(--mono);font-weight:500;font-size:clamp(30px,5vw,54px)}
+.specimen .aa{margin-top:14px;font-size:15px;color:var(--muted);word-spacing:2px;line-height:1.5}
+.specimen .role{margin-top:16px;font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.tscale{width:100%;border-collapse:collapse;font-size:14px}
+.tscale th,.tscale td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--border);vertical-align:baseline}
+.tscale th{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tscale td.samp{font-family:var(--serif);letter-spacing:-.02em;color:var(--fg)}
+.tscale td.mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tscale tr td.samp.sans{font-family:var(--sans)}
+.tscale-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface)}
+
+/* --- grid demo --- */
+.griddemo{display:grid;gap:8px;border:1px solid var(--border);border-radius:var(--r-md);padding:16px;background:var(--surface)}
+.griddemo .cols{display:grid;gap:8px}
+.griddemo .cols .col{height:56px;background:color-mix(in oklab,var(--latte),var(--cream) 45%);border-radius:4px}
+.griddemo .cap{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* --- spacing --- */
+.spacescale{display:flex;flex-direction:column;gap:10px}
+.spacescale .row{display:flex;align-items:center;gap:16px}
+.spacescale .bar{height:16px;background:var(--espresso);border-radius:3px}
+.spacescale .n{font-family:var(--mono);font-size:12px;color:var(--muted);width:64px;flex:none}
+
+/* --- radius / shadow --- */
+.rbox{aspect-ratio:1.5;background:color-mix(in oklab,var(--latte),var(--cream) 40%);border:1px solid var(--border);display:flex;align-items:flex-end;padding:12px}
+.rbox span{font-family:var(--mono);font-size:11px;color:var(--mocha)}
+.shbox{aspect-ratio:1.6;background:var(--surface);border-radius:var(--r-md);display:flex;align-items:flex-end;padding:14px;border:1px solid var(--border)}
+.shbox span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* --- icons --- */
+.iconwrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:2px;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.iconwrap .ic{aspect-ratio:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--surface);border:1px solid var(--border);margin:-.5px}
+.iconwrap .ic svg{width:26px;height:26px;stroke:var(--fg);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.iconwrap .ic span{font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* --- bean language --- */
+.beanuses{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:760px){.beanuses{grid-template-columns:1fr}}
+.beanuse{border:1px solid var(--border);border-radius:var(--r-md);padding:24px;background:var(--surface);min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
+.beanuse .demo{display:flex;align-items:center;gap:8px;color:var(--espresso)}
+.stamps{display:flex;gap:8px}
+.stamps .sbean{width:30px;height:41px;border:1.5px solid var(--latte);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;display:grid;place-items:center;opacity:.5}
+.stamps .sbean.filled{opacity:1;border-color:var(--espresso);background:color-mix(in oklab,var(--latte),var(--cream) 30%)}
+.stamps .sbean .bean{width:14px;height:19px}
+.spin{animation:spin 1.6s linear infinite;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider-bean{display:flex;align-items:center;gap:14px;color:var(--muted)}
+.divider-bean::before,.divider-bean::after{content:"";height:1px;background:var(--border);flex:1}
+.divider-bean .bean{width:16px;height:22px;color:var(--espresso)}
+
+/* --- patterns --- */
+.patcard{height:180px;border-radius:var(--r-md);border:1px solid var(--border);overflow:hidden;position:relative}
+.pat-repeat{background-color:var(--cream);
+  background-image:radial-gradient(circle at 50% 42%, transparent 44%, var(--latte) 45% 55%, transparent 56%);
+  background-size:34px 46px;opacity:1}
+.pat-over{background:var(--espresso);position:relative}
+.pat-over::before{content:"";position:absolute;right:-40px;bottom:-60px;width:260px;height:340px;
+  border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:color-mix(in oklab,var(--mocha),var(--latte) 22%)}
+.pat-convo{background:var(--surface);display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden}
+.pat-convo p{font-family:var(--serif);font-size:15px;line-height:1.9;color:color-mix(in oklab,var(--latte),var(--espresso) 22%);
+  letter-spacing:.02em;transform:rotate(-4deg);opacity:.85;text-align:center}
+.pat-cap{position:absolute;left:12px;bottom:12px;font:500 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--cream);background:rgba(47,35,34,.72);padding:6px 9px;border-radius:100px;backdrop-filter:blur(4px)}
+.pat-repeat .pat-cap,.pat-convo .pat-cap{color:var(--espresso);background:rgba(245,241,233,.8)}
+
+/* --- photography --- */
+.ph{position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);
+  background:linear-gradient(150deg,#3a2c2a,#241b1a 60%);min-height:280px;display:flex;flex-direction:column;justify-content:flex-end}
+.ph.tall{min-height:360px}
+.ph .grain{position:absolute;inset:0;opacity:.5;mix-blend-mode:overlay;
+  background-image:radial-gradient(circle at 30% 20%, rgba(203,183,146,.35), transparent 55%),radial-gradient(circle at 80% 80%, rgba(0,0,0,.5), transparent 60%)}
+.ph .note{position:relative;padding:22px 24px;color:var(--cream)}
+.ph .note .k{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--latte)}
+.ph .note .d{margin-top:8px;font-family:var(--serif);font-size:19px;letter-spacing:-.01em;line-height:1.2}
+.ph .badge{position:absolute;top:14px;left:14px;font:500 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--espresso);background:var(--latte);padding:6px 10px;border-radius:100px}
+.ph.real{background:#241b1a}
+.ph.real img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph .note.over{background:linear-gradient(to top,rgba(20,14,13,.85),transparent)}
+
+/* --- motion --- */
+.motioncard{border:1px solid var(--border);border-radius:var(--r-md);padding:24px;background:var(--surface)}
+.mtoken{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);font-size:14px}
+.mtoken:last-child{border-bottom:none}
+.mtoken .v{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.hoverdemo{margin-top:18px;display:flex;gap:14px;flex-wrap:wrap}
+.demo-btn{font:600 14px/1 var(--sans);color:var(--cream);background:var(--espresso);border:none;
+  padding:14px 22px;border-radius:var(--r-sm);cursor:pointer;display:inline-flex;align-items:center;gap:10px;
+  transition:transform var(--m-std) var(--ease),background var(--m-std) var(--ease),box-shadow var(--m-std) var(--ease)}
+.demo-btn:hover{background:var(--mocha);box-shadow:var(--sh-md)}
+.demo-btn:hover .arw{transform:translateX(4px)}
+.demo-btn .arw{transition:transform var(--m-std) var(--ease)}
+.demo-btn:active{transform:translateY(1px)}
+.demo-img{width:150px;height:104px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border);
+  background:linear-gradient(150deg,#4a3836,#2f2322);transition:transform var(--m-slow) var(--ease)}
+.demo-img:hover{transform:scale(1.05)}
+
+/* --- accessibility --- */
+.a11y{display:flex;flex-direction:column;gap:10px}
+.a11y .pair{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:var(--r-sm);border:1px solid var(--border)}
+.a11y .pair .swatchpair{width:120px;flex:none;font-size:14px;padding:8px 10px;border-radius:5px}
+.a11y .pair .info{font-size:13.5px;color:var(--muted)}
+.pass,.warn{font:500 11px/1 var(--mono);letter-spacing:.06em;padding:5px 9px;border-radius:100px;margin-left:auto;flex:none}
+.pass{background:color-mix(in oklab,var(--success),var(--cream) 72%);color:#3d5136}
+.warn{background:color-mix(in oklab,var(--warning),var(--cream) 70%);color:#6d4e17}
+.focusdemo{margin-top:8px}
+.focusdemo button{font:600 14px var(--sans);padding:12px 20px;border-radius:var(--r-sm);border:1px solid var(--espresso);background:transparent;color:var(--espresso);cursor:pointer}
+.focusdemo button:focus-visible{outline:3px solid var(--latte);outline-offset:2px}
+
+/* --- token table --- */
+.toktable{width:100%;border-collapse:collapse;font-size:13.5px}
+.toktable th,.toktable td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--border)}
+.toktable th{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.toktable td.tk{font-family:var(--mono);font-size:12px;color:var(--mocha)}
+.toktable td .sw-inline{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--border);vertical-align:-2px;margin-right:8px}
+.tok-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface)}
+
+/* --- footer --- */
+.foot{background:var(--espresso);color:var(--cream);padding:clamp(56px,8vw,96px) 0 48px;margin-top:8px}
+.foot .wrap{display:flex;flex-direction:column;gap:36px}
+.foot .mark{display:flex;align-items:center;gap:14px}
+.foot .mark .bean{width:26px;height:36px}
+.foot .mark .wm{font-family:var(--serif);font-size:26px;color:var(--cream)}
+.foot h3{color:var(--cream);font-size:clamp(26px,4vw,40px);max-width:16ch}
+.foot .next{display:flex;gap:14px;flex-wrap:wrap}
+.foot .next a{border:1px solid rgba(245,241,233,.24);border-radius:var(--r-sm);padding:14px 20px;font-size:14px;
+  display:flex;align-items:center;gap:10px;transition:background var(--m-fast) var(--ease),border-color var(--m-fast) var(--ease)}
+.foot .next a:hover{background:rgba(245,241,233,.08);border-color:rgba(245,241,233,.5)}
+.foot .next a .arw{color:var(--latte)}
+.foot .fine{font:500 11px/1.6 var(--mono);letter-spacing:.08em;color:rgba(245,241,233,.5);text-transform:uppercase}
+</style>
+</head>
+<body data-od-id="foundations-page">
+
+<!-- bean symbol -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="bean" viewBox="0 0 64 88">
+    <path class="bean-body" d="M32 3c15 0 26 17 26 41S47 85 32 85 6 68 6 44 17 3 32 3Z"/>
+    <path class="bean-crease" d="M32 9c-10 9 8 21-1 35-9 14 9 22 1 31"/>
+  </symbol>
+</svg>
+
+<header class="top" data-od-id="top-bar">
+  <div class="brand">
+    <a href="index.html"><img src="logo.png" alt="quotes" /></a>
+    <span class="tag">Design System</span>
+  </div>
+  <nav aria-label="Sections">
+    <a href="#brand">Brand</a>
+    <a href="#logo">Logo</a>
+    <a href="#color">Color</a>
+    <a href="#type">Type</a>
+    <a href="#layout">Grid</a>
+    <a href="#icons">Icons</a>
+    <a href="#bean">Bean</a>
+    <a href="#photo">Photography</a>
+    <a href="#motion">Motion</a>
+    <a href="#tokens">Tokens</a>
+  </nav>
+</header>
+
+<main>
+<!-- ============ COVER ============ -->
+<div class="wrap cover" data-od-id="cover">
+  <span class="eyebrow"><svg class="bean"><use href="#bean"/></svg> Foundations &nbsp;·&nbsp; v0.1</span>
+  <h1>Coffee, crafted<br>into a system.</h1>
+  <p class="lede">The foundation layer for the <b>quotes</b> digital ecosystem — the brand thinking, colour, type, grid, motion and the coffee-bean language that every screen is built from. Warm, calm, editorial, and unmistakably ours.</p>
+  <div class="meta">
+    <span class="chip">Quality</span><span class="chip">Warmth</span><span class="chip">Authenticity</span>
+    <span class="chip">Connection</span><span class="chip">Craft</span><span class="chip">Simplicity</span>
+  </div>
+</div>
+
+<!-- ============ BRAND ============ -->
+<section class="blk" id="brand" data-od-id="section-brand"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Brand</h2>
+    <p class="sub">Not simply selling coffee — designing an environment for coffee, conversation and moments worth remembering.</p></div>
+  <p class="body" style="font-size:19px;font-family:var(--serif);letter-spacing:-.01em;color:var(--espresso);max-width:24ch;line-height:1.25;margin-bottom:36px">
+    “Great coffee creates moments worth remembering.”</p>
+  <p class="body" style="margin-bottom:44px">Quotes is a premium contemporary coffee brand built around coffee, conversation and human connection. Coffee here is a pause, a ritual, a thought, a meeting — a moment worth sharing. The name quietly connects to thoughts and stories; the connection stays understated, never a literal quotation-mark gimmick. Premium, but never intimidating. Sophisticated, but still human.</p>
+  <div class="principles" data-od-id="brand-principles">
+    <div class="p"><h3><svg class="bean"><use href="#bean"/></svg>Warm</h3><p>Inviting, comfortable and human. Never sterile or corporate.</p></div>
+    <div class="p"><h3><svg class="bean"><use href="#bean"/></svg>Authentic</h3><p>Natural materials, genuine photography, honest messaging. No artificial luxury.</p></div>
+    <div class="p"><h3><svg class="bean"><use href="#bean"/></svg>Crafted</h3><p>Spacing, type, packaging and interaction all feel deliberate.</p></div>
+    <div class="p"><h3><svg class="bean"><use href="#bean"/></svg>Calm</h3><p>Never visually noisy. Whitespace is used generously.</p></div>
+    <div class="p"><h3><svg class="bean"><use href="#bean"/></svg>Premium</h3><p>Refined type, strong composition, restraint. Never excess decoration.</p></div>
+    <div class="p"><h3><svg class="bean"><use href="#bean"/></svg>Conversational</h3><p>Encourages people to stay, talk, work and share time together.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ LOGO ============ -->
+<section class="blk" id="logo" data-od-id="section-logo"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Logo system</h2>
+    <p class="sub">A bold lowercase wordmark with the handcrafted bean as its heart. Supplied artwork is canonical — never redrawn or re-proportioned.</p></div>
+  <div class="logo-row">
+    <div class="logo-plate plate-cream clearspace" data-od-id="logo-primary">
+      <div class="box"></div><img src="logo.png" alt="quotes primary logo on cream" />
+      <span class="cs label">Primary · cream</span>
+    </div>
+    <div class="logo-plate plate-espresso" data-od-id="logo-inverse">
+      <img src="logo.png" alt="quotes logo on espresso" />
+      <span class="cs label" style="color:var(--latte)">Inverse · espresso</span>
+    </div>
+  </div>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:16px;justify-content:center">
+      <div class="badge-mark on-dark"><svg class="bean"><use href="#bean"/></svg></div>
+      <span class="label">Brand mark · badge</span>
+    </div>
+    <div class="card">
+      <div class="label" style="margin-bottom:14px">Clear space</div>
+      <p style="font-size:14px;color:var(--mocha);line-height:1.6">Keep clear space equal to the <b>height of the bean</b> on all sides. Never crowd the mark with text, imagery, buttons or the browser edge.</p>
+    </div>
+    <div class="card">
+      <div class="label" style="margin-bottom:18px">Minimum size</div>
+      <div class="size-row">
+        <div class="s"><img src="logo.png" style="height:22px" alt="wordmark min"><span class="mono" style="color:var(--muted)">Wordmark · 96px / 30mm</span></div>
+        <div class="s"><div class="badge-mark on-dark" style="width:34px;height:34px"><svg class="bean" style="width:15px;height:20px"><use href="#bean"/></svg></div><span class="mono" style="color:var(--muted)">Bean · 24px / 10mm</span></div>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.5">Below wordmark minimum, switch to the standalone bean mark.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ COLOR ============ -->
+<section class="blk" id="color" data-od-id="section-color"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Colour</h2>
+    <p class="sub">A coffee-inspired palette. Cream is the canvas, espresso the ink, latte the single rationed accent.</p></div>
+  <div class="grid g4" data-od-id="core-swatches">
+    <div class="swatch"><div class="chipc" style="background:#2F2322"></div><div class="meta"><div class="n">Espresso</div><div class="v"><span>#2F2322</span><span>oklch .24</span></div></div></div>
+    <div class="swatch"><div class="chipc" style="background:#4A3836"></div><div class="meta"><div class="n">Mocha</div><div class="v"><span>#4A3836</span><span>oklch .34</span></div></div></div>
+    <div class="swatch"><div class="chipc" style="background:#CBB792"></div><div class="meta"><div class="n">Latte</div><div class="v"><span>#CBB792</span><span>oklch .77</span></div></div></div>
+    <div class="swatch"><div class="chipc" style="background:#F5F1E9;border-bottom:1px solid var(--border)"></div><div class="meta"><div class="n">Cream</div><div class="v"><span>#F5F1E9</span><span>oklch .96</span></div></div></div>
+  </div>
+
+  <div class="scale">
+    <h4>Espresso 50 → 900</h4>
+    <div class="steps">
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#F5F1E9 92%)"><span style="color:#3a2c2a">50</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#F5F1E9 82%)"><span style="color:#3a2c2a">100</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#F5F1E9 66%)"><span style="color:#3a2c2a">200</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#F5F1E9 50%)"><span style="color:#F5F1E9">300</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#F5F1E9 34%)"><span style="color:#F5F1E9">400</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#F5F1E9 18%)"><span style="color:#F5F1E9">500</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#F5F1E9 8%)"><span style="color:#F5F1E9">600</span></div>
+      <div class="st" style="background:#2F2322"><span style="color:#CBB792">700</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#000 22%)"><span style="color:#CBB792">800</span></div>
+      <div class="st" style="background:color-mix(in oklab,#2F2322,#000 42%)"><span style="color:#CBB792">900</span></div>
+    </div>
+    <h4>Mocha 50 → 900</h4>
+    <div class="steps">
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#F5F1E9 92%)"><span style="color:#4A3836">50</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#F5F1E9 82%)"><span style="color:#4A3836">100</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#F5F1E9 66%)"><span style="color:#4A3836">200</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#F5F1E9 50%)"><span style="color:#F5F1E9">300</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#F5F1E9 34%)"><span style="color:#F5F1E9">400</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#F5F1E9 18%)"><span style="color:#F5F1E9">500</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#F5F1E9 8%)"><span style="color:#F5F1E9">600</span></div>
+      <div class="st" style="background:#4A3836"><span style="color:#CBB792">700</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#000 22%)"><span style="color:#CBB792">800</span></div>
+      <div class="st" style="background:color-mix(in oklab,#4A3836,#000 42%)"><span style="color:#CBB792">900</span></div>
+    </div>
+    <h4>Latte 50 → 900</h4>
+    <div class="steps">
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#F5F1E9 80%)"><span style="color:#7a6a45">50</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#F5F1E9 60%)"><span style="color:#7a6a45">100</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#F5F1E9 38%)"><span style="color:#5c4f31">200</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#F5F1E9 18%)"><span style="color:#4A3836">300</span></div>
+      <div class="st" style="background:#CBB792"><span style="color:#3a2c2a">400</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#4A3836 14%)"><span style="color:#2F2322">500</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#4A3836 30%)"><span style="color:#F5F1E9">600</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#4A3836 48%)"><span style="color:#F5F1E9">700</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#2F2322 62%)"><span style="color:#F5F1E9">800</span></div>
+      <div class="st" style="background:color-mix(in oklab,#CBB792,#2F2322 78%)"><span style="color:#CBB792">900</span></div>
+    </div>
+  </div>
+
+  <h4 style="font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:34px 0 14px">Semantic · muted to harmonise</h4>
+  <div class="grid g4">
+    <div class="sem"><span class="dot" style="background:#5E7355"></span><div class="t"><b>Success</b> · Sage<div class="m">#5E7355</div></div></div>
+    <div class="sem"><span class="dot" style="background:#B98A3C"></span><div class="t"><b>Warning</b> · Amber<div class="m">#B98A3C</div></div></div>
+    <div class="sem"><span class="dot" style="background:#A5482E"></span><div class="t"><b>Error</b> · Terracotta<div class="m">#A5482E</div></div></div>
+    <div class="sem"><span class="dot" style="background:#5A6B73"></span><div class="t"><b>Info</b> · Slate<div class="m">#5A6B73</div></div></div>
+  </div>
+</div></section>
+
+<!-- ============ TYPE ============ -->
+<section class="blk" id="type" data-od-id="section-type"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Typography</h2>
+    <p class="sub">An editorial serif for voice, Inter for everything functional. Spacious, never compressed.</p></div>
+  <div class="grid g3" style="margin-bottom:24px">
+    <div class="specimen"><div class="big">Aa</div><div class="aa">Young Serif — the closest hostable match to Recoleta Bold. Soft, rounded, warm, nostalgic.</div><div class="role">Display · Serif</div></div>
+    <div class="specimen"><div class="big sans">Aa</div><div class="aa">Inter — body, navigation, labels, forms, pricing. Three weights: 400 / 500 / 600.</div><div class="role">Body · Sans</div></div>
+    <div class="specimen"><div class="big mono">Aa</div><div class="aa">IBM Plex Mono — token names, tabular prices, code and metadata.</div><div class="role">Data · Mono</div></div>
+  </div>
+  <div class="tscale-wrap"><table class="tscale">
+    <thead><tr><th>Role</th><th>Sample</th><th>Family / weight</th><th>Desktop → mobile</th><th>Leading · tracking</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Display XL</td><td class="samp" style="font-size:34px">Coffee, talk</td><td class="mono">Serif · 400</td><td class="mono">72 → 44</td><td class="mono">1.0 · -.03em</td></tr>
+      <tr><td class="mono">Display L</td><td class="samp" style="font-size:29px">Worth slowing</td><td class="mono">Serif · 400</td><td class="mono">57 → 38</td><td class="mono">1.05 · -.03em</td></tr>
+      <tr><td class="mono">Display M</td><td class="samp" style="font-size:25px">Best enjoyed</td><td class="mono">Serif · 400</td><td class="mono">45 → 32</td><td class="mono">1.08 · -.02em</td></tr>
+      <tr><td class="mono">H1</td><td class="samp" style="font-size:23px">Our origins</td><td class="mono">Serif · 400</td><td class="mono">36 → 28</td><td class="mono">1.1 · -.02em</td></tr>
+      <tr><td class="mono">H2</td><td class="samp" style="font-size:20px">Featured coffee</td><td class="mono">Serif · 400</td><td class="mono">28 → 24</td><td class="mono">1.15 · -.02em</td></tr>
+      <tr><td class="mono">H3</td><td class="samp sans" style="font-size:18px;font-weight:600">Ethiopia Yirgacheffe</td><td class="mono">Sans · 600</td><td class="mono">22 → 20</td><td class="mono">1.25 · -.01em</td></tr>
+      <tr><td class="mono">H4</td><td class="samp sans" style="font-size:16px;font-weight:600">Tasting notes</td><td class="mono">Sans · 600</td><td class="mono">18 → 17</td><td class="mono">1.3 · 0</td></tr>
+      <tr><td class="mono">H5</td><td class="samp sans" style="font-size:15px;font-weight:600">Grind selection</td><td class="mono">Sans · 600</td><td class="mono">16 → 15</td><td class="mono">1.35 · 0</td></tr>
+      <tr><td class="mono">Body L</td><td class="samp sans" style="font-size:16px">Thoughtfully sourced, carefully made.</td><td class="mono">Sans · 400</td><td class="mono">18 → 17</td><td class="mono">1.6 · 0</td></tr>
+      <tr><td class="mono">Body</td><td class="samp sans" style="font-size:15px">Best enjoyed together.</td><td class="mono">Sans · 400</td><td class="mono">16 → 15</td><td class="mono">1.6 · 0</td></tr>
+      <tr><td class="mono">Body S</td><td class="samp sans" style="font-size:13px">Washed · Light roast</td><td class="mono">Sans · 400</td><td class="mono">14 → 13</td><td class="mono">1.5 · .01em</td></tr>
+      <tr><td class="mono">Label</td><td class="samp sans" style="font-size:12px;font-weight:500;letter-spacing:.02em">ADD TO BAG</td><td class="mono">Sans · 500</td><td class="mono">13 → 12</td><td class="mono">1.2 · .02em</td></tr>
+      <tr><td class="mono">Caption</td><td class="samp sans" style="font-size:12px;color:var(--muted)">250g · whole bean</td><td class="mono">Sans · 400</td><td class="mono">12 → 11</td><td class="mono">1.5 · .01em</td></tr>
+      <tr><td class="mono">Overline</td><td class="samp mono" style="font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;color:var(--accent)">SINGLE ORIGIN</td><td class="mono">Mono · 500</td><td class="mono">12 → 11</td><td class="mono">1.2 · .16em</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<!-- ============ GRID / SPACE / RADIUS ============ -->
+<section class="blk" id="layout" data-od-id="section-layout"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Grid, spacing &amp; form</h2>
+    <p class="sub">Generous margins, editorial columns, an 8-point rhythm and small, considered radii.</p></div>
+  <div class="grid g3">
+    <div>
+      <div class="label" style="margin-bottom:12px">Responsive columns</div>
+      <div class="griddemo">
+        <span class="cap">Desktop · 12</span>
+        <div class="cols" style="grid-template-columns:repeat(12,1fr)"><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div></div>
+        <span class="cap" style="margin-top:6px">Tablet · 8</span>
+        <div class="cols" style="grid-template-columns:repeat(8,1fr)"><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div></div>
+        <span class="cap" style="margin-top:6px">Mobile · 4</span>
+        <div class="cols" style="grid-template-columns:repeat(4,1fr)"><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:12px">Spacing · 4 / 8 base</div>
+      <div class="card"><div class="spacescale">
+        <div class="row"><span class="n">4 · xs</span><div class="bar" style="width:4px"></div></div>
+        <div class="row"><span class="n">8 · sm</span><div class="bar" style="width:8px"></div></div>
+        <div class="row"><span class="n">12</span><div class="bar" style="width:12px"></div></div>
+        <div class="row"><span class="n">16 · md</span><div class="bar" style="width:16px"></div></div>
+        <div class="row"><span class="n">24 · lg</span><div class="bar" style="width:24px"></div></div>
+        <div class="row"><span class="n">32 · xl</span><div class="bar" style="width:32px"></div></div>
+        <div class="row"><span class="n">48</span><div class="bar" style="width:48px"></div></div>
+        <div class="row"><span class="n">64</span><div class="bar" style="width:64px"></div></div>
+        <div class="row"><span class="n">96</span><div class="bar" style="width:96px"></div></div>
+        <div class="row"><span class="n">128</span><div class="bar" style="width:128px"></div></div>
+      </div></div>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:12px">Radius · restrained</div>
+      <div class="grid g2" style="gap:12px">
+        <div class="rbox" style="border-radius:4px"><span>4 · xs</span></div>
+        <div class="rbox" style="border-radius:6px"><span>6 · sm</span></div>
+        <div class="rbox" style="border-radius:10px"><span>10 · md</span></div>
+        <div class="rbox" style="border-radius:16px"><span>16 · lg img</span></div>
+      </div>
+      <div class="label" style="margin:22px 0 12px">Elevation · soft &amp; rare</div>
+      <div class="grid g3" style="gap:12px">
+        <div class="shbox" style="box-shadow:var(--sh-sm)"><span>sm</span></div>
+        <div class="shbox" style="box-shadow:var(--sh-md)"><span>md</span></div>
+        <div class="shbox" style="box-shadow:var(--sh-lg)"><span>lg</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ ICONS ============ -->
+<section class="blk" id="icons" data-od-id="section-icons"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Iconography</h2>
+    <p class="sub">Thin-to-medium monoline, subtly rounded, warm — never overly technical.</p></div>
+  <div class="iconwrap">
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 8h11v4a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5V8Z"/><path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c-.6.8-.6 1.7 0 2.5M12 3.5c-.6.8-.6 1.7 0 2.5"/></svg><span>Coffee</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="6" ry="8.5"/><path d="M12 4c-3 3 2.6 6-.3 10.5C9 18 13.5 20 12 20"/></svg><span>Bean</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 8h10v6a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V8Z"/><path d="M16 9h1.6a2 2 0 0 1 0 4H16"/><path d="M4 21h14"/></svg><span>Cup</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s6.5-5.5 6.5-10a6.5 6.5 0 0 0-13 0C5.5 15.5 12 21 12 21Z"/><circle cx="12" cy="11" r="2.4"/></svg><span>Location</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span>Bag</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg><span>Account</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 9.2l5.4-.8L12 3.5Z"/></svg><span>Loyalty</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.2-4.2"/></svg><span>Search</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 13h11V7H3v6Z"/><path d="M14 10h3.5L20 13v3h-6"/><circle cx="7" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg><span>Delivery</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 20V9l5-4 5 4v11"/><path d="M10 20v-5h4v5"/></svg><span>Pickup</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 10h16M8 4v4M16 4v4"/></svg><span>Calendar</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg><span>Arrow</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-9.3A3.7 3.7 0 0 1 12 8a3.7 3.7 0 0 1 7 2.7C19 15.6 12 20 12 20Z"/></svg><span>Heart</span></div>
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M7 4h10v16l-5-3.5L7 20V4Z"/></svg><span>Bookmark</span></div>
+  </div>
+</div></section>
+
+<!-- ============ BEAN LANGUAGE ============ -->
+<section class="blk" id="bean" data-od-id="section-bean"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">07</span><h2>The bean language</h2>
+    <p class="sub">One proprietary mark, many quiet roles — never a sticker beside every heading.</p></div>
+  <div class="beanuses">
+    <div class="beanuse"><span class="label">Bullet &amp; list marker</span>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="demo"><svg class="bean" style="width:14px;height:19px"><use href="#bean"/></svg> Single origin, washed</div>
+        <div class="demo"><svg class="bean" style="width:14px;height:19px"><use href="#bean"/></svg> Roasted in small batches</div>
+        <div class="demo"><svg class="bean" style="width:14px;height:19px"><use href="#bean"/></svg> Ground to order</div>
+      </div>
+    </div>
+    <div class="beanuse"><span class="label">Loyalty stamp · 5 of 8</span>
+      <div class="stamps">
+        <div class="sbean filled"><svg class="bean"><use href="#bean"/></svg></div>
+        <div class="sbean filled"><svg class="bean"><use href="#bean"/></svg></div>
+        <div class="sbean filled"><svg class="bean"><use href="#bean"/></svg></div>
+        <div class="sbean filled"><svg class="bean"><use href="#bean"/></svg></div>
+        <div class="sbean filled"><svg class="bean"><use href="#bean"/></svg></div>
+        <div class="sbean"></div><div class="sbean"></div><div class="sbean"></div>
+      </div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.5">Three more cups to a free coffee.</p>
+    </div>
+    <div class="beanuse"><span class="label">Loader &amp; divider</span>
+      <div style="display:flex;align-items:center;gap:14px">
+        <svg class="bean spin" style="width:22px;height:30px;color:var(--espresso)"><use href="#bean"/></svg>
+        <span style="font-size:13px;color:var(--muted)">Brewing…</span>
+      </div>
+      <div class="divider-bean" style="margin-top:20px"><svg class="bean"><use href="#bean"/></svg></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ TEXTURE / PATTERNS ============ -->
+<section class="blk" id="patterns" data-od-id="section-patterns"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Texture &amp; pattern</h2>
+    <p class="sub">Tactile, handmade, subtle — carrying the etched quality of the mark. Never at the cost of readability.</p></div>
+  <div class="grid g4">
+    <div class="patcard pat-repeat"><span class="pat-cap">Bean repeat</span></div>
+    <div class="patcard pat-over"><span class="pat-cap">Oversized bean</span></div>
+    <div class="patcard pat-convo"><p>a pause · a ritual<br>a conversation · a thought<br>a moment worth sharing</p><span class="pat-cap">Conversation</span></div>
+    <div class="patcard" style="background:linear-gradient(135deg,#efe7d6,#e3d6bd);position:relative">
+      <span class="pat-cap">Recycled paper</span></div>
+  </div>
+</div></section>
+
+<!-- ============ PHOTOGRAPHY ============ -->
+<section class="blk" id="photo" data-od-id="section-photo"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">09</span><h2>Photography direction</h2>
+    <p class="sub">Warm, natural, cinematic, intimate. Golden light, shallow focus, real moments — never bright corporate stock.</p></div>
+  <div class="grid g3">
+    <div class="ph tall" data-od-id="photo-espresso"><span class="badge">Art direction</span><div class="grain"></div>
+      <div class="note"><div class="k">Espresso · craft</div><div class="d">Honey crema from a matte portafilter, steam, golden window light, very shallow focus.</div></div></div>
+    <div class="ph tall" data-od-id="photo-conversation"><span class="badge">Art direction</span><div class="grain"></div>
+      <div class="note"><div class="k">Connection · people</div><div class="d">Two hands around ceramic cups on worn wood — a candid, unhurried conversation.</div></div></div>
+    <div class="ph tall" data-od-id="photo-beans"><span class="badge">Art direction</span><div class="grain"></div>
+      <div class="note"><div class="k">Origin · material</div><div class="d">Roasted beans spilling from kraft paper on stone, tactile, directional side light.</div></div></div>
+  </div>
+  <p class="body" style="margin-top:22px;font-size:14px;color:var(--muted)">These plates document the intended treatment. Final cinematic photography renders for the homepage and product prototypes once an image key is configured (Settings → Fal).</p>
+</div></section>
+
+<!-- ============ MOTION ============ -->
+<section class="blk" id="motion" data-od-id="section-motion"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">10</span><h2>Motion</h2>
+    <p class="sub">Soft, calm, 150–400ms. Gentle scale and tonal shifts, a little arrow travel — never showy.</p></div>
+  <div class="grid g2">
+    <div class="motioncard">
+      <div class="mtoken"><span>Fast — hover, tonal shift</span><span class="v">150ms</span></div>
+      <div class="mtoken"><span>Standard — buttons, cards</span><span class="v">260ms</span></div>
+      <div class="mtoken"><span>Slow — image zoom, reveals</span><span class="v">400ms</span></div>
+      <div class="mtoken"><span>Easing</span><span class="v">cubic-bezier(.22,.61,.36,1)</span></div>
+      <p style="font-size:13px;color:var(--muted);margin-top:14px;line-height:1.5">Try the live demos → hover the button and image.</p>
+    </div>
+    <div class="motioncard">
+      <div class="label" style="margin-bottom:14px">Live</div>
+      <div class="hoverdemo">
+        <button class="demo-btn" type="button">Order Coffee <svg class="arw" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg></button>
+        <div class="demo-img" title="slow zoom on hover"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ ACCESSIBILITY ============ -->
+<section class="blk" id="a11y" data-od-id="section-a11y"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">11</span><h2>Accessibility</h2>
+    <p class="sub">Premium never reduces usability. WCAG AA contrast, visible focus, generous tap targets.</p></div>
+  <div class="grid g2">
+    <div class="a11y">
+      <div class="pair"><span class="swatchpair" style="background:#F5F1E9;color:#2F2322">Espresso / Cream</span><span class="info">Body &amp; headings · 11.8:1</span><span class="pass">AAA</span></div>
+      <div class="pair"><span class="swatchpair" style="background:#F5F1E9;color:#4A3836">Mocha / Cream</span><span class="info">Secondary text · 8.9:1</span><span class="pass">AAA</span></div>
+      <div class="pair"><span class="swatchpair" style="background:#2F2322;color:#F5F1E9">Cream / Espresso</span><span class="info">Dark sections · 11.8:1</span><span class="pass">AAA</span></div>
+      <div class="pair"><span class="swatchpair" style="background:#2F2322;color:#CBB792">Latte / Espresso</span><span class="info">Accents &amp; UI · 5.1:1</span><span class="pass">AA</span></div>
+      <div class="pair"><span class="swatchpair" style="background:#F5F1E9;color:#7C6E62">Muted / Cream</span><span class="info">Captions · 4.6:1</span><span class="pass">AA</span></div>
+      <div class="pair"><span class="swatchpair" style="background:#F5F1E9;color:#CBB792">Latte / Cream</span><span class="info">Decorative only — not for text</span><span class="warn">Decor</span></div>
+    </div>
+    <div class="motioncard">
+      <div class="label" style="margin-bottom:14px">Focus &amp; targets</div>
+      <p style="font-size:14px;color:var(--mocha);line-height:1.6;margin-bottom:16px">Focus rings use a 3px Latte outline with 2px offset. Interactive targets are a minimum of 44×44px. Tab to the button to see the ring.</p>
+      <div class="focusdemo"><button type="button">Focusable control</button></div>
+      <div style="margin-top:20px;display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border:1px dashed var(--muted);border-radius:6px;display:grid;place-items:center;font:500 10px var(--mono);color:var(--muted)">44</div>
+        <span style="font-size:13px;color:var(--muted)">Minimum tap target</span>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ TOKENS ============ -->
+<section class="blk" id="tokens" data-od-id="section-tokens"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">12</span><h2>Design tokens</h2>
+    <p class="sub">The single source the whole ecosystem consumes. Structured, semantic, named by purpose.</p></div>
+  <div class="tok-wrap"><table class="toktable">
+    <thead><tr><th>Token</th><th>Value</th><th>Applied to</th></tr></thead>
+    <tbody>
+      <tr><td class="tk">color.brand.espresso</td><td><span class="sw-inline" style="background:#2F2322"></span>#2F2322</td><td>Ink · nav · primary button</td></tr>
+      <tr><td class="tk">color.brand.mocha</td><td><span class="sw-inline" style="background:#4A3836"></span>#4A3836</td><td>Elevated dark · hover</td></tr>
+      <tr><td class="tk">color.brand.latte</td><td><span class="sw-inline" style="background:#CBB792"></span>#CBB792</td><td>Accent · bean · active</td></tr>
+      <tr><td class="tk">color.surface.primary</td><td><span class="sw-inline" style="background:#F5F1E9"></span>#F5F1E9</td><td>Page canvas</td></tr>
+      <tr><td class="tk">color.surface.raised</td><td><span class="sw-inline" style="background:#FCFAF5"></span>#FCFAF5</td><td>Cards on cream</td></tr>
+      <tr><td class="tk">color.text.primary</td><td><span class="sw-inline" style="background:#2F2322"></span>#2F2322</td><td>Body &amp; headings</td></tr>
+      <tr><td class="tk">color.text.muted</td><td><span class="sw-inline" style="background:#7C6E62"></span>#7C6E62</td><td>Captions · meta</td></tr>
+      <tr><td class="tk">color.text.inverse</td><td><span class="sw-inline" style="background:#F5F1E9"></span>#F5F1E9</td><td>Text on dark</td></tr>
+      <tr><td class="tk">color.border.subtle</td><td><span class="sw-inline" style="background:#E7DFCE"></span>#E7DFCE</td><td>Hairlines · dividers</td></tr>
+      <tr><td class="tk">color.action.primary</td><td><span class="sw-inline" style="background:#2F2322"></span>#2F2322</td><td>Primary CTA fill</td></tr>
+      <tr><td class="tk">type.display.xl</td><td>Young Serif · 72/44px</td><td>Hero statements</td></tr>
+      <tr><td class="tk">type.heading.h2</td><td>Young Serif · 28px</td><td>Section titles</td></tr>
+      <tr><td class="tk">type.body.default</td><td>Inter · 16px / 1.6</td><td>Paragraph copy</td></tr>
+      <tr><td class="tk">type.label</td><td>Inter 500 · 13px · .02em</td><td>Buttons · labels</td></tr>
+      <tr><td class="tk">space.1 → space.10</td><td>4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 128</td><td>Layout rhythm</td></tr>
+      <tr><td class="tk">radius.sm / md / lg</td><td>6 · 10 · 16px</td><td>Controls · cards · imagery</td></tr>
+      <tr><td class="tk">motion.fast / std / slow</td><td>150 · 260 · 400ms</td><td>Interaction timing</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot" data-od-id="footer">
+  <div class="wrap">
+    <div class="mark"><svg class="bean" style="color:var(--latte)"><use href="#bean"/></svg><span class="wm">quotes</span></div>
+    <h3>The foundation is set. Next, the system comes to life.</h3>
+    <div class="next">
+      <a href="index.html">System overview <span class="arw">→</span></a>
+      <a href="index.html#components">Components <span class="arw">→</span></a>
+      <a href="index.html#homepage">Homepage prototype <span class="arw">→</span></a>
+    </div>
+    <div class="fine">quotes coffee co. · foundations v0.1 · warm · calm · crafted · distinctive · human · premium</div>
+  </div>
+</footer>
+</body>
+</html>
