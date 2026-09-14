@@ -1,13 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sheet } from "@/components/ui/sheet";
+import { buildSignInHref } from "@/lib/auth/customer-auth-client";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { Segmented } from "@/components/ui/tabs";
-import { EmptyState } from "@/components/ui/card";
-import { CartLineRow } from "@/components/cart/cart-line-row";
+import { EmptyState, Notice } from "@/components/ui/card";
+import { QosCartLineRow } from "@/components/cart/qos-cart-line-row";
 import { OrderSummary } from "@/components/cart/order-summary";
-import { computeTotals, useCart, type Fulfilment } from "@/lib/stores/cart";
+import { useCart } from "@/lib/stores/cart";
+import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
 import { useHydrated } from "@/lib/use-hydrated";
 
 export function CartDrawer() {
@@ -16,12 +18,19 @@ export function CartDrawer() {
 
   const open = useCart((state) => state.drawerOpen);
   const setDrawerOpen = useCart((state) => state.setDrawerOpen);
-  const lines = useCart((state) => state.lines);
-  const fulfilment = useCart((state) => state.fulfilment);
-  const setFulfilment = useCart((state) => state.setFulfilment);
-  const promo = useCart((state) => state.promo);
+  const basket = useQosBasket((state) => state.basket);
+  const status = useQosBasket((state) => state.status);
+  const error = useQosBasket((state) => state.error);
+  const signedIn = useQosBasket((state) => state.signedIn);
+  const itemCount = useQosBasket(selectBasketItemCount);
+  const hydrate = useQosBasket((state) => state.hydrate);
 
-  const totals = computeTotals({ lines, fulfilment, promo });
+  useEffect(() => {
+    if (open) {
+      void hydrate();
+    }
+  }, [open, hydrate]);
+
   const close = () => setDrawerOpen(false);
 
   if (!hydrated) return null;
@@ -32,14 +41,12 @@ export function CartDrawer() {
       onClose={close}
       title="Your bag"
       description={
-        totals.itemCount > 0
-          ? `${totals.itemCount} item${totals.itemCount === 1 ? "" : "s"} · ${
-              fulfilment === "delivery" ? "delivery" : "collection"
-            }`
+        itemCount > 0
+          ? `${itemCount} item${itemCount === 1 ? "" : "s"} · QOS basket`
           : undefined
       }
       footer={
-        lines.length > 0 ? (
+        basket && basket.lines.length > 0 ? (
           <div className="flex flex-col gap-3">
             <OrderSummary />
             <Button
@@ -63,15 +70,22 @@ export function CartDrawer() {
         ) : null
       }
     >
-      {lines.length === 0 ? (
+      {status === "loading" ? (
+        <p className="text-[14px] text-muted">Loading your QOS basket…</p>
+      ) : null}
+
+      {error && !basket ? (
+        <Notice tone="error" title="Basket unavailable">
+          {error}
+        </Notice>
+      ) : null}
+
+      {!basket || basket.lines.length === 0 ? (
         <EmptyState
           title="Nothing in the bag yet"
-          body="Start with the Signature Blend, or pick something from the café menu."
+          body="Add something from the published café menu — it saves to your QOS basket."
           action={
             <div className="flex flex-wrap justify-center gap-2">
-              <ButtonLink href="/shop" onClick={close} size="sm">
-                Shop coffee
-              </ButtonLink>
               <ButtonLink href="/menu" variant="secondary" size="sm" onClick={close}>
                 Café menu
               </ButtonLink>
@@ -81,18 +95,26 @@ export function CartDrawer() {
         />
       ) : (
         <div className="flex flex-col gap-5">
-          <Segmented<Fulfilment>
-            label="Fulfilment"
-            value={fulfilment}
-            onChange={setFulfilment}
-            options={[
-              { value: "pickup", label: "Collect", hint: "From a café" },
-              { value: "delivery", label: "Deliver", hint: "Next-day post" },
-            ]}
-          />
+          {!signedIn ? (
+            <Notice tone="info" title="Sign in before checkout">
+              You&apos;re browsing with an anonymous basket. Sign in to pay with your verified
+              customer account.
+              <div className="mt-3">
+                <ButtonLink href={buildSignInHref("/checkout")} size="sm" onClick={close}>
+                  Sign in
+                </ButtonLink>
+              </div>
+            </Notice>
+          ) : null}
           <ul className="flex flex-col">
-            {lines.map((line) => (
-              <CartLineRow key={line.id} line={line} compact />
+            {basket.lines.map((line) => (
+              <QosCartLineRow
+                key={line.linePublicId}
+                line={line}
+                currency={basket.currency}
+                locale={basket.locale}
+                compact
+              />
             ))}
           </ul>
         </div>

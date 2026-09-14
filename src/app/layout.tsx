@@ -3,8 +3,6 @@ import { IBM_Plex_Mono, Inter, Young_Serif } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { BeanSprite } from "@/components/brand/bean";
-import { BRAND } from "@/lib/brand";
-
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -27,30 +25,11 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://quotes.coffee"),
   title: {
-    default: `${BRAND.name} — ${BRAND.tagline}`,
-    template: `%s · ${BRAND.name}`,
+    default: "QOS Storefront",
+    template: "%s · QOS Storefront",
   },
-  description: BRAND.description,
-  applicationName: BRAND.name,
-  keywords: [
-    "specialty coffee",
-    "single origin",
-    "coffee subscription",
-    "café",
-    "quotes coffee co.",
-  ],
-  openGraph: {
-    title: `${BRAND.name} — ${BRAND.tagline}`,
-    description: BRAND.description,
-    type: "website",
-    siteName: BRAND.name,
-  },
-  icons: {
-    icon: "/brand/quotes-logo.png",
-    apple: "/brand/quotes-logo.png",
-  },
+  description: "Multi-tenant QOS storefront renderer.",
 };
 
 export const viewport: Viewport = {

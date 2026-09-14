@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Bean } from "@/components/brand/bean";
-import type { PlateTone } from "@/lib/catalog";
+import type { PlateTone } from "@/lib/ui/plate-tone";
 
 /**
  * Art-directed imagery surface. The design export ships photography as tonal

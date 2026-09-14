@@ -3,17 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/brand/icons";
-import { TAB_NAV } from "./nav";
 import { cn } from "@/lib/cn";
-import { useCart } from "@/lib/stores/cart";
+import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
 import { useHydrated } from "@/lib/use-hydrated";
+import { useStorefrontShell } from "@/lib/stores/storefront-shell";
 
 /** Phone-only quick access to the four surfaces used most on a small screen. */
 export function MobileTabBar() {
   const pathname = usePathname();
   const hydrated = useHydrated();
-  const lines = useCart((state) => state.lines);
-  const itemCount = lines.reduce((sum, line) => sum + line.quantity, 0);
+  const itemCount = useQosBasket(selectBasketItemCount);
+  const shell = useStorefrontShell();
 
   return (
     <nav
@@ -21,7 +21,7 @@ export function MobileTabBar() {
       className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-[color-mix(in_oklab,var(--color-cream),transparent_4%)] pb-[env(safe-area-inset-bottom)] backdrop-blur-[10px] md:hidden"
     >
       <ul className="grid grid-cols-4">
-        {TAB_NAV.map((item) => {
+        {shell.tabNav.map((item) => {
           const active =
             item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           const showBadge = hydrated && item.href === "/order" && itemCount > 0;

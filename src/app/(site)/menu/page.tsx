@@ -3,16 +3,24 @@ import { Bean } from "@/components/brand/bean";
 import { ButtonLink, TravelArrow } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MenuBoard } from "@/components/menu/menu-board";
-import { DIETARY_LABELS } from "@/lib/menu";
-import { LOCATIONS } from "@/lib/locations";
+import { MenuContextNotice, MenuUnavailable } from "@/components/menu/menu-status";
+import { getServerStorefrontLocale } from "@/lib/locale/locale.server";
+import { loadPublishedMenu } from "@/lib/qos/menu.server";
+import { resolveStorefrontContextFromHeaders } from "@/lib/storefront/context.server";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Café menu",
-  description:
-    "Espresso bar, filter and brew, not-coffee and bakery — with sizes, milks and customisation.",
+  description: "Published branch menu from QOS with approved translations and AED pricing.",
 };
 
-export default function MenuPage() {
+export default async function MenuPage() {
+  const context = await resolveStorefrontContextFromHeaders();
+  const locale = await getServerStorefrontLocale();
+  const menuResult = await loadPublishedMenu(locale);
+  const isRetail = context.themePreset.id === "generic_retail_baseline";
+
   return (
     <>
       <section className="wrap pt-[clamp(40px,7vw,80px)] pb-[clamp(28px,4vw,48px)]">
@@ -20,12 +28,14 @@ export default function MenuPage() {
           <div>
             <span className="t-overline inline-flex items-center gap-2.5 tracking-[0.22em] text-muted">
               <Bean className="w-[0.9em]" />
-              Café menu
+              {isRetail ? "Shop" : "Café menu"}
             </span>
-            <h1 className="t-display-l mt-5 max-w-[20ch]">Everything on the bar today.</h1>
+            <h1 className="t-display-l mt-5 max-w-[20ch]">
+              {isRetail ? "Everything in the shop today." : "Everything on the bar today."}
+            </h1>
             <p className="mt-6 max-w-[56ch] text-[clamp(17px,2.2vw,20px)] leading-[1.55] text-mocha">
-              Espresso runs on Signature Blend as standard, with a rotating single origin on
-              filter. Prices are the same whether you sit in or take it away.
+              This {isRetail ? "catalogue" : "menu"} is loaded from the published QOS release for
+              the selected branch. Prices and availability come from the backend, not a local copy.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <ButtonLink href="/order" size="lg" className="group">
@@ -33,52 +43,73 @@ export default function MenuPage() {
                 <TravelArrow />
               </ButtonLink>
               <ButtonLink href="/locations" variant="secondary" size="lg">
-                Find a café
+                {isRetail ? "Find a shop" : "Find a café"}
               </ButtonLink>
             </div>
           </div>
 
           <Card className="flex flex-col gap-4">
-            <h2 className="t-label">Dietary key</h2>
-            <dl className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
-              {Object.entries(DIETARY_LABELS).map(([code, label]) => (
-                <div key={code} className="flex items-center gap-3 text-[13.5px]">
-                  <dt className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-line font-mono text-[10px] tracking-[0.06em] text-muted">
-                    {code}
-                  </dt>
-                  <dd>{label}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="t-caption border-t border-line pt-3">
-              Oat, almond and soy are {"\u00A0"}+40p. Tell the bar about allergies and we will
-              check every component.
-            </p>
+            <h2 className="t-label">Published menu source</h2>
+            {menuResult.status === "ok" ? (
+              <>
+                <dl className="grid gap-2 text-[13.5px]">
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted">Branch</dt>
+                    <dd className="font-medium">{menuResult.branchName}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted">Menu</dt>
+                    <dd className="font-medium">{menuResult.menu.displayName}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted">Release</dt>
+                    <dd className="font-mono">{menuResult.menu.releaseVersion}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted">Locale</dt>
+                    <dd className="font-mono uppercase">{menuResult.menu.locale}</dd>
+                  </div>
+                </dl>
+                <p className="t-caption border-t border-line pt-3">
+                  Modifier customisation returns when QOS modifier groups are published for
+                  this menu.
+                </p>
+              </>
+            ) : (
+              <p className="text-[13.5px] text-muted">{menuResult.error}</p>
+            )}
           </Card>
         </div>
       </section>
 
       <section className="wrap pb-[clamp(48px,7vw,88px)]">
-        <MenuBoard />
+        {menuResult.status === "ok" ? (
+          <div className="flex flex-col gap-6">
+            <MenuContextNotice
+              branchName={menuResult.branchName}
+              menuDisplayName={menuResult.menu.displayName}
+              releaseVersion={menuResult.menu.releaseVersion}
+              locale={menuResult.menu.locale}
+              currency={menuResult.menu.currency}
+            />
+            <MenuBoard menu={menuResult.menu} />
+          </div>
+        ) : (
+          <MenuUnavailable result={menuResult} />
+        )}
       </section>
 
       <section className="border-t border-line">
         <div className="wrap py-[clamp(40px,6vw,72px)]">
-          <h2 className="t-h1 mb-8">Where it&apos;s served</h2>
+          <h2 className="t-h1 mb-8">{isRetail ? "Where to collect" : "Where it&apos;s served"}</h2>
           <ul className="grid gap-5 md:grid-cols-3">
-            {LOCATIONS.map((location) => (
-              <li key={location.id}>
+            {context.manifest.locations.map((location) => (
+              <li key={location.locationPublicId}>
                 <Card className="flex h-full flex-col gap-3">
-                  <h3 className="t-h2">{location.name.replace("quotes ", "")}</h3>
-                  <p className="t-caption">{location.address.join(", ")}</p>
-                  <dl className="mt-auto flex flex-col gap-1.5 border-t border-line pt-4 font-mono text-[12px]">
-                    {location.hours.map((entry) => (
-                      <div key={entry.days} className="flex justify-between gap-3">
-                        <dt className="text-muted">{entry.days}</dt>
-                        <dd>{entry.hours}</dd>
-                      </div>
-                    ))}
-                  </dl>
+                  <h3 className="t-h2">{location.name}</h3>
+                  <p className="t-caption">
+                    Branch configured in the published storefront release.
+                  </p>
                 </Card>
               </li>
             ))}

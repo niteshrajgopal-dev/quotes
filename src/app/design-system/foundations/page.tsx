@@ -7,7 +7,7 @@ import { StampCard } from "@/components/brand/stamp-card";
 import { Card } from "@/components/ui/card";
 import { Plate } from "@/components/ui/plate";
 import { DsBlock, DsCover, DsLabel, DsTopBar } from "@/components/system/ds-shell";
-import { PRINCIPLES, VALUES } from "@/lib/brand";
+import { PRINCIPLES, VALUES } from "@/lib/fixtures/quotes-design-reference/brand";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {

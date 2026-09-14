@@ -9,8 +9,11 @@ import { useToast } from "@/components/ui/toast";
 import { computeTotals, useCart } from "@/lib/stores/cart";
 import { useLoyalty } from "@/lib/stores/loyalty";
 import { makeReference, useOrders, type PlacedOrder } from "@/lib/stores/orders";
-import { getLocation, LOCATIONS } from "@/lib/locations";
-import { formatPrice } from "@/lib/brand";
+import {
+  getLocation,
+  LOCATIONS,
+} from "@/lib/fixtures/quotes-design-reference/locations";
+import { formatPrice } from "@/lib/fixtures/quotes-design-reference/brand";
 
 type PaymentMethod = "card" | "in-cafe";
 

@@ -8,7 +8,7 @@ import { BagPlate, Plate } from "@/components/ui/plate";
 import { TravelArrow } from "@/components/ui/button";
 import { AddToBag } from "@/components/product/add-to-bag";
 import { CoffeeCard } from "@/components/product/coffee-card";
-import { COFFEES, getCoffee } from "@/lib/catalog";
+import { COFFEES, getCoffee } from "@/lib/fixtures/quotes-design-reference/catalog";
 import { cn } from "@/lib/cn";
 
 export function generateStaticParams() {

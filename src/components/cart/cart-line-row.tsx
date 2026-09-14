@@ -3,7 +3,7 @@
 import { Bean } from "@/components/brand/bean";
 import { QuantityStepper } from "@/components/ui/field";
 import { describeLine, useCart, type CartLine } from "@/lib/stores/cart";
-import { formatPrice } from "@/lib/brand";
+import { formatPrice } from "@/lib/fixtures/quotes-design-reference/brand";
 import { cn } from "@/lib/cn";
 
 export function CartLineRow({

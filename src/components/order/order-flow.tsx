@@ -1,46 +1,54 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Bean } from "@/components/brand/bean";
 import { Icon } from "@/components/brand/icons";
 import { Badge } from "@/components/ui/badge";
-import { Button, ButtonLink, TravelArrow } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, EmptyState, Notice } from "@/components/ui/card";
-import { Segmented, Stepper } from "@/components/ui/tabs";
-import { StampCard } from "@/components/brand/stamp-card";
+import { Stepper } from "@/components/ui/tabs";
 import { MenuBoard } from "@/components/menu/menu-board";
-import { CartLineRow } from "@/components/cart/cart-line-row";
+import { MenuUnavailable } from "@/components/menu/menu-status";
+import type { MenuLoadResult } from "@/lib/qos/menu-types";
+import { QosCartLineRow } from "@/components/cart/qos-cart-line-row";
 import { OrderSummary } from "@/components/cart/order-summary";
-import { CheckoutForm } from "@/components/checkout/checkout-form";
-import { computeTotals, useCart, type Fulfilment } from "@/lib/stores/cart";
+import { useCart, type Fulfilment } from "@/lib/stores/cart";
+import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
+import { formatMoneyMinor } from "@/lib/qos/money";
 import { useHydrated } from "@/lib/use-hydrated";
-import { LOCATIONS, getLocation } from "@/lib/locations";
-import { formatPrice } from "@/lib/brand";
+import { useStorefrontShell } from "@/lib/stores/storefront-shell";
 import { cn } from "@/lib/cn";
-import type { PlacedOrder } from "@/lib/stores/orders";
 
-const STEPS = ["Where", "Menu", "Bag", "Details", "Done"] as const;
+const STEPS = ["Where", "Menu", "Bag"] as const;
 
-export function OrderFlow() {
+export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
+  const router = useRouter();
+  const shell = useStorefrontShell();
+  const isRetail = shell.themePresetId === "generic_retail_baseline";
   const hydrated = useHydrated();
   const [step, setStep] = useState(0);
-  const [placed, setPlaced] = useState<PlacedOrder | null>(null);
 
-  const lines = useCart((state) => state.lines);
+  const basket = useQosBasket((state) => state.basket);
+  const itemCount = useQosBasket(selectBasketItemCount);
   const fulfilment = useCart((state) => state.fulfilment);
   const setFulfilment = useCart((state) => state.setFulfilment);
   const locationId = useCart((state) => state.locationId);
   const setLocation = useCart((state) => state.setLocation);
-  const promo = useCart((state) => state.promo);
 
-  const totals = computeTotals({ lines, fulfilment, promo });
-  const chosenLocation = locationId ? getLocation(locationId) : undefined;
+  const chosenLocation = shell.locations.find(
+    (location) => location.locationPublicId === locationId,
+  );
 
   const canLeaveWhere = fulfilment === "delivery" || Boolean(chosenLocation);
-  const canLeaveMenu = lines.length > 0;
+  const canLeaveMenu = itemCount > 0;
 
   const advance = () => {
+    if (step === STEPS.length - 1) {
+      router.push("/checkout");
+      return;
+    }
+
     setStep((current) => Math.min(current + 1, STEPS.length - 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -61,36 +69,25 @@ export function OrderFlow() {
 
   return (
     <div className="flex flex-col gap-8">
-      <Stepper
-        steps={[...STEPS]}
-        current={step}
-        onStepSelect={placed ? undefined : (index) => setStep(index)}
-      />
+      <Stepper steps={[...STEPS]} current={step} onStepSelect={(index) => setStep(index)} />
 
-      {/* ---------- STEP 0 · WHERE ---------- */}
       {step === 0 ? (
         <section aria-label="Choose how to get your order" className="flex flex-col gap-6">
-          <Segmented<Fulfilment>
-            label="Fulfilment"
-            value={fulfilment}
-            onChange={setFulfilment}
-            options={[
-              { value: "pickup", label: "Collect from a café", hint: "Ready in minutes" },
-              { value: "delivery", label: "Post me beans", hint: "Next-day delivery" },
-            ]}
-          />
+          {!isRetail ? (
+            <SegmentedFulfilment value={fulfilment} onChange={setFulfilment} />
+          ) : null}
 
-          {fulfilment === "pickup" ? (
+          {fulfilment === "pickup" || isRetail ? (
             <>
-              <h2 className="t-h1">Which café?</h2>
+              <h2 className="t-h1">{isRetail ? "Which shop?" : "Which café?"}</h2>
               <ul className="grid gap-4 md:grid-cols-3">
-                {LOCATIONS.map((location) => {
-                  const selected = locationId === location.id;
+                {shell.locations.map((location) => {
+                  const selected = locationId === location.locationPublicId;
                   return (
-                    <li key={location.id}>
+                    <li key={location.locationPublicId}>
                       <button
                         type="button"
-                        onClick={() => setLocation(location.id)}
+                        onClick={() => setLocation(location.locationPublicId)}
                         aria-pressed={selected}
                         className={cn(
                           "flex h-full w-full flex-col gap-3 rounded-md border p-5 text-left",
@@ -112,11 +109,11 @@ export function OrderFlow() {
                               selected ? "text-latte" : "text-muted",
                             )}
                           >
-                            ~{location.prepMinutes} min
+                            Branch
                           </span>
                         </span>
                         <span className={cn("font-serif text-[20px]", selected && "text-cream")}>
-                          {location.name.replace("quotes ", "")}
+                          {location.name}
                         </span>
                         <span
                           className={cn(
@@ -124,17 +121,7 @@ export function OrderFlow() {
                             selected ? "text-cream/65" : "text-muted",
                           )}
                         >
-                          {location.address.join(", ")}
-                        </span>
-                        <span
-                          className={cn(
-                            "mt-auto border-t pt-3 font-mono text-[12px]",
-                            selected
-                              ? "border-[var(--border-on-dark)] text-cream/70"
-                              : "border-line text-muted",
-                          )}
-                        >
-                          {location.hours[0].days} · {location.hours[0].hours}
+                          Published branch from the storefront release.
                         </span>
                       </button>
                     </li>
@@ -144,32 +131,29 @@ export function OrderFlow() {
 
               {chosenLocation ? (
                 <Notice tone="success" title={`${chosenLocation.name}.`}>
-                  Usually ready in about {chosenLocation.prepMinutes} minutes. Busiest from{" "}
-                  {chosenLocation.busyFrom}.
+                  Your basket and checkout will use this branch.
                 </Notice>
               ) : (
-                <Notice tone="info">Pick a café to see collection times at checkout.</Notice>
+                <Notice tone="info">
+                  Pick a branch to continue with the published menu.
+                </Notice>
               )}
             </>
           ) : (
             <>
               <h2 className="t-h1">Beans by post</h2>
               <p className="max-w-[58ch] text-[16px] leading-relaxed text-mocha">
-                Delivery covers retail bags of beans only — drinks are collection from a café.
-                Orders placed before 13:00 are roasted and posted the same day.
+                Delivery covers retail bags from the design-reference shop. The signed-in QOS
+                checkout path uses the published café menu.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <ButtonLink href="/shop" size="md" className="group">
-                  Choose your coffee
-                  <TravelArrow />
-                </ButtonLink>
-              </div>
+              <ButtonLink href="/shop" size="md">
+                Design-reference shop
+              </ButtonLink>
             </>
           )}
         </section>
       ) : null}
 
-      {/* ---------- STEP 1 · MENU ---------- */}
       {step === 1 ? (
         <section aria-label="Choose your drinks" className="flex flex-col gap-6">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
@@ -177,19 +161,22 @@ export function OrderFlow() {
             {chosenLocation ? (
               <Badge tone="neutral">
                 <Icon name="location" className="h-3 w-3" strokeWidth={2} />
-                {chosenLocation.name.replace("quotes ", "")}
+                {chosenLocation.name}
               </Badge>
             ) : null}
           </div>
-          <MenuBoard />
+          {menuResult.status === "ok" ? (
+            <MenuBoard menu={menuResult.menu} openBagOnAdd />
+          ) : (
+            <MenuUnavailable result={menuResult} />
+          )}
         </section>
       ) : null}
 
-      {/* ---------- STEP 2 · BAG ---------- */}
       {step === 2 ? (
         <section aria-label="Review your bag" className="flex flex-col gap-6">
           <h2 className="t-h1">Your bag</h2>
-          {lines.length === 0 ? (
+          {!basket || basket.lines.length === 0 ? (
             <EmptyState
               title="Nothing in the bag"
               body="Go back a step and pick something from the menu."
@@ -202,115 +189,45 @@ export function OrderFlow() {
           ) : (
             <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
               <ul className="flex flex-col border-t border-line">
-                {lines.map((line) => (
-                  <CartLineRow key={line.id} line={line} />
+                {basket.lines.map((line) => (
+                  <QosCartLineRow
+                    key={line.linePublicId}
+                    line={line}
+                    currency={basket.currency}
+                    locale={basket.locale}
+                  />
                 ))}
               </ul>
               <Card className="flex h-fit flex-col gap-5">
                 <h3 className="t-label">Summary</h3>
                 <OrderSummary />
+                <Button size="md" onClick={() => router.push("/checkout")}>
+                  Continue to checkout
+                </Button>
               </Card>
             </div>
           )}
         </section>
       ) : null}
 
-      {/* ---------- STEP 3 · DETAILS ---------- */}
-      {step === 3 ? (
-        <section aria-label="Your details" className="flex flex-col gap-6">
-          <h2 className="t-h1">Nearly there</h2>
-          <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-12">
-            <CheckoutForm
-              onPlaced={(order) => {
-                setPlaced(order);
-                setStep(4);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            />
-            <Card className="flex h-fit flex-col gap-5">
-              <h3 className="t-label">Order summary</h3>
-              <ul className="flex flex-col border-t border-line">
-                {lines.map((line) => (
-                  <CartLineRow key={line.id} line={line} compact readOnly />
-                ))}
-              </ul>
-              <OrderSummary showPromo={false} />
-            </Card>
-          </div>
-        </section>
-      ) : null}
-
-      {/* ---------- STEP 4 · DONE ---------- */}
-      {step === 4 && placed ? (
-        <section aria-label="Order confirmed" className="flex flex-col gap-7">
-          <div className="flex flex-col items-start gap-5 rounded-lg border border-line bg-surface p-7 sm:p-10">
-            <Badge tone="success">Order confirmed</Badge>
-            <h2 className="t-display-m max-w-[22ch]">
-              Thanks, {placed.customerName.split(" ")[0]}. It&apos;s in.
-            </h2>
-            <dl className="grid w-full gap-5 border-y border-line py-6 sm:grid-cols-3">
-              <div>
-                <dt className="t-label mb-2">Reference</dt>
-                <dd className="font-mono text-[18px]">{placed.reference}</dd>
-              </div>
-              <div>
-                <dt className="t-label mb-2">
-                  {placed.fulfilment === "pickup" ? "Ready at" : "Arrives"}
-                </dt>
-                <dd className="font-mono text-[18px]">{placed.readyAt}</dd>
-              </div>
-              <div>
-                <dt className="t-label mb-2">Total paid</dt>
-                <dd className="font-mono text-[18px]">{formatPrice(placed.total)}</dd>
-              </div>
-            </dl>
-
-            {placed.locationId ? (
-              <p className="text-[14.5px] leading-relaxed text-mocha">
-                Collect from{" "}
-                <Link
-                  href={`/locations#${placed.locationId}`}
-                  className="underline decoration-latte decoration-2 underline-offset-4"
-                >
-                  {getLocation(placed.locationId)?.name}
-                </Link>
-                . Give the reference at the bar.
-              </p>
-            ) : null}
-
-            {placed.stampsEarned > 0 ? (
-              <div className="flex w-full flex-col gap-3 rounded-md border border-line bg-bg p-5">
-                <span className="t-label">
-                  {placed.stampsEarned} stamp{placed.stampsEarned === 1 ? "" : "s"} added
-                </span>
-                <StampCard stamps={placed.stampsEarned} size="sm" />
-              </div>
-            ) : null}
-
-            <div className="flex flex-wrap gap-3 pt-1">
-              <ButtonLink href="/loyalty" size="md" className="group">
-                See your bean card
-                <TravelArrow />
-              </ButtonLink>
-              <ButtonLink href="/menu" variant="secondary" size="md">
-                Order something else
-              </ButtonLink>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {/* ---------- STICKY FLOW BAR ---------- */}
-      {step < 3 ? (
+      {step < STEPS.length - 1 ? (
         <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+68px)] z-40 -mx-[var(--mx)] border-t border-line bg-[color-mix(in_oklab,var(--color-cream),transparent_4%)] px-[var(--mx)] py-3 backdrop-blur-[10px] md:bottom-4 md:mx-0 md:rounded-md md:border md:px-4">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <p className="t-label">
-                {totals.itemCount > 0
-                  ? `${totals.itemCount} item${totals.itemCount === 1 ? "" : "s"}`
+                {itemCount > 0
+                  ? `${itemCount} item${itemCount === 1 ? "" : "s"}`
                   : "Empty bag"}
               </p>
-              <p className="font-mono text-[16px] tabular-nums">{formatPrice(totals.total)}</p>
+              <p className="font-mono text-[16px] tabular-nums">
+                {basket
+                  ? formatMoneyMinor(
+                      basket.provisionalSubtotalMinor,
+                      basket.currency,
+                      basket.locale,
+                    )
+                  : formatMoneyMinor(0, "AED", "en")}
+              </p>
             </div>
             <div className="flex shrink-0 gap-2">
               {step > 0 ? (
@@ -322,15 +239,50 @@ export function OrderFlow() {
                 size="md"
                 onClick={advance}
                 disabled={step === 0 ? !canLeaveWhere : !canLeaveMenu}
-                className="group"
               >
                 {step === 0 ? "Choose drinks" : step === 1 ? "Review bag" : "Checkout"}
-                <TravelArrow />
               </Button>
             </div>
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function SegmentedFulfilment({
+  value,
+  onChange,
+}: {
+  value: Fulfilment;
+  onChange: (value: Fulfilment) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="t-label">Fulfilment</span>
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            { value: "pickup", label: "Collect from a café" },
+            { value: "delivery", label: "Post me beans" },
+          ] as const
+        ).map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onChange(option.value)}
+            aria-pressed={value === option.value}
+            className={cn(
+              "rounded-full border px-4 py-2 text-[13.5px] font-medium transition-colors duration-fast ease-brand",
+              value === option.value
+                ? "border-espresso bg-espresso text-cream"
+                : "border-line bg-surface text-mocha hover:border-latte",
+            )}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

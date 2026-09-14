@@ -7,14 +7,14 @@ import { Segmented } from "@/components/ui/tabs";
 import { Notice } from "@/components/ui/card";
 import { useToast } from "@/components/ui/toast";
 import { useCart } from "@/lib/stores/cart";
-import { formatPrice } from "@/lib/brand";
+import { formatPrice } from "@/lib/fixtures/quotes-design-reference/brand";
 import {
   GRINDS,
   SUBSCRIPTION_FREQUENCIES,
   type Coffee,
   type FrequencyId,
   type GrindId,
-} from "@/lib/catalog";
+} from "@/lib/fixtures/quotes-design-reference/catalog";
 
 type Plan = "one-off" | "subscribe";
 

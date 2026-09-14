@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
 import { Bean } from "@/components/brand/bean";
 import { OrderFlow } from "@/components/order/order-flow";
+import { getServerStorefrontLocale } from "@/lib/locale/locale.server";
+import { loadPublishedMenu } from "@/lib/qos/menu.server";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Order",
-  description:
-    "Order ahead for collection from a Manchester café, or have beans posted next-day.",
+  description: "Order ahead from the published branch menu.",
 };
 
-export default function OrderPage() {
+export default async function OrderPage() {
+  const locale = await getServerStorefrontLocale();
+  const menuResult = await loadPublishedMenu(locale);
+
   return (
     <section className="wrap pt-[clamp(32px,5vw,64px)] pb-[clamp(48px,7vw,88px)]">
       <header className="mb-8 flex flex-col gap-4">
@@ -22,7 +28,7 @@ export default function OrderPage() {
         </p>
       </header>
 
-      <OrderFlow />
+      <OrderFlow menuResult={menuResult} />
     </section>
   );
 }

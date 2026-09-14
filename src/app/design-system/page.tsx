@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Bean } from "@/components/brand/bean";
 import { Badge } from "@/components/ui/badge";
 import { DS_LAYERS, DsTopBar } from "@/components/system/ds-shell";
-import { BRAND } from "@/lib/brand";
+import { BRAND } from "@/lib/fixtures/quotes-design-reference/brand";
 import { cn } from "@/lib/cn";
 
 /**

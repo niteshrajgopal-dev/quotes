@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { BagPlate } from "@/components/ui/plate";
 import { Icon } from "@/components/brand/icons";
-import { formatPrice } from "@/lib/brand";
-import type { Coffee } from "@/lib/catalog";
+import { formatPrice } from "@/lib/fixtures/quotes-design-reference/brand";
+import type { Coffee } from "@/lib/fixtures/quotes-design-reference/catalog";
 import { cn } from "@/lib/cn";
 
 export function CoffeeCard({

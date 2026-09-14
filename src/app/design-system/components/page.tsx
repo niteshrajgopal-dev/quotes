@@ -20,7 +20,7 @@ import { useToast } from "@/components/ui/toast";
 import { Icon } from "@/components/brand/icons";
 import { CoffeeCard } from "@/components/product/coffee-card";
 import { DsBlock, DsCover, DsLabel, DsTopBar } from "@/components/system/ds-shell";
-import { COFFEES } from "@/lib/catalog";
+import { COFFEES } from "@/lib/fixtures/quotes-design-reference/catalog";
 
 /**
  * The component library. Every specimen imports the same component the product

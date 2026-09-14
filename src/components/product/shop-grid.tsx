@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/card";
 import { FilterRail } from "@/components/ui/tabs";
 import { Icon } from "@/components/brand/icons";
 import { CoffeeCard } from "@/components/product/coffee-card";
-import { COFFEES, ROASTS, type Roast } from "@/lib/catalog";
+import { COFFEES, ROASTS, type Roast } from "@/lib/fixtures/quotes-design-reference/catalog";
 
 type RoastFilter = "all" | Roast;
 type Sort = "featured" | "price-asc" | "price-desc";

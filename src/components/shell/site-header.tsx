@@ -8,24 +8,27 @@ import { Bean } from "@/components/brand/bean";
 import { Icon } from "@/components/brand/icons";
 import { Sheet } from "@/components/ui/sheet";
 import { StampProgress } from "@/components/brand/stamp-card";
-import { PRIMARY_NAV, SECONDARY_NAV } from "./nav";
+import { SECONDARY_NAV } from "./nav";
 import { cn } from "@/lib/cn";
 import { useCart } from "@/lib/stores/cart";
+import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
 import { useLoyalty } from "@/lib/stores/loyalty";
 import { useHydrated } from "@/lib/use-hydrated";
-import { BRAND } from "@/lib/brand";
+import { CustomerAccountMenu } from "@/components/auth/customer-account-menu";
+import { LocaleSelector } from "@/components/locale/locale-selector";
+import { useStorefrontShell } from "@/lib/stores/storefront-shell";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
   const hydrated = useHydrated();
+  const shell = useStorefrontShell();
+  const showLoyalty = shell.themePresetId === "hospitality_baseline";
 
-  const lines = useCart((state) => state.lines);
   const setDrawerOpen = useCart((state) => state.setDrawerOpen);
+  const itemCount = useQosBasket(selectBasketItemCount);
   const member = useLoyalty((state) => state.member);
   const stamps = useLoyalty((state) => state.stamps);
-
-  const itemCount = lines.reduce((sum, line) => sum + line.quantity, 0);
 
   /** Navigating is what dismisses the drawer, so the links close it directly. */
   const closeNav = () => setNavOpen(false);
@@ -40,13 +43,15 @@ export function SiteHeader() {
           <div className="flex items-center gap-3">
             {/* 26px is the smallest height that clears the 96px wordmark minimum. */}
             <LogoLink height={26} priority />
-            <span className="t-overline hidden rounded-full border border-line px-2.5 py-1.5 text-[10px] text-muted lg:inline-flex">
-              {BRAND.chip}
-            </span>
+            {shell.headerChip ? (
+              <span className="t-overline hidden rounded-full border border-line px-2.5 py-1.5 text-[10px] text-muted lg:inline-flex">
+                {shell.headerChip}
+              </span>
+            ) : null}
           </div>
 
           <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
-            {PRIMARY_NAV.map((item) => (
+            {shell.primaryNav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -64,17 +69,29 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-1">
-            <Link
-              href="/loyalty"
-              className="hidden min-h-11 items-center gap-2 rounded-sm px-3 text-[13px] text-muted transition-colors duration-fast ease-brand hover:bg-latte-50 hover:text-fg md:inline-flex"
-            >
-              <Bean className="w-3" />
-              {hydrated && member ? (
-                <span className="font-mono text-[12px] text-fg">{stamps}/8</span>
-              ) : (
-                <span>Bean card</span>
-              )}
-            </Link>
+            {shell.localeSelectorEnabled ? (
+              <div className="hidden sm:block">
+                <LocaleSelector compact />
+              </div>
+            ) : null}
+
+            <div className="hidden md:block">
+              <CustomerAccountMenu returnTo="/checkout" />
+            </div>
+
+            {showLoyalty ? (
+              <Link
+                href="/loyalty"
+                className="hidden min-h-11 items-center gap-2 rounded-sm px-3 text-[13px] text-muted transition-colors duration-fast ease-brand hover:bg-latte-50 hover:text-fg md:inline-flex"
+              >
+                <Bean className="w-3" />
+                {hydrated && member ? (
+                  <span className="font-mono text-[12px] text-fg">{stamps}/8</span>
+                ) : (
+                  <span>Bean card</span>
+                )}
+              </Link>
+            ) : null}
 
             <button
               type="button"
@@ -110,10 +127,12 @@ export function SiteHeader() {
       <Sheet
         open={navOpen}
         onClose={() => setNavOpen(false)}
-        title="quotes"
-        description={BRAND.description}
+        title={shell.brandName}
+        description={shell.footerStatement}
         footer={
           <div className="flex flex-col gap-3">
+            {shell.localeSelectorEnabled ? <LocaleSelector /> : null}
+            <CustomerAccountMenu compact returnTo="/checkout" onNavigate={closeNav} />
             {hydrated && member ? (
               <StampProgress stamps={stamps} />
             ) : (
@@ -135,7 +154,7 @@ export function SiteHeader() {
         }
       >
         <nav aria-label="Mobile" className="flex flex-col">
-          {PRIMARY_NAV.map((item) => (
+          {shell.primaryNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}

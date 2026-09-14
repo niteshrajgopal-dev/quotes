@@ -9,9 +9,9 @@ import { Card, EmptyState } from "@/components/ui/card";
 import { CartLineRow } from "@/components/cart/cart-line-row";
 import { StampCard } from "@/components/brand/stamp-card";
 import { useOrders } from "@/lib/stores/orders";
-import { getLocation } from "@/lib/locations";
+import { getLocation } from "@/lib/fixtures/quotes-design-reference/locations";
 import { useHydrated } from "@/lib/use-hydrated";
-import { formatPrice } from "@/lib/brand";
+import { formatPrice } from "@/lib/fixtures/quotes-design-reference/brand";
 
 export default function OrderConfirmationPage() {
   const params = useParams<{ reference: string }>();

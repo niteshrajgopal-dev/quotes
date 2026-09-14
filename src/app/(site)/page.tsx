@@ -4,19 +4,53 @@ import { Icon } from "@/components/brand/icons";
 import { ButtonLink, TravelArrow } from "@/components/ui/button";
 import { SectionHead } from "@/components/ui/card";
 import { Plate } from "@/components/ui/plate";
-import { CoffeeCard } from "@/components/product/coffee-card";
 import { LoyaltyTeaser } from "@/components/loyalty/loyalty-teaser";
-import { BRAND, PRINCIPLES } from "@/lib/brand";
-import { getFeatured } from "@/lib/catalog";
+import { RetailHome } from "@/components/storefront/retail-home";
 import { ARTICLES, formatArticleDate } from "@/lib/journal";
-import { LOCATIONS } from "@/lib/locations";
-import { MENU_ITEMS } from "@/lib/menu";
-import { formatPrice } from "@/lib/brand";
+import { resolveHeroContentBlock } from "@/lib/storefront/content-blocks";
+import { resolveStorefrontContextFromHeaders } from "@/lib/storefront/context.server";
+import {
+  HOSPITALITY_HOME_PRINCIPLES,
+  HOSPITALITY_HOME_STATEMENTS,
+} from "@/lib/storefront/hospitality-home-copy";
+import { getServerStorefrontLocale } from "@/lib/locale/locale.server";
+import { loadPublishedMenu } from "@/lib/qos/menu.server";
+import { formatMoneyMinor } from "@/lib/qos/money";
 
-export default function HomePage() {
-  const featured = getFeatured();
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const context = await resolveStorefrontContextFromHeaders();
+  const locale = await getServerStorefrontLocale();
+  const hero = resolveHeroContentBlock(
+    context.themePreset.id,
+    context.manifest.contentBlocks,
+    locale,
+  );
+
+  if (context.themePreset.id === "generic_retail_baseline") {
+    return (
+      <RetailHome
+        brandName={context.brandName}
+        hero={
+          hero ?? {
+            id: "hero",
+            title: context.brandName,
+            subtitle: context.themePreset.footerStatement,
+          }
+        }
+        locations={context.manifest.locations}
+      />
+    );
+  }
   const stories = ARTICLES.filter((article) => article.featured);
-  const barFavourites = MENU_ITEMS.filter((item) => item.signature);
+  const menuResult = await loadPublishedMenu(locale);
+  const menuProducts =
+    menuResult.status === "ok"
+      ? menuResult.menu.sections.flatMap((section) => section.products)
+      : [];
+  const barFavourites = menuProducts.slice(0, 4);
+  const shelfHighlights = menuProducts.slice(0, 3);
 
   return (
     <>
@@ -26,19 +60,15 @@ export default function HomePage() {
           <div>
             <span className="t-overline inline-flex items-center gap-2.5 tracking-[0.22em] text-muted">
               <Bean className="w-[0.9em]" />
-              {BRAND.tagline}
+              {context.themePreset.headerChip ?? context.brandName}
             </span>
 
             <h1 className="t-display-xl mt-6">
-              Coffee worth
-              <br />
-              slowing down for.
+              {hero?.title ?? "Coffee worth slowing down for."}
             </h1>
 
             <p className="mt-7 max-w-[54ch] text-[clamp(17px,2.2vw,20px)] leading-[1.55] text-mocha">
-              {BRAND.description} We roast in small batches a mile from the bar, pour it in
-              three cafés across Manchester, and post it anywhere in the country the next
-              morning.
+              {hero?.subtitle ?? context.themePreset.footerStatement}
             </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
@@ -53,8 +83,8 @@ export default function HomePage() {
 
             <dl className="mt-11 flex flex-wrap gap-x-9 gap-y-6">
               {[
-                { value: "3", label: "Manchester cafés" },
-                { value: "6", label: "Coffees on the shelf" },
+                { value: String(context.manifest.locations.length), label: "Branches" },
+                { value: String(menuProducts.length), label: "Published items" },
                 { value: "8", label: "Cups to a free one" },
                 { value: "1mi", label: "Bar to roastery" },
               ].map((stat) => (
@@ -90,21 +120,21 @@ export default function HomePage() {
             <figure>
               <blockquote>
                 <p className="max-w-[24ch] font-serif text-[clamp(30px,5.5vw,58px)] leading-[1.08] tracking-[-0.03em]">
-                  {BRAND.statements.hero}
+                  {HOSPITALITY_HOME_STATEMENTS.hero}
                 </p>
               </blockquote>
               <figcaption className="t-overline mt-8 text-latte">
-                {BRAND.legalName} — brand essence
+                {context.brandName} — brand essence
               </figcaption>
             </figure>
 
             <p className="max-w-[40ch] text-[15px] leading-relaxed text-cream/65">
-              {BRAND.essence}
+              {hero?.subtitle ?? context.themePreset.footerStatement}
             </p>
           </div>
 
           <ul className="mt-14 grid gap-x-10 gap-y-8 border-t border-[var(--border-on-dark)] pt-10 sm:grid-cols-2 lg:grid-cols-3">
-            {PRINCIPLES.map((principle) => (
+            {HOSPITALITY_HOME_PRINCIPLES.map((principle) => (
               <li key={principle.name}>
                 <h3 className="flex items-center gap-2.5 font-serif text-[20px] text-cream">
                   <Bean onDark className="w-[0.8em]" />
@@ -117,24 +147,43 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ============ FEATURED COFFEE ============ */}
+      {/* ============ PUBLISHED MENU HIGHLIGHTS ============ */}
       <section className="wrap py-[clamp(52px,7vw,92px)]">
         <SectionHead
           index="01"
-          title="On the shelf"
-          sub="Roasted Tuesdays and Fridays. Whatever you order was roasted this week."
+          title="From the published menu"
+          sub="Highlights from the current QOS release for this branch."
         />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((coffee) => (
-            <CoffeeCard key={coffee.slug} coffee={coffee} />
-          ))}
-        </div>
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {shelfHighlights.length > 0 ? (
+            shelfHighlights.map((product) => (
+              <li
+                key={product.productPublicId}
+                className="flex flex-col gap-3 rounded-md border border-line bg-surface p-6"
+              >
+                <h3 className="t-h2">{product.displayName}</h3>
+                {product.description ? (
+                  <p className="text-[14.5px] leading-relaxed text-muted">{product.description}</p>
+                ) : null}
+                <p className="mt-auto font-mono text-[14px] tabular-nums">
+                  {formatMoneyMinor(
+                    product.price.amountMinor,
+                    product.price.currency,
+                    menuResult.status === "ok" ? menuResult.menu.locale : locale,
+                  )}
+                </p>
+              </li>
+            ))
+          ) : (
+            <li className="text-[14px] text-muted">Published menu items will appear here.</li>
+          )}
+        </ul>
         <div className="mt-8">
           <Link
-            href="/shop"
+            href="/menu"
             className="group inline-flex min-h-11 items-center gap-2.5 text-[14.5px] font-medium"
           >
-            All six coffees
+            Full café menu
             <TravelArrow className="text-latte" />
           </Link>
         </div>
@@ -152,18 +201,30 @@ export default function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
             <div className="flex flex-col gap-5">
               <ul className="flex flex-col divide-y divide-line border-y border-line">
-                {barFavourites.map((item) => (
-                  <li key={item.id} className="flex items-baseline gap-4 py-4">
-                    <Bean className="mt-1 w-3 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-[16px] font-semibold">{item.name}</h3>
-                      <p className="t-caption mt-0.5">{item.description}</p>
-                    </div>
-                    <span className="shrink-0 font-mono text-[14px] tabular-nums">
-                      {formatPrice(item.basePrice)}
-                    </span>
+                {barFavourites.length > 0 ? (
+                  barFavourites.map((item) => (
+                    <li key={item.productPublicId} className="flex items-baseline gap-4 py-4">
+                      <Bean className="mt-1 w-3 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-[16px] font-semibold">{item.displayName}</h3>
+                        {item.description ? (
+                          <p className="t-caption mt-0.5">{item.description}</p>
+                        ) : null}
+                      </div>
+                      <span className="ltr-isolate shrink-0 font-mono text-[14px] tabular-nums">
+                        {formatMoneyMinor(
+                          item.price.amountMinor,
+                          item.price.currency,
+                          menuResult.status === "ok" ? menuResult.menu.locale : locale,
+                        )}
+                      </span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="py-4 text-[14px] text-muted">
+                    Published menu items will appear here once the branch menu is available.
                   </li>
-                ))}
+                )}
               </ul>
 
               <div className="flex flex-wrap gap-3">
@@ -202,10 +263,10 @@ export default function HomePage() {
             <div className="relative bg-[color-mix(in_oklab,var(--color-cream),transparent_8%)] px-6 py-[clamp(48px,8vw,88px)] text-center backdrop-blur-[2px] sm:px-12">
               <BeanDivider className="mx-auto max-w-40" />
               <p className="mx-auto mt-8 max-w-[22ch] font-serif text-[clamp(26px,4.6vw,46px)] leading-[1.1] tracking-[-0.025em]">
-                {BRAND.statements.footer}
+                {HOSPITALITY_HOME_STATEMENTS.footer}
               </p>
               <p className="t-overline mx-auto mt-7 max-w-[44ch] leading-relaxed text-muted">
-                {BRAND.statements.ritual}
+                {HOSPITALITY_HOME_STATEMENTS.ritual}
               </p>
               <BeanDivider className="mx-auto mt-8 max-w-40" />
             </div>
@@ -271,18 +332,17 @@ export default function HomePage() {
             sub="Northern Quarter for the window bench, Ancoats for the roaster, Chorlton for the neighbourhood."
           />
           <ul className="grid gap-5 md:grid-cols-3">
-            {LOCATIONS.map((location) => (
-              <li key={location.id}>
+            {context.manifest.locations.map((location) => (
+              <li key={location.locationPublicId}>
                 <Link
-                  href={`/locations#${location.id}`}
+                  href={`/locations#${location.slug}`}
                   className="group flex h-full flex-col gap-4 rounded-md border border-line bg-surface p-6 transition-[border-color,box-shadow] duration-std ease-brand hover:border-latte hover:shadow-md"
                 >
                   <Icon name="location" className="h-5 w-5 text-latte" strokeWidth={1.7} />
-                  <h3 className="t-h2">{location.name.replace("quotes ", "")}</h3>
-                  <p className="t-caption">{location.address.join(", ")}</p>
-                  <p className="text-[13.5px] leading-relaxed text-mocha">{location.note}</p>
+                  <h3 className="t-h2">{location.name}</h3>
+                  <p className="t-caption">Published branch from the storefront release.</p>
                   <span className="mt-auto flex items-baseline justify-between gap-3 border-t border-line pt-4 font-mono text-[12px] text-muted">
-                    {location.hours[0].hours}
+                    View branch
                     <TravelArrow className="text-latte" />
                   </span>
                 </Link>

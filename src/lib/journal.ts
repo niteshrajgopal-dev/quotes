@@ -3,7 +3,7 @@
  * closer to a magazine than a blog, per the design export.
  */
 
-import type { PlateTone } from "./catalog";
+import type { PlateTone } from "@/lib/ui/plate-tone";
 
 export type Article = {
   slug: string;

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,700,100&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F5F1E9;font-family:Inter,system-ui,sans-serif;color:#2F2322}a{color:#2F2322}a:hover{color:#4A3836}</style>
+</helmet>
+<div style="min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:center;padding:48px clamp(20px,5vw,72px);max-width:1200px;margin:0 auto">
+  <div style="display:flex;flex-direction:column;gap:20px;max-width:420px">
+    <img src="assets/logo.png" alt="Quotes" style="height:40px;width:auto;align-self:flex-start">
+    <h1 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(36px,4vw,56px);line-height:.95;letter-spacing:-.025em">Mobile homepage</h1>
+    <p style="margin:0;font-size:15px;line-height:1.55;color:#4A3836">The same prototype at a phone viewport. Scroll inside the device. Below 900px the layout stacks product-first, parallax distances drop to 0.55×, pinned sections shorten to 0.7×, and the horizontal marquee movement is clipped so nothing overflows.</p>
+    <p style="margin:0;font-size:13px;line-height:1.55;color:#4A3836">Navigation links collapse; a menu button replaces them in production.</p>
+    <a href="Quotes Landing.dc.html" style="align-self:flex-start;font-size:14px;font-weight:600;border-bottom:1px solid #2F2322;text-decoration:none;padding-bottom:2px">Open desktop prototype →</a>
+  </div>
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div style="height:100%;background:#2F2322;padding-top:54px;box-sizing:border-box"><iframe src="Quotes Landing.dc.html" title="Quotes mobile prototype" style="width:100%;height:100%;border:0;display:block;background:#2F2322"></iframe></div>
+  </x-import>
+</div>
+</x-dc>
+</body>
+</html>
