@@ -1,0 +1,16 @@
+/* Quotes core palette — verbatim from brand guide */
+:root {
+  --q-espresso: #2f2322;
+  --q-mocha: #4a3836;
+  --q-latte: #cbb792;
+  --q-cream: #f5f1e9;
+  --q-black: #000000;
+
+  --q-cream-on-dark-body: rgba(245, 241, 233, 0.78);
+  --q-cream-on-dark-meta: rgba(245, 241, 233, 0.6);
+  --q-cream-on-dark-rule: rgba(245, 241, 233, 0.14);
+  --q-espresso-on-cream-rule: rgba(47, 35, 34, 0.15);
+
+  --q-nav-fill: rgba(47, 35, 34, 0.88);
+  --q-nav-fill-rest: rgba(74, 56, 54, 0.35);
+}

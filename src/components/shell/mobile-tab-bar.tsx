@@ -20,11 +20,12 @@ export function MobileTabBar() {
       aria-label="Quick access"
       className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-[color-mix(in_oklab,var(--color-cream),transparent_4%)] pb-[env(safe-area-inset-bottom)] backdrop-blur-[10px] md:hidden"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {shell.tabNav.map((item) => {
           const active =
             item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          const showBadge = hydrated && item.href === "/order" && itemCount > 0;
+          const showBadge =
+            hydrated && (item.href === "/order" || item.icon === "bag") && itemCount > 0;
 
           return (
             <li key={item.href}>

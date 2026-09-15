@@ -3,7 +3,15 @@ import coreWebVitals from "eslint-config-next/core-web-vitals";
 import typescript from "eslint-config-next/typescript";
 
 export default defineConfig([
-  globalIgnores([".next/**", "node_modules/**", "design/**", "out/**", "next-env.d.ts"]),
+  globalIgnores([
+    ".next/**",
+    ".agents/**",
+    "node_modules/**",
+    "design/**",
+    "design_handoff/**",
+    "out/**",
+    "next-env.d.ts",
+  ]),
   coreWebVitals,
   typescript,
 ]);

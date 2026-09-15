@@ -13,7 +13,7 @@ export type ButtonVariant = "primary" | "secondary" | "ghost" | "inverse" | "dan
 export type ButtonSize = "sm" | "md" | "lg";
 
 const base =
-  "relative inline-flex items-center justify-center gap-2.5 rounded-sm font-medium no-tap-highlight " +
+  "relative inline-flex items-center justify-center gap-2.5 rounded-pill font-medium no-tap-highlight " +
   "transition-[background-color,color,border-color,box-shadow,transform] duration-std ease-brand " +
   "disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none active:translate-y-px " +
   "disabled:active:translate-y-0";

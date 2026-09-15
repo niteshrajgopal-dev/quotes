@@ -29,48 +29,57 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+async function resolveSiteShell(): Promise<
+  { ok: true; shell: ReturnType<typeof toStorefrontShellSnapshot> } | { ok: false; message: string }
+> {
+  try {
+    const context = await resolveStorefrontContextFromHeaders();
+    const locale = await getServerStorefrontLocale();
+    return { ok: true, shell: toStorefrontShellSnapshot(context, locale) };
+  } catch (error) {
+    if (error instanceof StorefrontResolutionError) {
+      return { ok: false, message: error.message };
+    }
+    throw error;
+  }
+}
+
 /** Chrome for the product app: café, shop, ordering, loyalty and journal. */
 export default async function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  try {
-    const context = await resolveStorefrontContextFromHeaders();
-    const locale = await getServerStorefrontLocale();
-    const shell = toStorefrontShellSnapshot(context, locale);
+  const resolved = await resolveSiteShell();
 
-    return (
-      <StorefrontShellProvider value={shell}>
-        <StorefrontThemeEffect />
-        <StorefrontLocaleProvider>
-          <CustomerSessionProvider>
-            <BasketProvider>
-              <a
-                href="#main"
-                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-sm focus:bg-espresso focus:px-4 focus:py-3 focus:text-sm focus:font-medium focus:text-cream"
-              >
-                Skip to content
-              </a>
-              <SiteHeader />
-              <main
-                id="main"
-                className="pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-0"
-              >
-                {children}
-              </main>
-              <SiteFooter />
-              <MobileTabBar />
-              <CartDrawer />
-              <BasketMergeReconciliation />
-            </BasketProvider>
-          </CustomerSessionProvider>
-        </StorefrontLocaleProvider>
-      </StorefrontShellProvider>
-    );
-  } catch (error) {
-    if (error instanceof StorefrontResolutionError) {
-      return <StorefrontUnavailable message={error.message} />;
-    }
-
-    throw error;
+  if (!resolved.ok) {
+    return <StorefrontUnavailable message={resolved.message} />;
   }
+
+  return (
+    <StorefrontShellProvider value={resolved.shell}>
+      <StorefrontThemeEffect />
+      <StorefrontLocaleProvider>
+        <CustomerSessionProvider>
+          <BasketProvider>
+            <a
+              href="#main"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-sm focus:bg-espresso focus:px-4 focus:py-3 focus:text-sm focus:font-medium focus:text-cream"
+            >
+              Skip to content
+            </a>
+            <SiteHeader />
+            <main
+              id="main"
+              className="pb-[calc(env(safe-area-inset-bottom)+72px)] pt-[88px] md:pb-0 [&:has([data-hero])]:pt-0"
+            >
+              {children}
+            </main>
+            <SiteFooter />
+            <MobileTabBar />
+            <CartDrawer />
+            <BasketMergeReconciliation />
+          </BasketProvider>
+        </CustomerSessionProvider>
+      </StorefrontLocaleProvider>
+    </StorefrontShellProvider>
+  );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Bean, BeanDivider } from "@/components/brand/bean";
 import { Icon } from "@/components/brand/icons";
 import { SOCIALS } from "@/lib/fixtures/quotes-design-reference/brand";
@@ -8,8 +9,13 @@ import { SECONDARY_NAV } from "./nav";
 import { useStorefrontShell } from "@/lib/stores/storefront-shell";
 
 export function SiteFooter() {
+  const pathname = usePathname();
   const shell = useStorefrontShell();
   const showSocials = shell.themePresetId === "hospitality_baseline";
+
+  if (shell.themePresetId === "hospitality_baseline" && pathname === "/") {
+    return null;
+  }
 
   return (
     <footer className="mt-2 bg-espresso text-cream">

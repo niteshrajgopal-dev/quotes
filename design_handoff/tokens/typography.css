@@ -1,0 +1,9 @@
+/* Quotes typography — Young Serif (Recoleta stand-in) + Inter + IBM Plex Mono */
+:root {
+  --q-display: clamp(3.25rem, 7.4vw, 7.75rem);
+  --q-section: clamp(2.75rem, 5.6vw, 5.75rem);
+  --q-card: clamp(1.625rem, 3.2vw, 2.75rem);
+  --q-lead: clamp(1rem, 1.3vw, 1.1875rem);
+  --q-body: clamp(0.875rem, 1vw, 1rem);
+  --q-kicker: 0.75rem;
+}

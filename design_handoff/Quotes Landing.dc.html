@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,700,100&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+html{scroll-behavior:auto}
+body{margin:0;background:#2F2322;color:#F5F1E9;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}a:hover{color:#CBB792}
+*{box-sizing:border-box}
+::selection{background:#CBB792;color:#2F2322}
+@media (max-width:899px){
+[data-hero-grid]{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+[data-hero-cupwrap]{order:-1;min-height:34vh!important}
+[data-hero-cup="a"]{width:30vw!important}[data-hero-cup="b"]{width:38vw!important}
+[data-curated-grid]{grid-template-columns:minmax(0,1fr)!important;gap:60px!important}
+[data-drinks-cupwrap]{width:34vw!important;margin-left:-17vw!important}
+[data-drinks-stmt]{width:44%!important}
+[data-drinks-stmt] h3{font-size:16px!important}[data-drinks-stmt] p{font-size:11px!important}
+[data-band-panel]{grid-template-columns:minmax(0,1fr)!important}[data-band-heap]{display:none!important}
+[data-hero]{padding-top:96px!important}
+[data-hero-scrollhint]{display:none!important}
+[data-stage-grid]{grid-template-columns:minmax(0,1fr)!important;gap:20px!important;align-content:center}
+[data-stage-copy]{order:2}
+[data-feature-cupwrap]{order:1}
+[data-feature-cup]{width:38vw!important}
+[data-feature-ingredients]{order:3;display:grid!important;grid-template-columns:1fr 1fr;justify-self:stretch!important}
+[data-feature-ing]{justify-content:flex-start!important;flex-direction:row-reverse}
+[data-feature-detail]{grid-column:1 / -1;justify-content:start!important;text-align:left!important}
+[data-origins-grid],[data-menu-grid]{grid-template-columns:minmax(0,1fr)!important}
+[data-origins-grid] > div,[data-menu-grid] > div{grid-column:1 / -1!important}
+[data-sticky-col]{position:static!important}
+[data-origins-imgs]{padding-top:0!important}
+[data-origins-imgs] > div{margin-top:0!important}
+[data-rewards-panel],[data-footer-grid]{grid-template-columns:minmax(0,1fr)!important}
+[data-statement-cup]{width:22vw!important;right:6%!important}
+[data-nav-links]{display:none!important}
+}
+@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(2%,2%)}}
+</style>
+</helmet>
+<div ref="{{ root }}" style="position:relative;font-family:Inter,system-ui,sans-serif;background:#2F2322;color:#F5F1E9;overflow-x:clip">
+
+<!-- grain -->
+<div aria-hidden="true" style="pointer-events:none;position:fixed;inset:-10%;z-index:60;opacity:.07;mix-blend-mode:overlay;animation:grain 1.2s steps(2) infinite;background-image:url(&quot;data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'&gt;&lt;filter id='n'&gt;&lt;feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/&gt;&lt;/filter&gt;&lt;rect width='200' height='200' filter='url(%23n)'/&gt;&lt;/svg&gt;&quot;)"></div>
+
+<!-- LOADER -->
+<sc-if value="{{ showLoader }}" hint-placeholder-val="{{ true }}">
+<div data-loader style="position:fixed;inset:0;z-index:100;background:#2F2322;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px">
+  <img data-loader-bean src="assets/bean.png" alt="" style="width:64px;opacity:0;transform:scale(.7) rotate(-20deg)">
+  <div style="overflow:hidden;height:52px"><img data-loader-word src="assets/logo-cream.png" alt="Quotes" style="height:48px;display:block;transform:translateY(110%)"></div>
+</div>
+</sc-if>
+
+<!-- NAV -->
+<header data-nav style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:center;padding:22px clamp(16px,4vw,48px);transition:padding .5s cubic-bezier(.2,.7,.2,1)">
+  <nav data-nav-bar style="width:100%;max-width:1400px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 12px 10px 20px;border-radius:999px;border:1px solid transparent;transition:background .5s,border-color .5s,padding .5s,max-width .6s cubic-bezier(.2,.7,.2,1)">
+    <a href="#top" aria-label="Quotes home" style="display:flex;align-items:center"><img src="assets/logo-cream.png" alt="Quotes" style="height:26px;display:block"></a>
+    <div data-nav-links style="display:flex;gap:6px;font-size:13px;font-weight:500;letter-spacing:.01em">
+      <a href="#menu" style="padding:8px 14px;border-radius:999px;transition:background .25s,color .25s" style-hover="background:rgba(245,241,233,.08);color:#F5F1E9">Menu</a>
+      <a href="#locations" style="padding:8px 14px;border-radius:999px;transition:background .25s,color .25s" style-hover="background:rgba(245,241,233,.08);color:#F5F1E9">Locations</a>
+      <a href="#story" style="padding:8px 14px;border-radius:999px;transition:background .25s,color .25s" style-hover="background:rgba(245,241,233,.08);color:#F5F1E9">Our Story</a>
+      <a href="#rewards" style="padding:8px 14px;border-radius:999px;transition:background .25s,color .25s" style-hover="background:rgba(245,241,233,.08);color:#F5F1E9">Rewards</a>
+    </div>
+    <a href="#menu" style="background:#F5F1E9;color:#2F2322;font-size:13px;font-weight:600;padding:11px 20px;border-radius:999px;transition:transform .2s cubic-bezier(.2,.7,.2,1),background .25s" style-hover="background:#CBB792;transform:scale(1.03)" style-active="transform:scale(.97)">Order Now</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="top" data-hero data-screen-label="Hero" style="position:relative;min-height:100vh;display:grid;align-items:center;overflow:hidden;padding:clamp(110px,15vh,170px) clamp(20px,6vw,96px) clamp(120px,18vh,220px)">
+  <div data-hero-grid style="position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:center;max-width:1400px;margin:0 auto;width:100%">
+    <div data-hero-copy style="display:flex;flex-direction:column;gap:26px;max-width:600px">
+      <div data-hero-kicker style="display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#CBB792;font-weight:500"><span style="width:28px;height:1px;background:#CBB792;display:block"></span>Premium coffee</div>
+      <h1 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(52px,7vw,116px);line-height:.95;letter-spacing:-.025em;text-wrap:balance">
+        <span data-hero-line style="display:block;overflow:hidden"><span data-hero-word style="display:block">Coffee worth</span></span>
+        <span data-hero-line style="display:block;overflow:hidden"><span data-hero-word style="display:block;color:#CBB792">quoting.</span></span>
+      </h1>
+      <p data-hero-sub style="margin:0;font-size:clamp(16px,1.3vw,19px);line-height:1.55;color:rgba(245,241,233,.78);max-width:420px;text-wrap:pretty">Crafted with character.<br>Made for moments worth remembering.</p>
+      <div data-hero-ctas style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#menu" style="background:#F5F1E9;color:#2F2322;font-weight:600;font-size:14px;padding:16px 28px;border-radius:999px;transition:transform .2s cubic-bezier(.2,.7,.2,1),background .25s" style-hover="background:#CBB792;transform:scale(1.03)" style-active="transform:scale(.97)">Explore the Menu</a>
+        <a href="#locations" style="border:1px solid rgba(245,241,233,.35);color:#F5F1E9;font-weight:500;font-size:14px;padding:16px 28px;border-radius:999px;transition:border-color .25s,background .25s" style-hover="border-color:#F5F1E9;background:rgba(245,241,233,.06)">Find a Location</a>
+      </div>
+    </div>
+    <div data-hero-cupwrap style="position:relative;display:flex;justify-content:center;align-items:flex-end;gap:0;min-height:clamp(320px,48vh,600px)">
+      <div data-hero-halo aria-hidden="true" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(70vw,560px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(203,183,146,.2),rgba(203,183,146,0) 65%)"></div>
+      <div data-hero-cup="a" style="position:relative;width:clamp(150px,16vw,230px);margin-right:-6%;z-index:1;transform:rotate(-8deg);filter:drop-shadow(0 50px 40px rgba(0,0,0,.5))"><div  style="position:relative;width:100%;aspect-ratio:26/34">
+          <div style="position:absolute;left:12%;right:12%;top:0;height:6%;background:#1a1211;border-radius:10px 10px 3px 3px"></div>
+          <div style="position:absolute;left:3%;right:3%;top:5%;height:8%;background:#231918;border-radius:6px"></div>
+          <div style="position:absolute;left:5%;right:5%;top:12%;bottom:0;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.35)),#2F2322;clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 30% 30% / 0 0 10% 10%"></div>
+          <div style="position:absolute;left:8%;right:8%;top:34%;height:32%;background:linear-gradient(90deg,rgba(0,0,0,.12),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.18)),#CBB792;clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);display:flex;align-items:center;justify-content:center"><img src="assets/logo.png" alt="" style="width:62%;display:block;position:relative"></div>
+        </div></div>
+      <div data-hero-cup="b" style="position:relative;width:clamp(190px,21vw,300px);z-index:2;transform:translateY(-6%) rotate(6deg);filter:drop-shadow(0 60px 50px rgba(0,0,0,.5))"><div  style="position:relative;width:100%;aspect-ratio:26/34">
+          <div style="position:absolute;left:12%;right:12%;top:0;height:6%;background:#1a1211;border-radius:10px 10px 3px 3px"></div>
+          <div style="position:absolute;left:3%;right:3%;top:5%;height:8%;background:#231918;border-radius:6px"></div>
+          <div style="position:absolute;left:5%;right:5%;top:12%;bottom:0;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.35)),#F5F1E9;clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 30% 30% / 0 0 10% 10%"></div>
+          <div style="position:absolute;left:8%;right:8%;top:34%;height:32%;background:linear-gradient(90deg,rgba(0,0,0,.12),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.18)),#2F2322;clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);display:flex;align-items:center;justify-content:center"><img src="assets/logo-cream.png" alt="" style="width:62%;display:block;position:relative"></div>
+        </div></div>
+      <img data-hero-bean="1" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(30px,3.4vw,48px);left:2%;bottom:12%;opacity:.9;transform:rotate(30deg)">
+      <img data-hero-bean="2" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(22px,2.6vw,36px);right:4%;top:8%;opacity:.7;transform:rotate(-40deg)">
+    </div>
+  </div>
+</section>
+
+<!-- CURATED ROW: marquee headline scrubs horizontally, cups settle into cards at a faster rate -->
+<section data-curated data-screen-label="Curated Row" style="position:relative;background:#2F2322;padding:clamp(80px,14vh,160px) clamp(20px,6vw,96px) clamp(120px,18vh,220px);margin-top:-14vh;overflow:hidden">
+  <div data-curated-marquee aria-hidden="true" style="position:absolute;left:0;top:0;white-space:nowrap;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(84px,15vw,250px);line-height:1;color:#CBB792;opacity:.55;letter-spacing:-.02em;pointer-events:none;user-select:none">Signature Drinks Curated for You — Signature Drinks Curated for You —</div>
+  <div style="position:relative;max-width:1100px;margin:clamp(60px,10vw,160px) auto 0;display:flex;flex-direction:column;gap:40px;align-items:center">
+    <div data-curated-grid style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,28px);width:100%">
+      <sc-for list="{{ curated }}" as="d" hint-placeholder-count="3">
+        <div data-curated-item style="position:relative;display:flex;flex-direction:column;align-items:center;padding-top:clamp(70px,8vw,120px)">
+          <div data-curated-cup style="position:absolute;top:0;left:50%;width:clamp(90px,9vw,140px);margin-left:calc(clamp(90px,9vw,140px) / -2);z-index:2;filter:drop-shadow(0 40px 30px rgba(0,0,0,.5))"><div  style="position:relative;width:100%;aspect-ratio:26/34">
+          <div style="position:absolute;left:12%;right:12%;top:0;height:6%;background:#1a1211;border-radius:10px 10px 3px 3px"></div>
+          <div style="position:absolute;left:3%;right:3%;top:5%;height:8%;background:#231918;border-radius:6px"></div>
+          <div style="position:absolute;left:5%;right:5%;top:12%;bottom:0;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.35)),{{ d.body }};clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 30% 30% / 0 0 10% 10%"></div>
+          <div style="position:absolute;left:8%;right:8%;top:34%;height:32%;background:linear-gradient(90deg,rgba(0,0,0,.12),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.18)),{{ d.sleeve }};clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);display:flex;align-items:center;justify-content:center"><div style="width:62%;aspect-ratio:1536/409;position:relative;background-image:url({{ d.logo }});background-size:contain;background-repeat:no-repeat;background-position:center"></div></div>
+        </div></div>
+          <div data-curated-card style="width:100%;background:rgba(74,56,54,.55);border:1px solid rgba(245,241,233,.08);border-radius:8px;padding:clamp(80px,7vw,110px) 22px 22px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:transform .45s cubic-bezier(.2,.7,.2,1),background .45s" style-hover="transform:translateY(-4px);background:rgba(74,56,54,.8)">
+            <span style="position:absolute;top:14px;right:14px;font-size:11px;background:rgba(47,35,34,.7);padding:4px 8px;border-radius:999px;color:#CBB792">{{ d.rating }} ★</span>
+            <h3 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;font-weight:700;font-size:clamp(22px,2vw,28px);letter-spacing:-.02em">{{ d.name }}</h3>
+            <p style="margin:0;font-size:13px;line-height:1.5;color:rgba(245,241,233,.65);max-width:240px">{{ d.desc }}</p>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:6px"><span style="font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ d.price }}</span><a href="#menu" aria-label="Add" style="width:30px;height:30px;border-radius:50%;background:#CBB792;color:#2F2322;display:grid;place-items:center;font-size:18px;line-height:1;transition:transform .2s" style-hover="transform:scale(1.08)">+</a></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <a data-curated-cta href="#menu" style="border:1px solid rgba(245,241,233,.3);color:#F5F1E9;font-size:13px;font-weight:500;padding:12px 22px;border-radius:999px;transition:border-color .25s,background .25s" style-hover="border-color:#F5F1E9;background:rgba(245,241,233,.06)">Explore our full menu</a>
+  </div>
+</section>
+
+<!-- PINNED PRODUCT STORY: cup rises, grows, four statements reveal around it, then cup shrinks & exits up -->
+<section id="story-pin" data-drinks data-screen-label="Product Story" style="position:relative;height:100vh;overflow:hidden;background:#2F2322;padding:0 clamp(20px,6vw,96px)">
+  <div data-drinks-bg style="position:absolute;inset:0;background:#2F2322"></div>
+  <div data-drinks-title style="position:absolute;left:50%;top:clamp(88px,13vh,130px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;white-space:nowrap"><img src="assets/logo-cream.png" alt="Quotes" style="height:clamp(20px,2vw,28px)"><span style="font-size:clamp(14px,1.3vw,18px);letter-spacing:.14em;text-transform:uppercase;color:rgba(245,241,233,.6)">is</span></div>
+  <div data-drinks-stage style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100%,1200px);height:min(70vh,760px)">
+    <div data-drinks-cupwrap style="position:absolute;left:50%;top:50%;width:min(clamp(160px,16vw,240px),26vh);margin-left:calc(min(clamp(160px,16vw,240px),26vh) / -2);filter:drop-shadow(0 80px 60px rgba(0,0,0,.55));will-change:transform">
+      <div data-drinks-cup style="position:relative;width:100%;aspect-ratio:26/34">
+        <div style="position:absolute;left:12%;right:12%;top:0;height:6%;background:#1a1211;border-radius:10px 10px 3px 3px"></div>
+        <div style="position:absolute;left:3%;right:3%;top:5%;height:8%;background:#231918;border-radius:6px"></div>
+        <div data-drinks-body style="position:absolute;left:5%;right:5%;top:12%;bottom:0;background:#F5F1E9;clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 30% 30% / 0 0 10% 10%"><div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.18),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.28))"></div></div>
+        <div data-drinks-sleeve style="position:absolute;left:8%;right:8%;top:34%;height:32%;background:#4A3836;clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);display:flex;align-items:center;justify-content:center"><div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.25))"></div><img src="assets/logo-cream.png" alt="" style="width:62%;position:relative"></div>
+      </div>
+    </div>
+    <sc-for list="{{ statements }}" as="s" hint-placeholder-count="4">
+      <div data-drinks-stmt="{{ $index }}" style="position:absolute;width:min(34%,320px);display:flex;flex-direction:column;gap:10px;left:{{ s.left }};right:{{ s.right }};top:{{ s.top }};text-align:{{ s.align }};opacity:0">
+        <span style="position:absolute;top:-.4em;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;font-weight:700;font-size:clamp(80px,9vw,140px);line-height:1;color:rgba(203,183,146,.1);pointer-events:none;{{ s.numSide }}">{{ s.n }}</span>
+        <h3 style="position:relative;margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;font-weight:700;font-size:clamp(20px,1.8vw,26px);line-height:1.1;letter-spacing:-.02em;text-wrap:balance">{{ s.title }}</h3>
+        <p style="position:relative;margin:0;font-size:13px;line-height:1.55;color:rgba(245,241,233,.62);text-wrap:pretty">{{ s.body }}</p>
+      </div>
+    </sc-for>
+    <a data-drinks-cta href="#menu" style="position:absolute;left:50%;top:64%;transform:translateX(-50%);background:rgba(74,56,54,.8);border:1px solid rgba(245,241,233,.15);color:#F5F1E9;font-size:13px;font-weight:500;padding:12px 26px;border-radius:999px;opacity:0;white-space:nowrap;transition:background .25s" style-hover="background:#CBB792;color:#2F2322">Order Now</a>
+  </div>
+  <img data-drinks-bean="1" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(40px,4.5vw,64px);right:8%;bottom:-10%;opacity:0;transform:rotate(20deg)">
+  <img data-drinks-bean="2" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(28px,3vw,44px);right:18%;bottom:-16%;opacity:0;transform:rotate(-50deg)">
+  <img data-drinks-bean="3" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(22px,2.4vw,34px);right:30%;bottom:-8%;opacity:0;transform:rotate(70deg)">
+</section>
+
+<!-- BEANS CTA BAND: slides up over the still-pinned cup; beans parallax faster than the band -->
+<section data-band data-screen-label="Find your coffee" style="position:relative;background:#2F2322;padding:0 clamp(20px,6vw,96px) clamp(100px,16vh,180px);margin-top:-22vh;z-index:3">
+  <div style="position:relative;max-width:1400px;margin:0 auto">
+    <img data-band-bean="1" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(60px,7vw,110px);right:12%;top:-140px;transform:rotate(-20deg);z-index:2;filter:drop-shadow(0 20px 20px rgba(0,0,0,.4))">
+    <img data-band-bean="2" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(40px,4.5vw,70px);right:28%;top:-60px;transform:rotate(40deg);z-index:2">
+    <img data-band-bean="3" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(34px,3.6vw,56px);right:4%;top:-30px;transform:rotate(100deg);z-index:2">
+    <img data-band-bean="4" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:clamp(26px,2.8vw,44px);right:20%;top:40px;transform:rotate(-70deg);z-index:2">
+    <div data-band-panel style="position:relative;background:rgba(74,56,54,.55);border:1px solid rgba(245,241,233,.08);border-radius:10px;padding:clamp(32px,4vw,56px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;overflow:hidden">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <h2 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(28px,3.4vw,52px);line-height:1;letter-spacing:-.02em;text-wrap:balance">Find out which coffee suits you best.</h2>
+        <a href="#menu" style="align-self:flex-start;background:#F5F1E9;color:#2F2322;font-weight:600;font-size:14px;padding:14px 24px;border-radius:999px;transition:transform .2s cubic-bezier(.2,.7,.2,1),background .25s" style-hover="background:#CBB792;transform:scale(1.03)" style-active="transform:scale(.97)">Take the test</a>
+      </div>
+      <div data-band-heap aria-hidden="true" style="position:relative;width:clamp(160px,22vw,340px);height:clamp(90px,12vw,180px)">
+        <img src="assets/bean.png" alt="" style="position:absolute;width:26%;left:6%;top:40%;transform:rotate(15deg)"><img src="assets/bean.png" alt="" style="position:absolute;width:24%;left:26%;top:52%;transform:rotate(-35deg)"><img src="assets/bean.png" alt="" style="position:absolute;width:28%;left:44%;top:36%;transform:rotate(60deg)"><img src="assets/bean.png" alt="" style="position:absolute;width:22%;left:66%;top:50%;transform:rotate(-10deg)"><img src="assets/bean.png" alt="" style="position:absolute;width:20%;left:34%;top:18%;transform:rotate(95deg)"><img src="assets/bean.png" alt="" style="position:absolute;width:18%;left:58%;top:12%;transform:rotate(-60deg)"><img src="assets/bean.png" alt="" style="position:absolute;width:16%;left:82%;top:28%;transform:rotate(30deg)">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDITORIAL STATEMENT -->
+<section data-statement data-screen-label="Editorial Statement" style="position:relative;background:#F5F1E9;color:#2F2322;padding:clamp(120px,20vh,220px) 0;overflow:hidden;border-radius:28px 28px 0 0;margin-top:-28px;z-index:2">
+  <div data-statement-line="1" style="white-space:nowrap;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(72px,13vw,220px);line-height:.95;letter-spacing:-.03em;padding-left:6vw">Every cup has</div>
+  <div data-statement-line="2" style="white-space:nowrap;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(72px,13vw,220px);line-height:.95;letter-spacing:-.03em;padding-left:26vw;color:#4A3836">a story<span style="color:#CBB792">.</span></div>
+  <div data-statement-cup style="position:absolute;right:clamp(8%,14vw,20%);top:50%;width:clamp(120px,13vw,190px);aspect-ratio:26/34;transform:translateY(-50%);filter:drop-shadow(0 40px 40px rgba(47,35,34,.35))">
+    <div style="position:absolute;left:12%;right:12%;top:0;height:6%;background:#1a1211;border-radius:10px 10px 3px 3px"></div>
+    <div style="position:absolute;left:3%;right:3%;top:5%;height:8%;background:#231918;border-radius:6px"></div>
+    <div style="position:absolute;left:5%;right:5%;top:12%;bottom:0;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.35)),#2F2322;clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 30% 30% / 0 0 10% 10%"></div>
+    <div style="position:absolute;left:8%;right:8%;top:34%;height:32%;background:#CBB792;clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);display:flex;align-items:center;justify-content:center"><img src="assets/logo.png" alt="" style="width:62%"></div>
+  </div>
+  <p data-statement-copy style="margin:64px 6vw 0;max-width:460px;font-size:clamp(16px,1.2vw,18px);line-height:1.6;color:#4A3836;text-wrap:pretty">We roast in small batches, pour with intention and remember your name. The rest is the part you tell your friends about.</p>
+</section>
+
+<!-- ORIGINS -->
+<section id="story" data-origins data-screen-label="Origins" style="position:relative;background:#F5F1E9;color:#2F2322;padding:clamp(60px,10vh,140px) clamp(20px,6vw,96px) clamp(100px,16vh,200px);overflow:hidden">
+  <div data-origins-grid style="max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(16px,2vw,32px);align-items:start">
+    <div data-sticky-col style="grid-column:1 / span 5;display:flex;flex-direction:column;gap:24px;position:sticky;top:20vh">
+      <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#4A3836;font-weight:500;display:flex;gap:12px;align-items:center"><span style="width:24px;height:1px;background:#4A3836"></span>Craft</div>
+      <h2 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(44px,5.6vw,92px);line-height:.95;letter-spacing:-.025em">
+        <span data-reveal-line style="display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em"><span data-reveal-word style="display:block">From origin</span></span>
+        <span data-reveal-line style="display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em"><span data-reveal-word style="display:block">to cup<span style="color:#CBB792">.</span></span></span>
+      </h2>
+      <div data-origins-steps style="display:grid;gap:22px;max-width:400px;margin-top:8px">
+        <div data-origin-step style="display:grid;grid-template-columns:40px 1fr;gap:12px;border-top:1px solid rgba(47,35,34,.15);padding-top:16px"><span style="font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;color:#CBB792;font-size:18px">01</span><div><div style="font-weight:600;font-size:15px">Beans</div><p style="margin:6px 0 0;font-size:14px;line-height:1.55;color:#4A3836">Single-farm lots from Colombia, Ethiopia and Brazil, bought at prices that keep farms in families.</p></div></div>
+        <div data-origin-step style="display:grid;grid-template-columns:40px 1fr;gap:12px;border-top:1px solid rgba(47,35,34,.15);padding-top:16px"><span style="font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;color:#CBB792;font-size:18px">02</span><div><div style="font-weight:600;font-size:15px">Roasting</div><p style="margin:6px 0 0;font-size:14px;line-height:1.55;color:#4A3836">Roasted weekly in 12 kg batches, rested five days, never sold past day twenty-one.</p></div></div>
+        <div data-origin-step style="display:grid;grid-template-columns:40px 1fr;gap:12px;border-top:1px solid rgba(47,35,34,.15);padding-top:16px"><span style="font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;color:#CBB792;font-size:18px">03</span><div><div style="font-weight:600;font-size:15px">Preparation</div><p style="margin:6px 0 0;font-size:14px;line-height:1.55;color:#4A3836">Dialled in every morning. Milk steamed to 62°, espresso pulled at 1:2, every time.</p></div></div>
+      </div>
+    </div>
+    <div data-origins-imgs style="grid-column:7 / span 6;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2vw,32px);padding-top:6vh">
+      <div data-origin-img="1" style="grid-column:1 / span 2;aspect-ratio:4/3;overflow:hidden;border-radius:6px"><image-slot id="origin-beans" src="assets/photo-beans.png" shape="rect" placeholder="Photo · green coffee cherries on the branch" style="width:100%;height:100%"></image-slot></div>
+      <div data-origin-img="2" style="aspect-ratio:3/4;overflow:hidden;border-radius:6px;margin-top:-12vh"><image-slot id="origin-roast" src="assets/photo-roast.png" shape="rect" placeholder="Photo · beans in roaster drum" style="width:100%;height:100%"></image-slot></div>
+      <div data-origin-img="3" style="aspect-ratio:3/4;overflow:hidden;border-radius:6px;margin-top:8vh"><image-slot id="origin-pour" src="assets/photo-pour.png" shape="rect" placeholder="Photo · latte pour, close-up" style="width:100%;height:100%"></image-slot></div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU PREVIEW -->
+<section id="menu" data-menu data-screen-label="Menu Preview" style="position:relative;background:#2F2322;color:#F5F1E9;padding:clamp(100px,16vh,200px) clamp(20px,6vw,96px);border-radius:28px 28px 0 0;margin-top:-28px;z-index:2">
+  <div data-menu-grid style="max-width:1400px;margin:0 auto;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,96px);align-items:start">
+    <div data-sticky-col style="display:flex;flex-direction:column;gap:24px;position:sticky;top:20vh">
+      <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#CBB792;font-weight:500;display:flex;gap:12px;align-items:center"><span style="width:24px;height:1px;background:#CBB792"></span>The menu</div>
+      <h2 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(44px,5.6vw,92px);line-height:.95;letter-spacing:-.025em">
+        <span data-reveal-line style="display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em"><span data-reveal-word style="display:block">Something for</span></span>
+        <span data-reveal-line style="display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em"><span data-reveal-word style="display:block;color:#CBB792">every hour.</span></span>
+      </h2>
+      <p style="margin:0;max-width:380px;font-size:16px;line-height:1.55;color:rgba(245,241,233,.72)">Six categories, one standard. Menus vary slightly by location.</p>
+      <a href="#menu" style="align-self:flex-start;border:1px solid rgba(245,241,233,.35);font-weight:500;font-size:14px;padding:14px 24px;border-radius:999px;transition:border-color .25s,background .25s" style-hover="border-color:#F5F1E9;background:rgba(245,241,233,.06)">See the full menu</a>
+    </div>
+    <div data-menu-list style="display:flex;flex-direction:column;border-top:1px solid rgba(245,241,233,.14)">
+      <sc-for list="{{ categories }}" as="c" hint-placeholder-count="6">
+        <a href="#menu" data-menu-row style="display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:20px;align-items:center;padding:26px 8px;border-bottom:1px solid rgba(245,241,233,.14);color:#F5F1E9;transition:padding .35s cubic-bezier(.2,.7,.2,1),background .35s" style-hover="padding:26px 8px 26px 20px;background:rgba(245,241,233,.03)">
+          <span style="font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;color:#CBB792;font-size:16px">{{ c.n }}</span>
+          <span style="display:flex;flex-direction:column;gap:4px;min-width:0"><span style="font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 72;font-weight:700;font-size:clamp(28px,3.2vw,44px);line-height:1;letter-spacing:-.02em">{{ c.name }}</span><span style="font-size:14px;color:rgba(245,241,233,.6)">{{ c.blurb }}</span></span>
+          <span style="display:flex;align-items:center;gap:14px;font-size:13px;color:rgba(245,241,233,.6);white-space:nowrap"><span>{{ c.count }} items</span><span style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(245,241,233,.25);display:grid;place-items:center;font-size:16px;color:#F5F1E9">→</span></span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCT (pinned) -->
+<section data-feature data-screen-label="Featured Product" style="position:relative;height:100vh;overflow:hidden;color:#F5F1E9;display:grid;align-items:center;padding:0 clamp(20px,6vw,96px)">
+  <div data-feature-bg style="position:absolute;inset:0;background:#4A3836"></div>
+  <div data-feature-halo aria-hidden="true" style="position:absolute;left:50%;top:50%;width:min(90vw,820px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.6);background:radial-gradient(circle,rgba(203,183,146,.28),rgba(203,183,146,0) 65%);opacity:0"></div>
+  <div data-stage-grid style="position:relative;max-width:1400px;margin:0 auto;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center">
+    <div data-stage-copy style="display:flex;flex-direction:column;gap:20px;min-width:0">
+      <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#CBB792;font-weight:500;display:flex;gap:12px;align-items:center"><span style="width:24px;height:1px;background:#CBB792"></span>Featured</div>
+      <div style="position:relative;height:1em;font-size:clamp(30px,3.6vw,60px);overflow:hidden">
+        <h2 data-feature-title="0" style="position:absolute;left:0;top:0;margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:1em;line-height:1;letter-spacing:-.025em;white-space:nowrap">Spanish Latte</h2>
+        <h2 data-feature-title="1" style="position:absolute;left:0;top:0;margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:1em;line-height:1;letter-spacing:-.025em;white-space:nowrap">Sweet, not sugary.</h2>
+        <h2 data-feature-title="2" style="position:absolute;left:0;top:0;margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:1em;line-height:1;letter-spacing:-.025em;white-space:nowrap;color:#2F2322">Yours, hot or iced.</h2>
+      </div>
+      <div style="position:relative;min-height:90px">
+        <p data-feature-copy="0" style="position:absolute;left:0;top:0;margin:0;max-width:380px;font-size:16px;line-height:1.55;color:rgba(245,241,233,.78)">Our most-quoted drink. Double espresso, condensed milk, steamed whole milk.</p>
+        <p data-feature-copy="1" style="position:absolute;left:0;top:0;margin:0;max-width:380px;font-size:16px;line-height:1.55;color:rgba(245,241,233,.78)">Condensed milk does the work of both sugar and cream, so the espresso still leads.</p>
+        <p data-feature-copy="2" style="position:absolute;left:0;top:0;margin:0;max-width:380px;font-size:16px;line-height:1.55;color:#4A3836">Served in 8 oz and 12 oz. Oat milk on request.</p>
+      </div>
+      <div data-feature-cta style="display:flex;gap:12px;align-items:center;margin-top:8px">
+        <a href="#menu" style="background:#F5F1E9;color:#2F2322;font-weight:600;font-size:14px;padding:14px 24px;border-radius:999px;transition:transform .2s cubic-bezier(.2,.7,.2,1),background .25s" style-hover="background:#CBB792;transform:scale(1.03)" style-active="transform:scale(.97)">Order the Spanish Latte</a>
+        <span data-feature-price style="font-size:15px;font-variant-numeric:tabular-nums;color:rgba(245,241,233,.8)">£4.60</span>
+      </div>
+    </div>
+    <div data-feature-cupwrap style="position:relative;display:flex;justify-content:center;filter:drop-shadow(0 70px 60px rgba(0,0,0,.45))">
+      <div data-feature-cup style="position:relative;width:clamp(180px,20vw,280px);aspect-ratio:26/34">
+        <div style="position:absolute;left:12%;right:12%;top:0;height:6%;background:#1a1211;border-radius:10px 10px 3px 3px"></div>
+        <div style="position:absolute;left:3%;right:3%;top:5%;height:8%;background:#231918;border-radius:6px"></div>
+        <div style="position:absolute;left:5%;right:5%;top:12%;bottom:0;background:linear-gradient(90deg,rgba(0,0,0,.2),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.3)),#CBB792;clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 30% 30% / 0 0 10% 10%"></div>
+        <div style="position:absolute;left:8%;right:8%;top:34%;height:32%;background:linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.25)),#2F2322;clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);display:flex;align-items:center;justify-content:center"><img src="assets/logo-cream.png" alt="" style="width:62%;position:relative"></div>
+      </div>
+      <img data-feature-bean="1" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:44px;left:-10%;top:10%;opacity:0;transform:rotate(20deg)">
+      <img data-feature-bean="2" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:32px;right:-14%;bottom:12%;opacity:0;transform:rotate(-30deg)">
+      <img data-feature-bean="3" src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;width:26px;right:-4%;top:-6%;opacity:0;transform:rotate(60deg)">
+    </div>
+    <div data-feature-ingredients style="display:flex;flex-direction:column;gap:12px;justify-self:end;min-width:0">
+      <div data-feature-ing style="display:flex;gap:14px;align-items:center;justify-content:flex-end;font-size:14px;opacity:0"><span style="color:rgba(245,241,233,.6)">Double espresso</span><span style="width:8px;height:8px;border-radius:50%;background:#2F2322;border:1px solid #CBB792"></span></div>
+      <div data-feature-ing style="display:flex;gap:14px;align-items:center;justify-content:flex-end;font-size:14px;opacity:0"><span style="color:rgba(245,241,233,.6)">Condensed milk</span><span style="width:8px;height:8px;border-radius:50%;background:#F5F1E9"></span></div>
+      <div data-feature-ing style="display:flex;gap:14px;align-items:center;justify-content:flex-end;font-size:14px;opacity:0"><span style="color:rgba(245,241,233,.6)">Steamed whole milk</span><span style="width:8px;height:8px;border-radius:50%;background:#CBB792"></span></div>
+      <div data-feature-ing style="display:flex;gap:14px;align-items:center;justify-content:flex-end;font-size:14px;opacity:0"><span style="color:rgba(245,241,233,.6)">Cinnamon, optional</span><span style="width:8px;height:8px;border-radius:50%;background:#4A3836;border:1px solid #CBB792"></span></div>
+      <div data-feature-detail style="margin-top:20px;display:grid;grid-template-columns:auto auto;gap:6px 24px;justify-content:end;font-size:13px;opacity:0;text-align:right"><span style="color:rgba(245,241,233,.55)">Roast</span><span>Medium</span><span style="color:rgba(245,241,233,.55)">Origin</span><span>Huila, Colombia</span><span style="color:rgba(245,241,233,.55)">Sweetness</span><span>●●●○○</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATIONS -->
+<section id="locations" data-locations data-screen-label="Locations" style="position:relative;background:#F5F1E9;color:#2F2322;padding:clamp(100px,16vh,200px) clamp(20px,6vw,96px);border-radius:28px 28px 0 0;margin-top:-28px;z-index:2">
+  <div style="max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(40px,6vh,72px)">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap">
+      <h2 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(44px,5.6vw,92px);line-height:.95;letter-spacing:-.025em">
+        <span data-reveal-line style="display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em"><span data-reveal-word style="display:block">Find your Quotes<span style="color:#CBB792">.</span></span></span>
+      </h2>
+      <p style="margin:0;max-width:340px;font-size:15px;line-height:1.55;color:#4A3836">Three rooms, one standard. Location menus arriving soon.</p>
+    </div>
+    <div data-loc-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(16px,2vw,28px)">
+      <sc-for list="{{ locations }}" as="l" hint-placeholder-count="3">
+        <article data-loc-card style="display:flex;flex-direction:column;gap:18px;background:#fff;border:1px solid rgba(47,35,34,.1);border-radius:8px;overflow:hidden;transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s" style-hover="transform:translateY(-6px);box-shadow:0 30px 50px -30px rgba(47,35,34,.35)">
+          <div style="aspect-ratio:4/3;overflow:hidden"><div style="width:100%;height:100%;background:#2F2322 url({{ l.src }}) center/cover no-repeat"></div></div>
+          <div style="display:flex;flex-direction:column;gap:14px;padding:0 22px 22px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><h3 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100;font-weight:700;font-size:26px;letter-spacing:-.02em">{{ l.name }}</h3><span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#4A3836;background:rgba(203,183,146,.35);padding:5px 9px;border-radius:3px">{{ l.tag }}</span></div>
+            <p style="margin:0;font-size:14px;line-height:1.5;color:#4A3836">{{ l.address }}</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;color:#4A3836;border-top:1px solid rgba(47,35,34,.1);padding-top:12px"><span>Mon–Fri</span><span style="font-variant-numeric:tabular-nums">{{ l.week }}</span><span>Sat–Sun</span><span style="font-variant-numeric:tabular-nums">{{ l.weekend }}</span></div>
+            <a href="#locations" style="align-self:flex-start;display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:14px;color:#2F2322;border-bottom:1px solid #2F2322;padding-bottom:2px;transition:color .25s,border-color .25s" style-hover="color:#4A3836;border-color:#CBB792">Get directions <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- REWARDS -->
+<section id="rewards" data-rewards data-screen-label="Rewards" style="position:relative;background:#F5F1E9;color:#2F2322;padding:0 clamp(20px,6vw,96px) clamp(100px,16vh,200px)">
+  <div data-rewards-panel style="max-width:1400px;margin:0 auto;background:#2F2322;color:#F5F1E9;border-radius:10px;padding:clamp(40px,6vw,80px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;position:relative;overflow:hidden">
+    <img src="assets/bean.png" alt="" aria-hidden="true" style="position:absolute;right:-4%;top:-30%;width:clamp(200px,28vw,420px);opacity:.12;transform:rotate(25deg);pointer-events:none">
+    <div style="display:flex;flex-direction:column;gap:16px;position:relative">
+      <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#CBB792;font-weight:500">Quotes Rewards</div>
+      <h2 style="margin:0;font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(32px,3.6vw,56px);line-height:1;letter-spacing:-.02em;text-wrap:balance">Your tenth cup is our treat.</h2>
+      <p style="margin:0;max-width:440px;font-size:15px;line-height:1.55;color:rgba(245,241,233,.72);text-wrap:pretty">Scan at the counter, no app required. Regulars get first taste of seasonal drinks.</p>
+    </div>
+    <a href="#rewards" style="position:relative;border:1px solid rgba(245,241,233,.35);color:#F5F1E9;font-weight:500;font-size:14px;padding:14px 24px;border-radius:999px;white-space:nowrap;transition:border-color .25s,background .25s" style-hover="border-color:#F5F1E9;background:rgba(245,241,233,.06)">Join Rewards</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer data-footer data-screen-label="Footer" style="position:relative;background:#000;color:#F5F1E9;padding:clamp(80px,12vh,140px) clamp(20px,6vw,96px) 40px;overflow:hidden">
+  <div style="max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(60px,10vh,120px)">
+    <div data-footer-grid style="display:grid;grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr));gap:40px">
+      <div style="display:flex;flex-direction:column;gap:20px"><img src="assets/logo-cream.png" alt="Quotes" style="height:36px;width:auto;align-self:flex-start"><p style="margin:0;max-width:320px;font-size:14px;line-height:1.55;color:rgba(245,241,233,.6)">Premium coffee, made for moments worth remembering.</p></div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:14px"><span style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#CBB792;margin-bottom:6px">Explore</span><a href="#menu">Menu</a><a href="#locations">Locations</a><a href="#story">Our Story</a><a href="#footer">Contact</a></div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:14px"><span style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#CBB792;margin-bottom:6px">Follow</span><a href="#footer">Instagram</a><a href="#footer">TikTok</a></div>
+    </div>
+    <div data-footer-word style="font-family:Fraunces,Recoleta,serif;font-variation-settings:'SOFT' 100,'opsz' 144;font-weight:700;font-size:clamp(90px,19vw,340px);line-height:.8;letter-spacing:-.04em;color:#2F2322;white-space:nowrap;margin-bottom:-.12em;user-select:none">quotes</div>
+    <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12px;color:rgba(245,241,233,.5);border-top:1px solid rgba(245,241,233,.12);padding-top:20px"><span>© 2026 Quotes Coffee Co.</span><div style="display:flex;gap:20px"><a href="#footer">Privacy</a><a href="#footer">Terms</a><a href="#footer">Cookies</a></div></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showLoader&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;reducedMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;motionScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0.5,&quot;max&quot;:1.5,&quot;step&quot;:0.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+class Component extends DCLogic {
+  root = React.createRef();
+  drinks = [
+    { name: 'Espresso', desc: 'Two shots, twenty-eight seconds. Dark chocolate, red fruit, a long clean finish.', price: '£3.20', body: '#2F2322', sleeve: '#CBB792', bg: '#2F2322' },
+    { name: 'Flat White', desc: 'Velvet-textured milk over a double ristretto. Small cup, big opinion.', price: '£3.90', body: '#F5F1E9', sleeve: '#2F2322', bg: '#33272620' },
+    { name: 'Spanish Latte', desc: 'Condensed milk, steamed milk, double espresso. Our most quoted drink.', price: '£4.60', body: '#CBB792', sleeve: '#2F2322', bg: '#4A3836' },
+    { name: 'Iced Latte', desc: 'Espresso poured over cold milk and clear ice. Made for the walk.', price: '£4.20', body: '#F5F1E9', sleeve: '#4A3836', bg: '#3a2d2b' },
+    { name: 'Cold Brew', desc: 'Steeped eighteen hours, served black. Smooth, low-acid, quietly strong.', price: '£4.00', body: '#000000', sleeve: '#CBB792', bg: '#000000' },
+  ];
+  curated = [
+    { name: 'Spanish Latte', desc: 'Condensed milk, steamed milk, double espresso. Our most quoted drink.', price: '£4.60', rating: '4.9', body: '#CBB792', sleeve: '#2F2322', logo: 'assets/logo-cream.png' },
+    { name: 'Flat White', desc: 'Velvet-textured milk over a double ristretto. Small cup, big opinion.', price: '£3.90', rating: '5.0', body: '#F5F1E9', sleeve: '#2F2322', logo: 'assets/logo-cream.png' },
+    { name: 'Cold Brew', desc: 'Steeped eighteen hours, served black. Smooth, low-acid, quietly strong.', price: '£4.00', rating: '4.7', body: '#2F2322', sleeve: '#CBB792', logo: 'assets/logo.png' },
+  ];
+  statements = [
+    { n: '1', title: 'Beans worth the wait', body: 'Single-farm lots, roasted weekly in 12 kg batches and rested five days before they meet a grinder.', left: '0', right: 'auto', top: '14%', align: 'left', numSide: 'left:-.15em' },
+    { n: '2', title: 'A drink made for you', body: 'Milk, strength and sweetness dialled to how you take it. Regulars rarely have to ask.', left: 'auto', right: '0', top: '14%', align: 'right', numSide: 'right:-.15em' },
+    { n: '3', title: 'Rooms that slow you down', body: 'Warm light, good chairs and no rush. Stay for the second cup.', left: '0', right: 'auto', top: '56%', align: 'left', numSide: 'left:-.15em' },
+    { n: '4', title: 'Baristas who care', body: 'Every shot tasted before it is served. Every name remembered.', left: 'auto', right: '0', top: '56%', align: 'right', numSide: 'right:-.15em' },
+  ];
+  categories = [
+    { n: '01', name: 'Coffee', blurb: 'Espresso, filter and everything in between', count: 12 },
+    { n: '02', name: 'Cold Drinks', blurb: 'Iced, shaken, steeped', count: 8 },
+    { n: '03', name: 'Matcha', blurb: 'Ceremonial grade, whisked to order', count: 4 },
+    { n: '04', name: 'Pastries', blurb: 'Baked before we open', count: 9 },
+    { n: '05', name: 'Breakfast', blurb: 'Until 11:30, later on weekends', count: 7 },
+    { n: '06', name: 'Desserts', blurb: 'For the afternoon quote', count: 5 },
+  ];
+  locations = [
+    { slot: 'loc-soho', src: 'assets/photo-soho.png', photo: 'Venue photo · Soho counter', name: 'Soho', tag: 'Flagship', address: '14 Berwick Street, London W1F 0PP', week: '7:00 – 19:00', weekend: '8:00 – 18:00' },
+    { slot: 'loc-shoreditch', src: 'assets/photo-shoreditch.png', photo: 'Venue photo · Shoreditch room', name: 'Shoreditch', tag: 'Roastery', address: '88 Redchurch Street, London E2 7DP', week: '7:30 – 18:00', weekend: '9:00 – 18:00' },
+    { slot: 'loc-marylebone', src: 'assets/photo-marylebone.png', photo: 'Venue photo · Marylebone window seats', name: 'Marylebone', tag: 'New', address: '31 Chiltern Street, London W1U 7PJ', week: '7:00 – 18:00', weekend: '8:00 – 17:00' },
+  ];
+  renderVals() {
+    return { root: this.root, drinks: this.drinks, curated: this.curated, statements: this.statements, categories: this.categories, locations: this.locations, showLoader: this.props.showLoader ?? true };
+  }
+  componentDidMount() { this.tryInit(); }
+  componentDidUpdate(prev) {
+    if (prev.reducedMotion !== this.props.reducedMotion || prev.motionScale !== this.props.motionScale) { this.teardown(); this.tryInit(); }
+  }
+  componentWillUnmount() { this.teardown(); }
+  teardown() { clearTimeout(this._poll); clearTimeout(this._loaderGuard); if (this.ctx) { this.ctx.revert(); this.ctx = null; } const l = this.root.current && this.root.current.querySelector('[data-loader]'); if (l) l.style.display = 'none'; }
+  tryInit() {
+    const r = this.root.current;
+    const ready = window.gsap && window.ScrollTrigger && r && r.querySelectorAll('[data-drinks-stmt]').length === 4 && r.querySelectorAll('[data-curated-item]').length === 3 && r.querySelector('[data-loc-card]');
+    if (ready && document.readyState === 'complete') {
+      // Scripts in <helmet> can be evaluated twice by the host; wait until the gsap global stops changing, then bind ScrollTrigger to the final instance.
+      const g = window.gsap;
+      if (this._lastGsap !== g) { this._lastGsap = g; this._poll = setTimeout(() => this.tryInit(), 250); return; }
+      try { this.init(); } catch (e) { console.error('Quotes init failed', e); }
+      return;
+    }
+    this._poll = setTimeout(() => this.tryInit(), 80);
+  }
+  init() {
+    const gsap = window.gsap, ST = window.ScrollTrigger; gsap.registerPlugin(ST);
+    const root = this.root.current; if (!root) return;
+    const q = (s) => root.querySelector(s), qa = (s) => Array.from(root.querySelectorAll(s));
+    const reduced = (this.props.reducedMotion ?? false) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mobile = innerWidth < 900;
+    const K = (reduced ? 0.25 : mobile ? 0.55 : 1) * (this.props.motionScale ?? 1);
+    const pinLen = (v) => reduced ? v * 0.5 : mobile ? v * 0.7 : v;
+    const E = { out2: 'power2.out', out3: 'power3.out', io4: 'power4.inOut', expo: 'expo.out' };
+
+    this.ctx = gsap.context(() => {
+      // Loader
+      const loader = q('[data-loader]');
+      const intro = gsap.timeline({ defaults: { ease: E.out3 } });
+      if (loader) {
+        intro.to('[data-loader-bean]', { opacity: 1, scale: 1, rotate: 0, duration: .55 })
+          .to('[data-loader-word]', { yPercent: -110, y: 0, duration: .55, ease: E.expo }, '-=.2')
+          .to(loader, { yPercent: -100, duration: .7, ease: E.io4, onComplete: () => { loader.style.display = 'none'; } }, '+=.2');
+        // Safety: if the tab is hidden and the ticker stalls, never trap the user behind the loader
+        this._loaderGuard = setTimeout(() => { if (intro.progress() < 1) intro.progress(1); }, 3500);
+      }
+      // Hero entrance (after loader)
+      intro.from('[data-hero-word]', { yPercent: 110, duration: .9, stagger: .1, ease: E.expo }, loader ? '-=.45' : 0)
+        .from(['[data-hero-kicker]', '[data-hero-sub]', '[data-hero-ctas]'], { y: 24, opacity: 0, duration: .7, stagger: .08 }, '-=.6')
+        .from('[data-hero-cup]', { y: 80 * K + 20, scale: .92, opacity: 0, duration: 1.1, stagger: .1, ease: E.expo }, '-=.9')
+        .from('[data-hero-bean]', { y: 40, opacity: 0, duration: .8, stagger: .1 }, '-=.7');
+
+      // Nav: compact pill from the top (reference); deepens on scroll
+      const nav = q('[data-nav]'), bar = q('[data-nav-bar]');
+      nav.style.padding = '12px clamp(16px,4vw,48px)';
+      Object.assign(bar.style, { maxWidth: '980px', padding: '6px 6px 6px 16px', background: 'rgba(74,56,54,.35)', borderColor: 'rgba(245,241,233,.1)' });
+      ST.create({ start: 80, end: 'max', onToggle: (s) => {
+        const on = s.isActive;
+        bar.style.background = on ? 'rgba(47,35,34,.8)' : 'rgba(74,56,54,.35)';
+        bar.style.backdropFilter = on ? 'blur(14px)' : 'none';
+      } });
+
+      // Hero scroll: copy slower than cups; cups drift up & apart (ref 0.3–1.0s)
+      gsap.timeline({ scrollTrigger: { trigger: '[data-hero]', start: 'top top', end: 'bottom top', scrub: true } })
+        .to('[data-hero-copy]', { y: -90 * K, ease: 'none' }, 0)
+        .to('[data-hero-cup="a"]', { y: -220 * K, x: -30 * K, rotate: -14 * K, ease: 'none' }, 0)
+        .to('[data-hero-cup="b"]', { y: -320 * K, x: 30 * K, rotate: 12 * K, ease: 'none' }, 0)
+        .to('[data-hero-bean="1"]', { y: -480 * K, rotate: 90, ease: 'none' }, 0)
+        .to('[data-hero-bean="2"]', { y: -240 * K, rotate: -100, ease: 'none' }, 0)
+        .to('[data-hero-halo]', { scale: 1.4, opacity: 0, ease: 'none' }, 0);
+
+      // Curated row: marquee scrubs horizontally through the whole pass; cups float above cards then settle (ref 1.0–1.7s)
+      gsap.timeline({ scrollTrigger: { trigger: '[data-curated]', start: 'top bottom', end: 'bottom top', scrub: true } })
+        .fromTo('[data-curated-marquee]', { xPercent: 4 }, { xPercent: -34 * K, ease: 'none' }, 0);
+      gsap.timeline({ scrollTrigger: { trigger: '[data-curated-grid]', start: 'top bottom', end: 'top 25%', scrub: true } })
+        .fromTo('[data-curated-cup]', { y: -140 * K, scale: 1.08 }, { y: 0, scale: 1, ease: 'none', stagger: .06 }, 0)
+        .fromTo('[data-curated-card]', { y: 60 * K, opacity: .4 }, { y: 0, opacity: 1, ease: 'none', stagger: .06 }, 0);
+      gsap.from('[data-curated-cta]', { y: 20, opacity: 0, duration: .7, ease: E.out3, scrollTrigger: { trigger: '[data-curated-cta]', start: 'top 92%' } });
+
+      // Product story — pinned ~3 viewports (ref 2.4–6.6s):
+      // 0–1: cup rises from below & grows; 1–1.6: statements 1,2 reveal; 1.6–2.2: statements 3,4 + cup at max scale;
+      // 2.2–2.8: cup shrinks & rises, statements drift up, CTA appears; band slides over from below (own trigger)
+      const stmts = qa('[data-drinks-stmt]');
+      const cupW = q('[data-drinks-cupwrap]');
+      const dt = gsap.timeline({ scrollTrigger: { trigger: '[data-drinks]', start: 'top top', end: () => '+=' + pinLen(innerHeight * 3.0), pin: true, scrub: .8, anticipatePin: 1 } });
+      gsap.set(cupW, { yPercent: -50 });
+      dt.fromTo(cupW, { y: () => innerHeight * .9, scale: .7 }, { y: 0, scale: 1, duration: 1, ease: E.out3 }, 0)
+        .from('[data-drinks-title]', { y: 40 * K, opacity: 0, duration: .6, ease: E.out3 }, .4)
+        .to(cupW, { scale: 1.35, duration: 1.2, ease: 'power1.inOut' }, 1)
+        .to(stmts[0], { opacity: 1, y: 0, duration: .5, ease: E.out3 }, 1.0).from(stmts[0], { y: 40 * K, duration: .5, ease: E.out3 }, 1.0)
+        .to(stmts[1], { opacity: 1, y: 0, duration: .5, ease: E.out3 }, 1.3).from(stmts[1], { y: 40 * K, duration: .5, ease: E.out3 }, 1.3)
+        .to(stmts[2], { opacity: 1, y: 0, duration: .5, ease: E.out3 }, 1.6).from(stmts[2], { y: 40 * K, duration: .5, ease: E.out3 }, 1.6)
+        .to(stmts[3], { opacity: 1, y: 0, duration: .5, ease: E.out3 }, 1.9).from(stmts[3], { y: 40 * K, duration: .5, ease: E.out3 }, 1.9)
+        .to('[data-drinks-sleeve]', { backgroundColor: '#2F2322', duration: 1, ease: E.io4 }, 1.4)
+        // exit: cup shrinks and lifts, copy drifts up, CTA in, beans rise (ref 5.2–6.6s)
+        .to(cupW, { scale: .82, yPercent: -150, y: () => -innerHeight * .12, duration: .9, ease: 'power2.inOut' }, 2.2)
+        .to(stmts, { y: -140 * K, opacity: .35, duration: .9, ease: 'power2.inOut' }, 2.2)
+        .to('[data-drinks-title]', { y: -80 * K, opacity: 0, duration: .5 }, 2.2)
+        .to('[data-drinks-cta]', { opacity: 1, duration: .4 }, 2.05).from('[data-drinks-cta]', { y: 30, duration: .5, ease: E.out3 }, 2.05)
+        .to('[data-drinks-bean]', { opacity: 1, y: -320 * K, rotate: '+=60', duration: 1.0, stagger: .1, ease: 'none' }, 2.1)
+        .to({}, { duration: .2 });
+
+      // Beans CTA band slides up over the pinned scene; loose beans travel faster than the panel (ref 5.9–8.0s)
+      gsap.timeline({ scrollTrigger: { trigger: '[data-band]', start: 'top bottom', end: 'top 30%', scrub: true } })
+        .fromTo('[data-band-panel]', { y: 120 * K }, { y: 0, ease: 'none' }, 0)
+        .fromTo('[data-band-bean="1"]', { y: 420 * K, rotate: 40 }, { y: 0, rotate: -20, ease: 'none' }, 0)
+        .fromTo('[data-band-bean="2"]', { y: 300 * K, rotate: -20 }, { y: 0, rotate: 40, ease: 'none' }, 0)
+        .fromTo('[data-band-bean="3"]', { y: 520 * K }, { y: 0, ease: 'none' }, 0)
+        .fromTo('[data-band-bean="4"]', { y: 240 * K }, { y: 0, ease: 'none' }, 0)
+        .fromTo('[data-band-heap]', { y: 80 * K, scale: .9 }, { y: 0, scale: 1, ease: 'none' }, 0);
+
+      // Editorial statement — opposed horizontal movement, cup passes across
+      gsap.timeline({ scrollTrigger: { trigger: '[data-statement]', start: 'top bottom', end: 'bottom top', scrub: true } })
+        .fromTo('[data-statement-line="1"]', { x: 120 * K }, { x: -220 * K, ease: 'none' }, 0)
+        .fromTo('[data-statement-line="2"]', { x: -160 * K }, { x: 160 * K, ease: 'none' }, 0)
+        .fromTo('[data-statement-cup]', { y: 220 * K, rotate: 8 * K }, { y: -380 * K, rotate: -6 * K, ease: 'none' }, 0);
+      gsap.from('[data-statement-copy]', { y: 30, opacity: 0, duration: .9, ease: E.out3, scrollTrigger: { trigger: '[data-statement-copy]', start: 'top 85%' } });
+
+      // Origins — line reveals + layered image parallax
+      qa('[data-reveal-line]').forEach((line) => {
+        gsap.from(line.querySelector('[data-reveal-word]'), { yPercent: 110, duration: 1, ease: E.expo, scrollTrigger: { trigger: line, start: 'top 88%' } });
+      });
+      gsap.from('[data-origin-step]', { y: 28, opacity: 0, duration: .8, stagger: .12, ease: E.out3, scrollTrigger: { trigger: '[data-origins-steps]', start: 'top 85%' } });
+      [['1', -60], ['2', -180], ['3', -110]].forEach(([n, d]) => gsap.to(`[data-origin-img="${n}"]`, { y: d * K, ease: 'none', scrollTrigger: { trigger: '[data-origins]', start: 'top bottom', end: 'bottom top', scrub: true } }));
+      qa('[data-origin-img]').forEach((el) => gsap.from(el, { clipPath: 'inset(0 0 100% 0)', duration: 1.2, ease: E.io4, scrollTrigger: { trigger: el, start: 'top 90%' } }));
+
+      // Menu rows
+      gsap.from('[data-menu-row]', { y: 40, opacity: 0, duration: .8, stagger: .08, ease: E.out3, scrollTrigger: { trigger: '[data-menu-list]', start: 'top 80%' } });
+
+      // Featured — pinned; product stays, world changes
+      const ft = qa('[data-feature-title]'), fc = qa('[data-feature-copy]'), ings = qa('[data-feature-ing]');
+      gsap.set(ft.slice(1), { yPercent: 110 }); gsap.set(fc.slice(1), { opacity: 0, y: 16 });
+      const f = gsap.timeline({ scrollTrigger: { trigger: '[data-feature]', start: 'top top', end: () => '+=' + pinLen(innerHeight * 2.6), pin: true, scrub: .6, anticipatePin: 1 } });
+      f.from('[data-feature-cup]', { y: 200 * K, scale: .85, ease: E.out3, duration: 1 }, 0)
+        .from(ft[0], { yPercent: 110, duration: .7, ease: E.expo }, 0)
+        .from([fc[0], '[data-feature-cta]'], { opacity: 0, y: 20, duration: .6 }, .3)
+        // state 2: ingredients enter
+        .to('[data-feature-halo]', { opacity: 1, scale: 1, duration: 1, ease: E.io4 }, 1)
+        .to(ings, { opacity: 1, x: 0, duration: .5, stagger: .12, ease: E.out3 }, 1)
+        .from(ings, { x: 40 * K, duration: .5, stagger: .12, ease: E.out3 }, 1)
+        .to('[data-feature-bean]', { opacity: 1, duration: .4, stagger: .1 }, 1)
+        .from('[data-feature-bean]', { y: 60 * K, duration: .8, stagger: .1, ease: E.out3 }, 1)
+        .to(ft[0], { yPercent: -110, duration: .6, ease: E.io4 }, 1).to(ft[1], { yPercent: 0, duration: .6, ease: E.io4 }, 1)
+        .to(fc[0], { opacity: 0, y: -16, duration: .4 }, 1).to(fc[1], { opacity: 1, y: 0, duration: .5 }, 1.15)
+        .to('[data-feature-cup]', { rotate: 4 * K, y: -20 * K, duration: .8, ease: E.io4 }, 1)
+        // state 3: background flips to latte, details reveal
+        .to('[data-feature-bg]', { backgroundColor: '#CBB792', duration: 1, ease: E.io4 }, 2)
+        .to('[data-feature-halo]', { opacity: 0, duration: .6 }, 2)
+        .to(ft[1], { yPercent: -110, duration: .6, ease: E.io4 }, 2).to(ft[2], { yPercent: 0, duration: .6, ease: E.io4 }, 2)
+        .to(fc[1], { opacity: 0, y: -16, duration: .4 }, 2).to(fc[2], { opacity: 1, y: 0, duration: .5 }, 2.15)
+        .to(ings.map(i => i.firstChild), { color: '#2F2322', duration: .6 }, 2)
+        .to('[data-feature-price]', { color: '#2F2322', duration: .6 }, 2)
+        .to('[data-feature-detail]', { opacity: 1, y: 0, color: '#2F2322', duration: .6 }, 2.2)
+        .from('[data-feature-detail]', { y: 20, duration: .6 }, 2.2)
+        .to('[data-feature-cup]', { rotate: 0, y: 0, scale: 1.06, duration: .8, ease: E.io4 }, 2)
+        .to('[data-feature-bean]', { y: -80 * K, rotate: '+=40', duration: 1, ease: 'none' }, 2)
+        .to({}, { duration: .5 });
+
+      // Locations & rewards & footer
+      gsap.from('[data-loc-card]', { y: 50, opacity: 0, duration: .9, stagger: .1, ease: E.out3, scrollTrigger: { trigger: '[data-loc-grid]', start: 'top 85%' } });
+      gsap.from('[data-rewards] > div', { y: 40, opacity: 0, duration: .9, ease: E.out3, scrollTrigger: { trigger: '[data-rewards]', start: 'top 80%' } });
+      gsap.from('[data-footer-word]', { yPercent: 40, ease: 'none', scrollTrigger: { trigger: '[data-footer]', start: 'top bottom', end: 'bottom bottom', scrub: true } });
+    }, root);
+  }
+}
+</script>
+</body>
+</html>

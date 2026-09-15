@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,23 +53,28 @@ export function MenuBoard({
       .filter((entry) => entry.products.length > 0);
   }, [category, menu.sections, query]);
 
+  const [addingId, setAddingId] = useState<string | null>(null);
+
   const quickAdd = (product: PublicMenuProduct) => {
-    if (!product.eligibility.available) {
+    if (!product.eligibility.available || addingId) {
       return;
     }
 
+    setAddingId(product.productPublicId);
     void upsertProduct({
       productPublicId: product.productPublicId,
       displayName: product.displayName,
-    }).then(() => {
-      toast({
-        title: `${product.displayName} added`,
-        body: "Saved to your QOS basket.",
-      });
-      if (openBagOnAdd) {
-        setDrawerOpen(true);
-      }
-    });
+    })
+      .then(() => {
+        toast({
+          title: `${product.displayName} added`,
+          body: "Saved to your QOS basket.",
+        });
+        if (openBagOnAdd) {
+          setDrawerOpen(true);
+        }
+      })
+      .finally(() => setAddingId(null));
   };
 
   return (
@@ -118,34 +124,42 @@ export function MenuBoard({
           }
         />
       ) : (
-        visibleSections.map(({ section, products }) => (
-          <section
-            key={section.publicId}
-            aria-labelledby={`menu-${section.publicId}`}
-            className="flex flex-col gap-4"
-          >
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-line pb-3">
-              <h3 id={`menu-${section.publicId}`} className="t-h2">
-                {section.displayName}
-              </h3>
-              {section.description ? (
-                <p className="t-caption sm:ml-auto">{section.description}</p>
-              ) : null}
-            </div>
-
-            <ul className="grid gap-3 md:grid-cols-2">
-              {products.map((product) => (
-                <MenuRow
-                  key={product.productPublicId}
-                  product={product}
-                  currency={menu.currency}
-                  locale={menu.locale}
-                  onQuickAdd={() => quickAdd(product)}
-                />
-              ))}
-            </ul>
-          </section>
-        ))
+        <div className="overflow-hidden rounded-md bg-espresso px-2 text-cream md:px-6">
+          {visibleSections.map(({ section, products }, sectionIndex) => (
+            <section key={section.publicId} aria-labelledby={`menu-${section.publicId}`}>
+              <div className="border-b border-cream/14 px-2 py-5 md:px-2">
+                <div className="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-4">
+                  <span className="font-serif text-base text-latte">
+                    {String(sectionIndex + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 id={`menu-${section.publicId}`} className="font-serif text-[clamp(28px,3.2vw,44px)] leading-none tracking-[-0.02em]">
+                      {section.displayName}
+                    </h3>
+                    {section.description ? (
+                      <p className="mt-1 text-sm text-cream/60">{section.description}</p>
+                    ) : null}
+                  </div>
+                  <span className="hidden text-sm text-cream/60 sm:inline">
+                    {products.length} items
+                  </span>
+                </div>
+              </div>
+              <ul className="flex flex-col border-b border-cream/14 last:border-b-0">
+                {products.map((product) => (
+                  <MenuRow
+                    key={product.productPublicId}
+                    product={product}
+                    currency={menu.currency}
+                    locale={menu.locale}
+                    adding={addingId === product.productPublicId}
+                    onQuickAdd={() => quickAdd(product)}
+                  />
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       )}
     </div>
   );
@@ -155,11 +169,13 @@ function MenuRow({
   product,
   currency,
   locale,
+  adding,
   onQuickAdd,
 }: {
   product: PublicMenuProduct;
   currency: string;
   locale: PublicMenuResponse["locale"];
+  adding: boolean;
   onQuickAdd: () => void;
 }) {
   const unavailable = !product.eligibility.available;
@@ -167,37 +183,45 @@ function MenuRow({
   return (
     <li
       className={cn(
-        "flex flex-col gap-3 rounded-md border border-line bg-surface p-4 transition-colors duration-fast ease-brand",
-        unavailable ? "opacity-60" : "hover:border-latte",
+        "group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-cream/14 px-2 py-5 transition-[padding,background] duration-350 ease-[cubic-bezier(.2,.7,.2,1)] last:border-b-0 hover:bg-cream/3 hover:pl-5 md:px-2",
+        unavailable && "opacity-60",
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h4 className="text-[16px] font-semibold">{product.displayName}</h4>
-          {product.description ? (
-            <p className="mt-1 text-[13.5px] leading-relaxed text-muted">
-              {product.description}
-            </p>
-          ) : null}
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h4 className="font-serif text-xl tracking-[-0.02em]">{product.displayName}</h4>
+          <span className="font-mono text-sm tabular-nums text-cream/80">
+            {formatMoneyMinor(product.price.amountMinor, currency, locale)}
+          </span>
         </div>
-        <span className="ltr-isolate shrink-0 font-mono text-[14px] tabular-nums">
-          {formatMoneyMinor(product.price.amountMinor, currency, locale)}
-        </span>
+        {product.description ? (
+          <p className="mt-1 text-sm leading-relaxed text-cream/60">{product.description}</p>
+        ) : null}
+        {unavailable ? (
+          <div className="mt-2">
+            <Badge tone="warning">Unavailable</Badge>
+          </div>
+        ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5">
-        {unavailable ? <Badge tone="warning">Unavailable</Badge> : null}
-      </div>
-
-      <div className="mt-auto flex gap-2 pt-1">
+      <div className="flex items-center gap-3">
         <Button
           size="sm"
+          variant="inverse"
           onClick={onQuickAdd}
-          disabled={unavailable}
-          className="flex-1"
+          disabled={unavailable || adding}
+          loading={adding}
+          loadingLabel="Adding"
         >
-          {unavailable ? "Unavailable" : "Add"}
+          Add
         </Button>
+        <Link
+          href={`/order?product=${product.productPublicId}`}
+          aria-label={`Customise ${product.displayName}`}
+          className="grid h-10 w-10 place-items-center rounded-full border border-cream/25 text-cream transition-colors group-hover:border-cream group-hover:bg-cream group-hover:text-espresso"
+        >
+          →
+        </Link>
       </div>
     </li>
   );
