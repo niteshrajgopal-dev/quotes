@@ -80,7 +80,7 @@ export function SiteHeader() {
         >
           <Link href="/" aria-label={`${shell.brandName} home`} className="inline-flex shrink-0 items-center">
             <Image
-              src={isHospitality ? "/assets/logo-cream.png" : shell.logoSrc}
+              src={isHospitality ? shell.logoOnDarkSrc : shell.logoSrc}
               alt={shell.brandName}
               width={120}
               height={26}
@@ -126,7 +126,7 @@ export function SiteHeader() {
                     href="/loyalty"
                     className="hidden items-center gap-2 rounded-pill px-3 py-2 text-[13px] text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream md:inline-flex"
                   >
-                    <Image src="/assets/bean.png" alt="" width={12} height={12} className="h-3 w-3" />
+                    <Image src={shell.markSrc} alt="" width={12} height={12} className="h-3 w-3" />
                     Bean card
                   </Link>
                 ) : null}

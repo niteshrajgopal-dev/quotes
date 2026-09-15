@@ -100,6 +100,7 @@ export function buildManifestThemeCssVariables(
     "--color-surface": colors.background,
     "--color-fg": colors.text,
     "--color-accent": colors.accent,
+    "--color-latte": colors.accent,
     "--color-espresso": colors.primary,
     "--color-mocha": colors.primary,
     "--font-sans": BODY_FONT_STACKS[typography.body],

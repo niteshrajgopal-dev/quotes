@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 
-import { SiteHeader } from "@/components/shell/site-header";
-import { SiteFooter } from "@/components/shell/site-footer";
-import { MobileTabBar } from "@/components/shell/mobile-tab-bar";
-import { CartDrawer } from "@/components/shell/cart-drawer";
+import { SiteChrome } from "@/components/shell/site-chrome";
 import { BasketProvider } from "@/components/qos/basket-provider";
 import { CustomerSessionProvider } from "@/components/auth/customer-session-provider";
 import { BasketMergeReconciliation } from "@/components/basket/basket-merge-reconciliation";
 import { StorefrontLocaleProvider } from "@/components/locale/storefront-locale-provider";
 import { StorefrontUnavailable } from "@/components/storefront/storefront-unavailable";
+import { TenantBrandSprites } from "@/components/brand/tenant-brand";
 import { StorefrontThemeEffect } from "@/components/storefront/storefront-theme-effect";
 import { StorefrontResolutionError } from "@/lib/storefront/errors";
 import { resolveStorefrontContextFromHeaders } from "@/lib/storefront/context.server";
@@ -56,6 +54,7 @@ export default async function SiteLayout({
 
   return (
     <StorefrontShellProvider value={resolved.shell}>
+      <TenantBrandSprites />
       <StorefrontThemeEffect />
       <StorefrontLocaleProvider>
         <CustomerSessionProvider>
@@ -66,16 +65,7 @@ export default async function SiteLayout({
             >
               Skip to content
             </a>
-            <SiteHeader />
-            <main
-              id="main"
-              className="pb-[calc(env(safe-area-inset-bottom)+72px)] pt-[88px] md:pb-0 [&:has([data-hero])]:pt-0"
-            >
-              {children}
-            </main>
-            <SiteFooter />
-            <MobileTabBar />
-            <CartDrawer />
+            <SiteChrome>{children}</SiteChrome>
             <BasketMergeReconciliation />
           </BasketProvider>
         </CustomerSessionProvider>

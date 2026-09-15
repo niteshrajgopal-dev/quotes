@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Bean } from "@/components/brand/bean";
+import { PageLoadState } from "@/components/ui/page-load-state";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink, TravelArrow } from "@/components/ui/button";
 import { Card, EmptyState } from "@/components/ui/card";
@@ -23,9 +24,8 @@ export default function OrderConfirmationPage() {
 
   if (!hydrated) {
     return (
-      <section className="wrap flex items-center gap-3 py-24 text-muted">
-        <Bean className="w-5 animate-bean-spin" />
-        <span className="text-[14px]">Looking up {reference}…</span>
+      <section className="wrap">
+        <PageLoadState label={`Looking up ${reference}…`} className="py-24" />
       </section>
     );
   }

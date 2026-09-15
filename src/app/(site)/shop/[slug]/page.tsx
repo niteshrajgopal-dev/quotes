@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bean, BeanDivider } from "@/components/brand/bean";
 import { Badge } from "@/components/ui/badge";
 import { Card, SectionHead } from "@/components/ui/card";
-import { BagPlate, Plate } from "@/components/ui/plate";
+import { Plate } from "@/components/ui/plate";
 import { TravelArrow } from "@/components/ui/button";
 import { AddToBag } from "@/components/product/add-to-bag";
 import { CoffeeCard } from "@/components/product/coffee-card";
 import { COFFEES, getCoffee } from "@/lib/fixtures/quotes-design-reference/catalog";
+import { shopCoffeeImage } from "@/lib/storefront/hospitality-assets";
 import { cn } from "@/lib/cn";
 
 export function generateStaticParams() {
@@ -69,13 +71,21 @@ export default async function ProductPage({
       <section className="wrap pt-8 pb-[clamp(48px,7vw,88px)]">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           {/* --- imagery --- */}
-          <div className="flex flex-col gap-4">
-            <BagPlate
-              tone={coffee.plate}
-              label={coffee.name}
-              sublabel={`${coffee.process} · ${coffee.roast} roast`}
-              className="aspect-4/5 lg:sticky lg:top-24"
-            />
+          <div className="relative flex flex-col gap-4 lg:sticky lg:top-24">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-espresso">
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(203,183,146,.18),transparent_65%)]"
+              />
+              <Image
+                src={shopCoffeeImage(coffee.slug)}
+                alt={coffee.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            </div>
           </div>
 
           {/* --- buy column --- */}
@@ -230,8 +240,8 @@ export default async function ProductPage({
       <section className="wrap py-[clamp(48px,7vw,88px)]">
         <SectionHead index="—" title="Also on the shelf" />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {related.map((candidate) => (
-            <CoffeeCard key={candidate.slug} coffee={candidate} />
+          {related.map((candidate, index) => (
+            <CoffeeCard key={candidate.slug} coffee={candidate} variant="dark" index={index} />
           ))}
         </div>
         <div className="mt-8">

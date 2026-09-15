@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bean } from "@/components/brand/bean";
+import { HospitalityPageIntro } from "@/components/hospitality/page-intro";
 import { ShopGrid } from "@/components/product/shop-grid";
 import { Plate } from "@/components/ui/plate";
 import { SectionHead } from "@/components/ui/card";
@@ -13,17 +13,11 @@ export const metadata: Metadata = {
 export default function ShopPage() {
   return (
     <>
-      <section className="wrap pt-[clamp(40px,7vw,80px)] pb-[clamp(32px,5vw,56px)]">
-        <span className="t-overline inline-flex items-center gap-2.5 tracking-[0.22em] text-muted">
-          <Bean className="w-[0.9em]" />
-          Retail beans
-        </span>
-        <h1 className="t-display-l mt-5 max-w-[18ch]">Six coffees, honestly described.</h1>
-        <p className="mt-6 max-w-[58ch] text-[clamp(17px,2.2vw,20px)] leading-[1.55] text-mocha">
-          Everything here was roasted this week in Ancoats. Tasting notes are what we actually
-          taste on the cupping table, not what reads well on a bag.
-        </p>
-      </section>
+      <HospitalityPageIntro
+        kicker="Shop"
+        title="Six coffees, honestly described."
+        lead="Everything here was roasted this week in Ancoats. Tasting notes are what we actually taste on the cupping table, not what reads well on a bag."
+      />
 
       <section className="wrap pb-[clamp(48px,7vw,88px)]">
         <ShopGrid />

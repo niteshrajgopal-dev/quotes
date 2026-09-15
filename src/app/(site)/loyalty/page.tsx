@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Bean, BeanDivider } from "@/components/brand/bean";
+import { PageLoadState } from "@/components/ui/page-load-state";
+import { HospitalityPageIntro } from "@/components/hospitality/page-intro";
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink, TravelArrow } from "@/components/ui/button";
 import { Card, EmptyState, Notice } from "@/components/ui/card";
@@ -44,24 +46,15 @@ export default function LoyaltyPage() {
 
   return (
     <>
-      <section className="wrap pt-[clamp(40px,7vw,80px)] pb-[clamp(32px,5vw,56px)]">
-        <span className="t-overline inline-flex items-center gap-2.5 tracking-[0.22em] text-muted">
-          <Bean className="w-[0.9em]" />
-          Loyalty
-        </span>
-        <h1 className="t-display-l mt-5 max-w-[20ch]">The bean card.</h1>
-        <p className="mt-6 max-w-[56ch] text-[clamp(17px,2.2vw,20px)] leading-[1.55] text-mocha">
-          Eight stamps, one free coffee. A stamp for every drink and every bag of beans, in café
-          or online. No app, no points that expire, nothing to scan.
-        </p>
-      </section>
+      <HospitalityPageIntro
+        kicker="Bean card"
+        title="The bean card."
+        lead="Eight stamps, one free coffee. A stamp for every drink and every bag of beans, in café or online. No app, no points that expire, nothing to scan."
+      />
 
       <section className="wrap pb-[clamp(48px,7vw,88px)]">
         {!hydrated ? (
-          <div className="flex items-center gap-3 py-16 text-muted">
-            <Bean className="w-5 animate-bean-spin" />
-            <span className="text-[14px]">Opening your card…</span>
-          </div>
+          <PageLoadState label="Opening your card…" />
         ) : !member ? (
           /* ---------- NOT A MEMBER ---------- */
           <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-14">

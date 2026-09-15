@@ -42,8 +42,13 @@ console.log("QOS-52 verification");
 {
   const { response, text } = await fetchText(`${FLOWERS}/`);
   check(response.ok, `flowers home expected 200, got ${response.status}`);
-  check(text.includes("Fresh flowers for every moment"), "flowers home missing retail hero");
-  console.log("  · flowers home ok");
+  check(
+    text.includes("Shop collections") ||
+      text.includes("More than flowers") ||
+      text.includes("/tenants/retail/hero/bouquet"),
+    "flowers home missing Floréa hero",
+  );
+  console.log("  · flowers Floréa home ok");
 }
 
 {

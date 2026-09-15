@@ -484,23 +484,27 @@ html[dir="rtl"] .sheet-panel[data-side="right"] {
   inset-inline-start: auto;
 }
 
-/* Synthetic retail tenant preset (QOS-52 flower shop proof). */
-html[data-theme="retail"] {
-  --color-espresso: #14532d;
-  --color-mocha: #166534;
-  --color-latte: #ec4899;
-  --color-cream: #fff7ed;
-  --color-bg: #fff7ed;
-  --color-surface: #fffbeb;
-  --color-fg: #14532d;
-  --color-muted: #4d7c0f;
-  --color-line: #fde68a;
-  --color-accent: #ec4899;
+@keyframes florea-dot {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, 7px, 0);
+  }
+}
+
+.florea-dot {
+  animation: florea-dot 2.4s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .florea-dot {
+    animation: none !important;
   }
 
   *,

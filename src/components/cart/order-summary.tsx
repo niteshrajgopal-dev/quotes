@@ -7,7 +7,7 @@ import { useQosBasket } from "@/lib/stores/qos-basket";
 import { cn } from "@/lib/cn";
 
 /** Authoritative basket totals from QOS. */
-export function OrderSummary() {
+export function OrderSummary({ tone = "light" }: { tone?: "light" | "dark" }) {
   const basket = useQosBasket((state) => state.basket);
   const signedIn = useQosBasket((state) => state.signedIn);
   const error = useQosBasket((state) => state.error);
@@ -18,11 +18,13 @@ export function OrderSummary() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Notice tone="info">
-        {signedIn
-          ? "Totals come from your signed-in QOS basket."
-          : "Totals come from your server basket. Sign in before checkout to pay."}
-      </Notice>
+      {tone === "light" ? (
+        <Notice tone="info">
+          {signedIn
+            ? "Totals come from your signed-in QOS basket."
+            : "Totals come from your server basket. Sign in before checkout to pay."}
+        </Notice>
+      ) : null}
 
       {error ? (
         <Notice tone="error" title="Basket update issue">
@@ -38,9 +40,17 @@ export function OrderSummary() {
             basket.currency,
             basket.locale,
           )}
+          tone={tone}
         />
-        <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3.5">
-          <dt className="font-serif text-[19px]">Total</dt>
+        <div
+          className={cn(
+            "mt-1 flex items-baseline justify-between border-t pt-3.5",
+            tone === "dark" ? "border-cream/14" : "border-line",
+          )}
+        >
+          <dt className={cn("font-serif text-[19px]", tone === "dark" && "text-cream")}>
+            Total
+          </dt>
           <dd className="font-mono text-[19px] tabular-nums">
             {formatMoneyMinor(
               basket.provisionalSubtotalMinor,
@@ -51,11 +61,13 @@ export function OrderSummary() {
         </div>
       </dl>
 
-      <p className="t-caption flex items-center gap-2">
-        <Bean className="w-3" />
-        Basket version {basket.version} · {basket.ownership} · release{" "}
-        {basket.menuReleaseVersion}
-      </p>
+      {tone === "light" ? (
+        <p className="t-caption flex items-center gap-2">
+          <Bean className="w-3" />
+          Basket version {basket.version} · {basket.ownership} · release{" "}
+          {basket.menuReleaseVersion}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -64,15 +76,24 @@ function Row({
   label,
   value,
   accent = false,
+  tone = "light",
 }: {
   label: string;
   value: string;
   accent?: boolean;
+  tone?: "light" | "dark";
 }) {
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <dt className="text-muted">{label}</dt>
-      <dd className={cn("font-mono tabular-nums", accent ? "text-success" : "text-fg")}>{value}</dd>
+      <dt className={tone === "dark" ? "text-cream/60" : "text-muted"}>{label}</dt>
+      <dd
+        className={cn(
+          "font-mono tabular-nums",
+          accent ? "text-success" : tone === "dark" ? "text-cream" : "text-fg",
+        )}
+      >
+        {value}
+      </dd>
     </div>
   );
 }

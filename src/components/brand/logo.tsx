@@ -7,7 +7,7 @@ import { useOptionalStorefrontShell } from "@/lib/stores/storefront-shell";
 
 const LOGO_INTRINSIC = { width: 1536, height: 409 };
 const MIN_WORDMARK_WIDTH = 96;
-const FALLBACK_LOGO_SRC = "/brand/quotes-logo.png";
+const FALLBACK_LOGO_SRC = "/tenants/hospitality/brand/quotes-logo.png";
 
 export function Wordmark({
   height = 26,

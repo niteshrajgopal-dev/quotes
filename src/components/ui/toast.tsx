@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/cn";
-import { Bean } from "@/components/brand/bean";
+import { TenantMark } from "@/components/brand/tenant-brand";
 
 type ToastTone = "default" | "success" | "error";
 
@@ -71,7 +71,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 : "border-espresso bg-espresso text-cream",
             )}
           >
-            <Bean
+            <TenantMark
               onDark={item.tone !== "error"}
               className={cn("mt-0.5 w-4 shrink-0", item.tone === "error" && "opacity-70")}
             />

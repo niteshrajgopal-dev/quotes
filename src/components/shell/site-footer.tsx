@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bean, BeanDivider } from "@/components/brand/bean";
+import { TenantMark, TenantMarkDivider } from "@/components/brand/tenant-brand";
 import { Icon } from "@/components/brand/icons";
 import { SOCIALS } from "@/lib/fixtures/quotes-design-reference/brand";
 import { SECONDARY_NAV } from "./nav";
@@ -11,7 +11,8 @@ import { useStorefrontShell } from "@/lib/stores/storefront-shell";
 export function SiteFooter() {
   const pathname = usePathname();
   const shell = useStorefrontShell();
-  const showSocials = shell.themePresetId === "hospitality_baseline";
+  const isHospitality = shell.themePresetId === "hospitality_baseline";
+  const showSocials = isHospitality;
 
   if (shell.themePresetId === "hospitality_baseline" && pathname === "/") {
     return null;
@@ -22,7 +23,7 @@ export function SiteFooter() {
       <div className="wrap flex flex-col gap-12 py-[clamp(56px,8vw,96px)] pb-12">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3.5">
-            <Bean onDark className="w-6" />
+            <TenantMark onDark className="w-6" />
             <span className="font-serif text-[26px] text-cream">{shell.brandName}</span>
           </div>
           <p className="max-w-[20ch] font-serif text-[clamp(22px,3.4vw,34px)] leading-tight text-cream">
@@ -104,14 +105,14 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <BeanDivider className="opacity-80" />
+        <TenantMarkDivider className="opacity-80" />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <p className="t-caption text-cream/55">
             {shell.brandName} · served from {shell.hostname}
           </p>
           <p className="t-caption text-cream/45">
-            <Icon name="bean" className="mr-1 inline h-3 w-3 opacity-60" />
+            <Icon name={isHospitality ? "bean" : "heart"} className="mr-1 inline h-3 w-3 opacity-60" />
             QOS storefront renderer
           </p>
         </div>

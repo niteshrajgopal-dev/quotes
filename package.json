@@ -12,6 +12,7 @@
     "verify:shots": "node scripts/shots.mjs",
     "verify:smoke": "node scripts/smoke.mjs",
     "verify:qos-52": "node scripts/verify-qos-52.mjs",
+    "verify:qos-78": "node scripts/verify-qos-78.mjs",
     "verify:qos-41": "node scripts/verify-qos-41.mjs",
     "verify:sticky": "node scripts/check-sticky.mjs"
   },

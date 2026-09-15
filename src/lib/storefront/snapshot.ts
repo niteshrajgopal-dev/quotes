@@ -5,6 +5,7 @@ import {
   buildManifestThemeCssVariables,
   resolveManifestThemeTokens,
 } from "@/lib/storefront/theme-tokens";
+import { resolveTenantAssetPack } from "@/lib/storefront/tenant-assets";
 import type { StorefrontShellSnapshot } from "@/lib/stores/storefront-shell";
 
 export function toStorefrontShellSnapshot(
@@ -12,13 +13,17 @@ export function toStorefrontShellSnapshot(
   locale: StorefrontLocale,
 ): StorefrontShellSnapshot {
   const themeTokens = resolveManifestThemeTokens(context.manifest.theme);
+  const assets = resolveTenantAssetPack(context.themePreset.id);
 
   return {
     brandName: context.brandName,
     hostname: context.hostname,
     themePresetId: context.themePreset.id,
     dataTheme: context.themePreset.dataTheme,
-    logoSrc: context.themePreset.logoSrc,
+    logoSrc: assets.logoSrc,
+    logoOnDarkSrc: assets.logoOnDarkSrc,
+    markSrc: assets.markSrc,
+    themeColor: assets.themeColor,
     logoAlt: `${context.brandName} — home`,
     headerChip: context.themePreset.headerChip,
     footerStatement: resolveFooterStatement(

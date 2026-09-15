@@ -2,10 +2,11 @@
 
 import { useEffect, type ReactNode } from "react";
 
-import { Bean } from "@/components/brand/bean";
+import { TenantMarkSpinner } from "@/components/brand/tenant-brand";
+import { PageLoadState } from "@/components/ui/page-load-state";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { Card, EmptyState, Notice } from "@/components/ui/card";
+import { EmptyState, Notice } from "@/components/ui/card";
 import { formatMoneyMinor } from "@/lib/qos/money";
 import type { CheckoutPaymentOutcomeResponse } from "@/lib/qos/types";
 import { useCart } from "@/lib/stores/cart";
@@ -67,18 +68,22 @@ export function CheckoutOutcomePanel({
     outcome.status === "cancelled" ||
     outcome.status === "expired";
 
-  return (
-    <div className="flex flex-col gap-5">
-      <Badge tone={badgeToneForStatus(outcome.status)}>
-        {statusLabel(outcome.status)}
-      </Badge>
+  const succeeded = outcome.status === "succeeded";
 
-      <h1 className="t-display-m max-w-[28ch]">
-        {locale === "ar" ? outcome.messaging.titleAr : outcome.messaging.titleEn}
-      </h1>
-      <p className="max-w-[52ch] text-[16px] leading-relaxed text-mocha">
-        {locale === "ar" ? outcome.messaging.bodyAr : outcome.messaging.bodyEn}
-      </p>
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
+        <Badge tone={badgeToneForStatus(outcome.status)}>
+          {statusLabel(outcome.status)}
+        </Badge>
+
+        <h1 className="t-display-m max-w-[28ch]">
+          {locale === "ar" ? outcome.messaging.titleAr : outcome.messaging.titleEn}
+        </h1>
+        <p className="max-w-[52ch] text-[16px] leading-relaxed text-mocha">
+          {locale === "ar" ? outcome.messaging.bodyAr : outcome.messaging.bodyEn}
+        </p>
+      </div>
 
       {outcome.diagnostics?.isLabelledFixture ? (
         <Notice tone="info" title="Fixture mode.">
@@ -90,8 +95,8 @@ export function CheckoutOutcomePanel({
       {polling ? (
         <Notice tone="info">
           <span className="inline-flex items-center gap-2">
-            <Bean className="w-4 animate-bean-spin" />
-            Confirming your sandbox payment with QOS…
+            <TenantMarkSpinner className="w-4" />
+            Confirming your payment…
           </span>
         </Notice>
       ) : null}
@@ -113,38 +118,46 @@ export function CheckoutOutcomePanel({
         </Notice>
       ) : null}
 
-      <div className="mt-4 grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-12">
+      <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-12">
         <div className="flex flex-col gap-6">
-          <Card className="p-0">
-            <dl className="grid gap-5 p-6 sm:grid-cols-2">
+          <div
+            className={
+              succeeded
+                ? "rounded-md border border-cream/8 bg-espresso p-6 text-cream sm:p-8"
+                : "rounded-md border border-line bg-surface p-6 sm:p-8"
+            }
+          >
+            <dl className="grid gap-5 sm:grid-cols-2">
               <div>
-                <dt className="t-label mb-2">Payment reference</dt>
-                <dd className="ltr-isolate font-mono text-[18px] break-all">
-                  {outcome.paymentAttemptPublicId}
-                </dd>
-              </div>
-              {outcome.providerReference ? (
-                <div>
-                  <dt className="t-label mb-2">Stripe session</dt>
-                  <dd className="font-mono text-[14px] break-all text-muted">
-                    {outcome.providerReference}
-                  </dd>
-                </div>
-              ) : null}
-              <div>
-                <dt className="t-label mb-2">Total</dt>
-                <dd className="ltr-isolate font-mono text-[18px]">
+                <dt
+                  className={
+                    succeeded
+                      ? "mb-2 text-xs uppercase tracking-[0.18em] text-latte"
+                      : "t-label mb-2"
+                  }
+                >
+                  Order total
+                </dt>
+                <dd className="ltr-isolate font-mono text-[22px] tabular-nums">
                   {formatMoneyMinor(outcome.totalMinor, outcome.currency, locale)}
                 </dd>
               </div>
               <div>
-                <dt className="t-label mb-2">Quote</dt>
-                <dd className="font-mono text-[14px] break-all text-muted">
-                  {outcome.quotePublicId}
+                <dt
+                  className={
+                    succeeded
+                      ? "mb-2 text-xs uppercase tracking-[0.18em] text-latte"
+                      : "t-label mb-2"
+                  }
+                >
+                  Reference
+                </dt>
+                <dd className="ltr-isolate font-mono text-[14px] break-all opacity-80">
+                  {outcome.paymentAttemptPublicId}
                 </dd>
               </div>
             </dl>
-          </Card>
+          </div>
 
           <div>
             <h2 className="t-label mb-3">What you ordered</h2>
@@ -176,23 +189,41 @@ export function CheckoutOutcomePanel({
           </div>
         </div>
 
-        <Card className="flex flex-col gap-4">
-          <h2 className="t-label">Test checkout only</h2>
-          <p className="text-[14.5px] leading-relaxed text-mocha">
-            No real charge was made and no order will be fulfilled. This screen reflects the
-            backend-confirmed sandbox outcome from QOS, not the Stripe redirect alone.
-          </p>
-          <div className="flex flex-wrap gap-3 pt-2">
-            {showRetry ? (
-              <ButtonLink href="/checkout" size="sm">
-                Try checkout again
-              </ButtonLink>
-            ) : null}
-            <ButtonLink href="/menu" variant="secondary" size="sm">
-              Back to menu
-            </ButtonLink>
-          </div>
-        </Card>
+        <div className="flex flex-col gap-4 rounded-md border border-line bg-surface p-6">
+          {succeeded ? (
+            <>
+              <h2 className="font-serif text-[22px] tracking-[-0.02em]">You are all set.</h2>
+              <p className="text-[14.5px] leading-relaxed text-mocha">
+                We will have your order ready at the counter. Show your reference if asked.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <ButtonLink href="/order" size="sm">
+                  Order again
+                </ButtonLink>
+                <ButtonLink href="/loyalty" variant="secondary" size="sm">
+                  Bean card
+                </ButtonLink>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="t-label">Need to try again?</h2>
+              <p className="text-[14.5px] leading-relaxed text-mocha">
+                Your bag is still saved. Return to checkout when you are ready.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                {showRetry ? (
+                  <ButtonLink href="/checkout" size="sm">
+                    Return to checkout
+                  </ButtonLink>
+                ) : null}
+                <ButtonLink href="/menu" variant="secondary" size="sm">
+                  Back to menu
+                </ButtonLink>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -200,9 +231,8 @@ export function CheckoutOutcomePanel({
 
 export function CheckoutOutcomeLoading({ label }: { label: string }) {
   return (
-    <section className="wrap flex items-center gap-3 py-24 text-muted">
-      <Bean className="w-5 animate-bean-spin" />
-      <span className="text-[14px]">{label}</span>
+    <section className="wrap">
+      <PageLoadState label={label} className="py-24" />
     </section>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Bean } from "@/components/brand/bean";
 import { ButtonLink } from "@/components/ui/button";
-import { Card, EmptyState } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/card";
+import { PageLoadState } from "@/components/ui/page-load-state";
 import { QosCartLineRow } from "@/components/cart/qos-cart-line-row";
 import { OrderSummary } from "@/components/cart/order-summary";
 import { QosCheckoutHandoff } from "@/components/checkout/qos-checkout-handoff";
@@ -16,9 +16,15 @@ export default function CheckoutPage() {
   const itemCount = useQosBasket(selectBasketItemCount);
 
   return (
-    <section className="wrap pt-[clamp(32px,5vw,64px)] pb-[clamp(48px,7vw,88px)]">
-      <nav aria-label="Breadcrumb" className="mb-6">
+    <section className="wrap pb-[clamp(48px,7vw,88px)]">
+      <nav aria-label="Breadcrumb" className="mb-8">
         <ol className="flex flex-wrap items-center gap-2 font-mono text-[11px] tracking-[0.08em] text-muted uppercase">
+          <li>
+            <Link href="/order" className="transition-colors duration-fast hover:text-fg">
+              Order
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
           <li>
             <Link href="/menu" className="transition-colors duration-fast hover:text-fg">
               Menu
@@ -29,19 +35,8 @@ export default function CheckoutPage() {
         </ol>
       </nav>
 
-      <header className="mb-9 flex flex-col gap-4">
-        <span className="t-overline inline-flex items-center gap-2.5 tracking-[0.22em] text-muted">
-          <Bean className="w-[0.9em]" />
-          Checkout
-        </span>
-        <h1 className="t-display-m">One last look.</h1>
-      </header>
-
       {!hydrated ? (
-        <div className="flex items-center gap-3 py-16 text-muted">
-          <Bean className="w-5 animate-bean-spin" />
-          <span className="text-[14px]">Loading your bag…</span>
-        </div>
+        <PageLoadState label="Loading your bag…" />
       ) : itemCount === 0 || !basket ? (
         <EmptyState
           title="Your bag is empty"
@@ -59,9 +54,11 @@ export default function CheckoutPage() {
           </div>
 
           <div className="flex flex-col gap-5 lg:sticky lg:top-24 lg:h-fit">
-            <Card className="flex flex-col gap-5">
-              <h2 className="t-label">Your QOS basket</h2>
-              <ul className="flex flex-col border-t border-line">
+            <div className="flex flex-col gap-5 rounded-md border border-cream/8 bg-espresso p-6 text-cream">
+              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-latte">
+                Your bag
+              </h2>
+              <ul className="flex flex-col border-t border-cream/14">
                 {basket.lines.map((line) => (
                   <QosCartLineRow
                     key={line.linePublicId}
@@ -69,11 +66,12 @@ export default function CheckoutPage() {
                     currency={basket.currency}
                     locale={basket.locale}
                     compact
+                    tone="dark"
                   />
                 ))}
               </ul>
-              <OrderSummary />
-            </Card>
+              <OrderSummary tone="dark" />
+            </div>
           </div>
         </div>
       )}

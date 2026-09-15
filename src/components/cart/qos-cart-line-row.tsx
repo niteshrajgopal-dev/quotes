@@ -13,12 +13,14 @@ export function QosCartLineRow({
   locale,
   compact = false,
   readOnly = false,
+  tone = "light",
 }: {
   line: BasketLineResponse;
   currency: string;
   locale: "en" | "ar";
   compact?: boolean;
   readOnly?: boolean;
+  tone?: "light" | "dark";
 }) {
   const productLabels = useQosBasket((state) => state.productLabels);
   const setLineQuantity = useQosBasket((state) => state.setLineQuantity);
@@ -30,21 +32,37 @@ export function QosCartLineRow({
   const busy = status === "mutating";
 
   return (
-    <li className={cn("flex gap-4 border-b border-line py-4 last:border-b-0", compact && "py-3.5")}>
+    <li
+      className={cn(
+        "flex gap-4 border-b py-4 last:border-b-0",
+        tone === "dark" ? "border-cream/14" : "border-line",
+        compact && "py-3.5",
+      )}
+    >
       <span
         className={cn(
-          "grid shrink-0 place-items-center rounded-sm border border-line bg-latte-50",
+          "grid shrink-0 place-items-center rounded-sm border",
+          tone === "dark" ? "border-cream/15 bg-mocha/55" : "border-line bg-latte-50",
           compact ? "h-14 w-14" : "h-16 w-16",
         )}
       >
-        <Bean className={compact ? "w-5" : "w-6"} />
+        <Bean onDark={tone === "dark"} className={compact ? "w-5" : "w-6"} />
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[14.5px] font-medium leading-snug">{displayName}</p>
-            <p className="ltr-isolate t-caption mt-0.5 font-mono">{line.productPublicId}</p>
+            <p
+              className={cn(
+                "text-[14.5px] font-medium leading-snug",
+                tone === "dark" && "text-cream",
+              )}
+            >
+              {displayName}
+            </p>
+            {tone === "light" ? (
+              <p className="ltr-isolate t-caption mt-0.5 font-mono">{line.productPublicId}</p>
+            ) : null}
           </div>
           <p className="ltr-isolate shrink-0 font-mono text-[13.5px] tabular-nums">
             {formatMoneyMinor(lineTotalMinor, currency, locale)}

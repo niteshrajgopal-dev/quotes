@@ -10,6 +10,9 @@ export type StorefrontShellSnapshot = {
   themePresetId: string;
   dataTheme: string;
   logoSrc: string;
+  logoOnDarkSrc: string;
+  markSrc: string;
+  themeColor: string;
   logoAlt: string;
   headerChip?: string;
   footerStatement: string;

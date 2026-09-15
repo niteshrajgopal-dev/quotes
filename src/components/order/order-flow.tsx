@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bean } from "@/components/brand/bean";
+import { PageLoadState } from "@/components/ui/page-load-state";
 import { Icon } from "@/components/brand/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -26,6 +26,7 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
   const router = useRouter();
   const shell = useStorefrontShell();
   const isRetail = shell.themePresetId === "generic_retail_baseline";
+  const isHospitality = shell.themePresetId === "hospitality_baseline";
   const hydrated = useHydrated();
   const [step, setStep] = useState(0);
 
@@ -59,12 +60,7 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
   };
 
   if (!hydrated) {
-    return (
-      <div className="flex items-center gap-3 py-16 text-muted">
-        <Bean className="w-5 animate-bean-spin" />
-        <span className="text-[14px]">Loading your bag…</span>
-      </div>
-    );
+    return <PageLoadState label="Loading your bag…" />;
   }
 
   return (
@@ -211,7 +207,14 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
       ) : null}
 
       {step < STEPS.length - 1 ? (
-        <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+68px)] z-40 -mx-[var(--mx)] border-t border-line bg-[color-mix(in_oklab,var(--color-cream),transparent_4%)] px-[var(--mx)] py-3 backdrop-blur-[10px] md:bottom-4 md:mx-0 md:rounded-md md:border md:px-4">
+        <div
+          className={cn(
+            "sticky bottom-[calc(env(safe-area-inset-bottom)+68px)] z-40 -mx-[var(--mx)] border-t px-[var(--mx)] py-3 backdrop-blur-[10px] md:bottom-4 md:mx-0 md:rounded-md md:border md:px-4",
+            isHospitality
+              ? "border-cream/12 bg-[rgba(47,35,34,0.92)] text-cream"
+              : "border-line bg-[color-mix(in_oklab,var(--color-cream),transparent_4%)]",
+          )}
+        >
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <p className="t-label">

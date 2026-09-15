@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import type { StorefrontContext } from "@/lib/storefront/context.server";
 import { resolveHeroContentBlock } from "@/lib/storefront/content-blocks";
+import { resolveTenantAssetPack } from "@/lib/storefront/tenant-assets";
 
 export function buildStorefrontMetadata(context: StorefrontContext): Metadata {
   const defaultLocale = context.manifest.defaultLocale === "ar" ? "ar" : "en";
@@ -13,10 +14,7 @@ export function buildStorefrontMetadata(context: StorefrontContext): Metadata {
   const description =
     hero?.subtitle ??
     `${context.brandName} storefront served from ${context.hostname}.`;
-  const icon =
-    context.themePreset.id === "generic_retail_baseline"
-      ? context.themePreset.logoSrc
-      : "/brand/quotes-logo.png";
+  const icon = context.themePreset.logoSrc;
 
   return {
     metadataBase: new URL(`https://${context.hostname}`),
@@ -36,5 +34,6 @@ export function buildStorefrontMetadata(context: StorefrontContext): Metadata {
       icon,
       apple: icon,
     },
+    themeColor: resolveTenantAssetPack(context.themePreset.id).themeColor,
   };
 }

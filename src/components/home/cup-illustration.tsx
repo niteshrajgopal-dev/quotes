@@ -12,7 +12,7 @@ type CupIllustrationProps = {
 export function CupIllustration({
   bodyColor,
   sleeveColor,
-  logoSrc = "/assets/logo.png",
+  logoSrc = "/tenants/hospitality/media/logo.png",
   className,
 }: CupIllustrationProps) {
   return (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { motion } from "framer-motion";
+import { TenantMarkSpinner } from "@/components/brand/tenant-brand";
 import { cn } from "@/lib/cn";
 
 type MotionButtonVariant = "primary" | "secondary" | "inverse-fill" | "inverse-outline" | "ghost";
@@ -28,6 +29,8 @@ const sizes = {
 type CommonProps = {
   variant?: MotionButtonVariant;
   size?: keyof typeof sizes;
+  loading?: boolean;
+  loadingLabel?: string;
   children: ReactNode;
   className?: string;
 };
@@ -59,6 +62,8 @@ export function MotionButtonLink({
 export function MotionButton({
   variant = "primary",
   size = "md",
+  loading = false,
+  loadingLabel = "Working",
   className,
   children,
   disabled,
@@ -66,13 +71,16 @@ export function MotionButton({
   onClick,
 }: CommonProps &
   Pick<ComponentProps<"button">, "type" | "onClick" | "disabled" | "aria-busy" | "aria-label">) {
+  const busy = disabled || loading;
+
   return (
     <motion.button
       type={type}
       onClick={onClick}
-      disabled={disabled}
-      whileHover={disabled ? undefined : { scale: 1.03 }}
-      whileTap={disabled ? undefined : { scale: 0.97 }}
+      disabled={busy}
+      aria-busy={loading || undefined}
+      whileHover={busy ? undefined : { scale: 1.03 }}
+      whileTap={busy ? undefined : { scale: 0.97 }}
       className={cn(
         "inline-flex items-center justify-center gap-2.5 rounded-pill font-semibold no-tap-highlight transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-45",
         variants[variant],
@@ -80,7 +88,14 @@ export function MotionButton({
         className,
       )}
     >
-      {children}
+      {loading ? (
+        <>
+          <TenantMarkSpinner className="w-[0.85em]" />
+          <span>{loadingLabel.replace(/\.{3}|…+$/u, "")}…</span>
+        </>
+      ) : (
+        children
+      )}
     </motion.button>
   );
 }

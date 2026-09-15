@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bean } from "@/components/brand/bean";
+import { HospitalityPageIntro } from "@/components/hospitality/page-intro";
 import { TravelArrow } from "@/components/ui/button";
 import { Plate } from "@/components/ui/plate";
 import { ARTICLES, formatArticleDate } from "@/lib/journal";
@@ -16,17 +16,11 @@ export default function JournalPage() {
 
   return (
     <>
-      <section className="wrap pt-[clamp(40px,7vw,80px)] pb-[clamp(32px,5vw,56px)]">
-        <span className="t-overline inline-flex items-center gap-2.5 tracking-[0.22em] text-muted">
-          <Bean className="w-[0.9em]" />
-          Journal
-        </span>
-        <h1 className="t-display-l mt-5 max-w-[20ch]">Origins, people, conversations.</h1>
-        <p className="mt-6 max-w-[58ch] text-[clamp(17px,2.2vw,20px)] leading-[1.55] text-mocha">
-          What we learn on the farm, at the roaster and across the table — written the way we
-          would say it, not the way it sells.
-        </p>
-      </section>
+      <HospitalityPageIntro
+        kicker="Journal"
+        title="Origins, people, conversations."
+        lead="What we learn on the farm, at the roaster and across the table — written the way we would say it, not the way it sells."
+      />
 
       {/* --- lead story --- */}
       <section className="wrap pb-[clamp(40px,6vw,72px)]">

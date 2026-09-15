@@ -114,8 +114,8 @@ export function ShopGrid() {
         />
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map((coffee) => (
-            <CoffeeCard key={coffee.slug} coffee={coffee} />
+          {results.map((coffee, index) => (
+            <CoffeeCard key={coffee.slug} coffee={coffee} variant="dark" index={index} />
           ))}
         </div>
       )}

@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, Inter, Young_Serif } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Serif, Inter, Manrope, Young_Serif } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
-import { BeanSprite } from "@/components/brand/bean";
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -21,6 +20,21 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-plex-mono",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-manrope",
   display: "swap",
 });
 
@@ -44,13 +58,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${youngSerif.variable} ${plexMono.variable}`}
+      className={`${inter.variable} ${youngSerif.variable} ${plexMono.variable} ${instrumentSerif.variable} ${manrope.variable}`}
     >
       <body className="min-h-dvh">
-        <ToastProvider>
-          <BeanSprite />
-          {children}
-        </ToastProvider>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

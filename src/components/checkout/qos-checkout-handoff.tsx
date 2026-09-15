@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button, ButtonLink } from "@/components/ui/button";
-import { Card, Notice } from "@/components/ui/card";
+import { Notice } from "@/components/ui/card";
 import { buildSignInHref } from "@/lib/auth/customer-auth-client";
 import { startCheckoutFromBasket } from "@/lib/qos/checkout-handoff-client";
 import { QosRequestError } from "@/lib/qos/api-client";
@@ -24,7 +24,6 @@ export function QosCheckoutHandoff() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [lastReference, setLastReference] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,7 +59,6 @@ export function QosCheckoutHandoff() {
 
     try {
       const paymentAttempt = await startCheckoutFromBasket(basket.version);
-      setLastReference(paymentAttempt.paymentAttemptPublicId);
 
       if (!paymentAttempt.handoff.url) {
         throw new Error("QOS did not return a checkout handoff URL.");
@@ -75,14 +73,14 @@ export function QosCheckoutHandoff() {
         await refreshCustomer();
         setError(
           handoffError.field === "emailVerified"
-            ? "Verify your email before starting sandbox checkout."
-            : "Sign in with your customer account to start sandbox checkout.",
+            ? "Verify your email before paying."
+            : "Sign in with your customer account to continue.",
         );
       } else {
         setError(
           handoffError instanceof Error
             ? handoffError.message
-            : "Unable to start sandbox checkout.",
+            : "Unable to start checkout.",
         );
       }
       setBusy(false);
@@ -93,23 +91,24 @@ export function QosCheckoutHandoff() {
   const checking = loading || sessionStatus === "loading";
 
   return (
-    <Card className="flex flex-col gap-4 border-dashed">
+    <div className="flex flex-col gap-6 rounded-md border border-line bg-surface p-6 sm:p-8">
       <div className="flex flex-col gap-2">
-        <p className="t-overline text-muted">QOS sandbox checkout</p>
-        <h2 className="t-label">Backend-verified test payment</h2>
-        <p className="text-[14px] text-muted">
-          Starts a checkout quote from your current QOS basket and hands off to Stripe
-          sandbox. Success is only confirmed after QOS verifies the payment outcome.
+        <h2 className="font-serif text-[clamp(24px,2.4vw,32px)] tracking-[-0.02em]">
+          Payment
+        </h2>
+        <p className="max-w-[46ch] text-[15px] leading-relaxed text-mocha">
+          Pay securely and we will confirm your order. You will return here once payment
+          completes.
         </p>
       </div>
 
       {checking ? (
-        <p className="text-[14px] text-muted">Checking QOS checkout readiness…</p>
+        <p className="text-[14px] text-muted">Checking your account…</p>
       ) : null}
 
       {!checking && !signedIn ? (
-        <Notice tone="info" title="Customer sign-in required">
-          Checkout is tied to your verified QOS customer session.
+        <Notice tone="info" title="Sign in to pay">
+          Checkout is tied to your customer account.
           <div className="mt-3">
             <ButtonLink href={buildSignInHref("/checkout")} size="sm">
               Sign in to continue
@@ -119,26 +118,13 @@ export function QosCheckoutHandoff() {
       ) : null}
 
       {!checking && signedIn ? (
-        <Notice tone="info">
+        <p className="text-[14px] text-mocha">
           Signed in as <span className="font-medium text-fg">{displayName}</span>.
-        </Notice>
-      ) : null}
-
-      {basket ? (
-        <p className="font-mono text-[12px] text-muted">
-          Basket {basket.basketPublicId} · {basket.itemCount} item
-          {basket.itemCount === 1 ? "" : "s"} · v{basket.version}
-        </p>
-      ) : null}
-
-      {lastReference ? (
-        <p className="font-mono text-[12px] text-muted">
-          Last payment attempt: {lastReference}
         </p>
       ) : null}
 
       {error ? (
-        <Notice tone="error" title="Sandbox checkout unavailable">
+        <Notice tone="error" title="Checkout unavailable">
           {error}
         </Notice>
       ) : null}
@@ -148,18 +134,16 @@ export function QosCheckoutHandoff() {
           type="button"
           size="lg"
           loading={busy}
-          loadingLabel="Starting checkout…"
+          loadingLabel="Redirecting to payment…"
           disabled={checking || !canCheckout || Boolean(error)}
           onClick={() => void onStartCheckout()}
         >
-          Pay with Stripe sandbox
+          Pay now
         </Button>
-        {signedIn ? (
-          <ButtonLink href="/checkout/success" variant="secondary" size="lg">
-            Open success recovery
-          </ButtonLink>
-        ) : null}
+        <ButtonLink href="/order" variant="secondary" size="lg">
+          Edit order
+        </ButtonLink>
       </div>
-    </Card>
+    </div>
   );
 }

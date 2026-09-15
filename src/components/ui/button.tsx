@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { BeanSpinner } from "@/components/brand/bean";
+import { TenantMarkSpinner } from "@/components/brand/tenant-brand";
 
 /**
  * Primary actions are espresso-solid, never latte — the accent stays rationed.
@@ -65,8 +65,8 @@ export function Button({
     >
       {loading ? (
         <>
-          <BeanSpinner className="w-[0.85em]" />
-          <span>{loadingLabel}…</span>
+          <TenantMarkSpinner className="w-[0.85em]" />
+          <span>{loadingLabel.replace(/\.{3}|…+$/u, "")}…</span>
         </>
       ) : (
         children

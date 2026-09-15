@@ -3,8 +3,8 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-import { Bean } from "@/components/brand/bean";
 import { Badge } from "@/components/ui/badge";
+import { PageLoadState } from "@/components/ui/page-load-state";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, Notice } from "@/components/ui/card";
 import {
@@ -101,9 +101,8 @@ export default function CheckoutCancelledPage() {
   return (
     <Suspense
       fallback={
-        <section className="wrap flex items-center gap-3 py-24 text-muted">
-          <Bean className="w-5 animate-bean-spin" />
-          <span className="text-[14px]">Loading…</span>
+        <section className="wrap">
+          <PageLoadState label="Loading…" className="py-24" />
         </section>
       }
     >

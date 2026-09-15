@@ -6,6 +6,10 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { useHospitalityLandingMotion } from "@/components/home/use-hospitality-landing-motion";
 import { MotionButtonLink } from "@/components/ui/motion-button";
+import {
+  hospitalityVenuePhoto,
+  hospitalityVenueTag,
+} from "@/lib/storefront/hospitality-assets";
 import type { StorefrontManifestLocation } from "@/lib/storefront/manifest-types";
 import { formatMoneyMinor } from "@/lib/qos/money";
 import type { PublicMenuLocale, PublicMenuProduct } from "@/lib/qos/menu-types";
@@ -50,31 +54,23 @@ const CATEGORIES = [
   { n: "06", name: "Desserts", blurb: "For the afternoon quote", count: 5 },
 ] as const;
 
-const VENUE_PHOTOS = [
-  "/assets/venue-soho.png",
-  "/assets/venue-shoreditch.png",
-  "/assets/venue-marylebone.png",
-] as const;
-
 const PRODUCT_IMAGES = [
-  "/assets/product-spanish-latte.png",
-  "/assets/product-flat-white.png",
-  "/assets/product-cold-brew.png",
-  "/assets/product-espresso.png",
-  "/assets/product-iced-latte.png",
+  "/tenants/hospitality/media/product-spanish-latte.png",
+  "/tenants/hospitality/media/product-flat-white.png",
+  "/tenants/hospitality/media/product-cold-brew.png",
+  "/tenants/hospitality/media/product-espresso.png",
+  "/tenants/hospitality/media/product-iced-latte.png",
 ] as const;
 
 function productImageFor(name: string, index: number): string {
   const lower = name.toLowerCase();
-  if (lower.includes("latte")) return "/assets/product-spanish-latte.png";
-  if (lower.includes("flat white")) return "/assets/product-flat-white.png";
-  if (lower.includes("cold brew")) return "/assets/product-cold-brew.png";
-  if (lower.includes("espresso")) return "/assets/product-espresso.png";
-  if (lower.includes("iced")) return "/assets/product-iced-latte.png";
+  if (lower.includes("latte")) return "/tenants/hospitality/media/product-spanish-latte.png";
+  if (lower.includes("flat white")) return "/tenants/hospitality/media/product-flat-white.png";
+  if (lower.includes("cold brew")) return "/tenants/hospitality/media/product-cold-brew.png";
+  if (lower.includes("espresso")) return "/tenants/hospitality/media/product-espresso.png";
+  if (lower.includes("iced")) return "/tenants/hospitality/media/product-iced-latte.png";
   return PRODUCT_IMAGES[index % PRODUCT_IMAGES.length];
 }
-
-const VENUE_TAGS = ["Flagship", "Roastery", "New"] as const;
 
 type HospitalityLandingProps = {
   brandName: string;
@@ -109,7 +105,7 @@ export function HospitalityLanding({
       >
         <Image
           data-loader-bean
-          src="/assets/bean.png"
+          src="/tenants/hospitality/media/bean.png"
           alt=""
           width={64}
           height={64}
@@ -120,7 +116,7 @@ export function HospitalityLanding({
         <div className="h-[52px] overflow-hidden">
           <Image
             data-loader-word
-            src="/assets/logo-cream.png"
+            src="/tenants/hospitality/media/logo-cream.png"
             alt={brandName}
             width={180}
             height={48}
@@ -189,7 +185,7 @@ export function HospitalityLanding({
             />
             <Image
               data-hero-cup="b"
-              src="/assets/photo-splash-cup.png"
+              src="/tenants/hospitality/media/photo-splash-cup.png"
               alt="Quotes cup with coffee splash"
               width={460}
               height={580}
@@ -198,7 +194,7 @@ export function HospitalityLanding({
             />
             <Image
               data-hero-bean="1"
-              src="/assets/bean.png"
+              src="/tenants/hospitality/media/bean.png"
               alt=""
               width={48}
               height={48}
@@ -207,7 +203,7 @@ export function HospitalityLanding({
             />
             <Image
               data-hero-bean="2"
-              src="/assets/bean.png"
+              src="/tenants/hospitality/media/bean.png"
               alt=""
               width={36}
               height={36}
@@ -299,19 +295,40 @@ export function HospitalityLanding({
         className="relative h-screen overflow-hidden bg-espresso px-[var(--mx)]"
       >
         <div data-drinks-title className="absolute left-1/2 top-[clamp(88px,13vh,130px] flex -translate-x-1/2 items-center gap-2.5 whitespace-nowrap">
-          <Image src="/assets/logo-cream.png" alt={brandName} width={112} height={28} className="h-[clamp(20px,2vw,28px)] w-auto" />
+          <Image src="/tenants/hospitality/media/logo-cream.png" alt={brandName} width={112} height={28} className="h-[clamp(20px,2vw,28px)] w-auto" />
           <span className="text-[clamp(14px,1.3vw,18px)] uppercase tracking-[0.14em] text-cream/60">
             is
           </span>
         </div>
         <div className="absolute left-1/2 top-1/2 h-[min(70vh,760px)] w-[min(100%,1200px)] -translate-x-1/2 -translate-y-1/2">
           <div
+            data-drinks-sleeve
+            aria-hidden
+            className="absolute left-[8%] right-[8%] top-[34%] flex h-[32%] items-center justify-center bg-mocha"
+            style={{ clipPath: "polygon(0 0, 100% 0, 95% 100%, 5% 100%)" }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 65%,rgba(0,0,0,.25))",
+              }}
+            />
+            <Image
+              src="/tenants/hospitality/media/logo-cream.png"
+              alt=""
+              width={220}
+              height={56}
+              className="relative w-[62%]"
+            />
+          </div>
+          <div
             data-drinks-cupwrap
             className="absolute left-1/2 top-1/2 w-[min(clamp(220px,24vw,360px),40vh)] -translate-x-1/2 will-change-transform drop-shadow-[0_80px_60px_rgba(0,0,0,.55)] max-md:w-[54vw] max-md:-translate-x-1/2"
           >
             <Image
               data-drinks-cup
-              src="/assets/photo-splash-cup.png"
+              src="/tenants/hospitality/media/photo-splash-cup.png"
               alt=""
               width={360}
               height={450}
@@ -351,7 +368,7 @@ export function HospitalityLanding({
           <Image
             key={n}
             data-drinks-bean
-            src="/assets/bean.png"
+            src="/tenants/hospitality/media/bean.png"
             alt=""
             width={64}
             height={64}
@@ -375,7 +392,7 @@ export function HospitalityLanding({
             <Image
               key={n}
               data-band-bean={n}
-              src="/assets/bean.png"
+              src="/tenants/hospitality/media/bean.png"
               alt=""
               width={110}
               height={110}
@@ -390,7 +407,7 @@ export function HospitalityLanding({
           ))}
           <div
             data-band-panel
-            className="relative grid items-center gap-8 overflow-hidden rounded-lg border border-cream/8 bg-espresso bg-[url('/assets/photo-beans-fall.png')] bg-cover bg-right bg-no-repeat p-[clamp(32px,4vw,56px)] md:grid-cols-[1fr_auto]"
+            className="relative grid items-center gap-8 overflow-hidden rounded-lg border border-cream/8 bg-espresso bg-[url('/tenants/hospitality/media/photo-beans-fall.png')] bg-cover bg-right bg-no-repeat p-[clamp(32px,4vw,56px)] md:grid-cols-[1fr_auto]"
           >
             <div className="flex flex-col gap-[18px]">
               <h2 className="text-balance font-serif text-[clamp(28px,3.4vw,52px)] leading-none tracking-[-0.02em]">
@@ -413,7 +430,7 @@ export function HospitalityLanding({
               ].map((bean, i) => (
                 <Image
                   key={i}
-                  src="/assets/bean.png"
+                  src="/tenants/hospitality/media/bean.png"
                   alt=""
                   width={80}
                   height={80}
@@ -452,7 +469,7 @@ export function HospitalityLanding({
           className="absolute right-[clamp(8%,14vw,20%)] top-1/2 aspect-[3/4] w-[clamp(140px,15vw,220px)] -translate-y-1/2 overflow-hidden rounded-md drop-shadow-[0_40px_40px_-10px_rgba(47,35,34,.35)] max-md:right-[6%] max-md:w-[22vw]"
         >
           <Image
-            src="/assets/product-espresso.png"
+            src="/tenants/hospitality/media/product-espresso.png"
             alt=""
             fill
             className="object-cover"
@@ -513,13 +530,13 @@ export function HospitalityLanding({
           </div>
           <div className="col-span-12 grid grid-cols-2 gap-[clamp(16px,2vw,32px)] pt-[6vh] lg:col-span-6 lg:col-start-7">
             <div data-origin-img="1" className="relative col-span-2 aspect-[4/3] overflow-hidden rounded-sm">
-              <Image src="/assets/craft-cherries.png" alt="" fill className="object-cover" sizes="(max-width: 900px) 100vw, 50vw" />
+              <Image src="/tenants/hospitality/media/craft-cherries.png" alt="" fill className="object-cover" sizes="(max-width: 900px) 100vw, 50vw" />
             </div>
             <div data-origin-img="2" className="relative -mt-[12vh] aspect-[3/4] overflow-hidden rounded-sm max-md:mt-0">
-              <Image src="/assets/craft-roaster.png" alt="" fill className="object-cover" sizes="(max-width: 900px) 50vw, 25vw" />
+              <Image src="/tenants/hospitality/media/craft-roaster.png" alt="" fill className="object-cover" sizes="(max-width: 900px) 50vw, 25vw" />
             </div>
             <div data-origin-img="3" className="relative mt-[8vh] aspect-[3/4] overflow-hidden rounded-sm max-md:mt-0">
-              <Image src="/assets/craft-pour.png" alt="" fill className="object-cover" sizes="(max-width: 900px) 50vw, 25vw" />
+              <Image src="/tenants/hospitality/media/craft-pour.png" alt="" fill className="object-cover" sizes="(max-width: 900px) 50vw, 25vw" />
             </div>
           </div>
         </div>
@@ -586,7 +603,7 @@ export function HospitalityLanding({
         data-feature
         className="relative grid h-screen items-center overflow-hidden px-[var(--mx)] text-cream"
       >
-        <div data-feature-bg className="absolute inset-0 bg-mocha" />
+        <div data-feature-bg className="absolute inset-0 bg-[var(--q-mocha)]" />
         <div
           data-feature-halo
           aria-hidden
@@ -642,7 +659,7 @@ export function HospitalityLanding({
           >
             <div data-feature-cup className="relative aspect-[3/4] w-[clamp(200px,22vw,320px)] overflow-hidden rounded-md max-md:w-[38vw]">
               <Image
-                src="/assets/product-spanish-latte.png"
+                src="/tenants/hospitality/media/product-spanish-latte.png"
                 alt={featured?.displayName ?? "Spanish Latte"}
                 fill
                 className="object-cover"
@@ -653,7 +670,7 @@ export function HospitalityLanding({
               <Image
                 key={n}
                 data-feature-bean={n}
-                src="/assets/bean.png"
+                src="/tenants/hospitality/media/bean.png"
                 alt=""
                 width={44}
                 height={44}
@@ -723,7 +740,7 @@ export function HospitalityLanding({
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-espresso">
                   <Image
-                    src={VENUE_PHOTOS[index % VENUE_PHOTOS.length]}
+                    src={hospitalityVenuePhoto(index)}
                     alt=""
                     fill
                     className="object-cover"
@@ -734,7 +751,7 @@ export function HospitalityLanding({
                   <div className="flex items-baseline justify-between gap-3">
                     <h3 className="font-serif text-[26px] tracking-[-0.02em]">{location.name}</h3>
                     <span className="rounded-xs bg-latte/35 px-2 py-1 text-[11px] uppercase tracking-[0.14em] text-mocha">
-                      {VENUE_TAGS[index % VENUE_TAGS.length]}
+                      {hospitalityVenueTag(index)}
                     </span>
                   </div>
                   <p className="text-sm leading-normal text-mocha">Published branch from QOS.</p>
@@ -761,7 +778,7 @@ export function HospitalityLanding({
           className="relative mx-auto grid max-w-[1400px] items-center gap-8 overflow-hidden rounded-lg bg-espresso p-[clamp(40px,6vw,80px)] text-cream md:grid-cols-[1fr_auto]"
         >
           <Image
-            src="/assets/bean.png"
+            src="/tenants/hospitality/media/bean.png"
             alt=""
             width={420}
             height={420}
@@ -789,7 +806,7 @@ export function HospitalityLanding({
         <div className="mx-auto flex max-w-[1400px] flex-col gap-[clamp(60px,10vh,120px)]">
           <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr]">
             <div className="flex flex-col gap-5">
-              <Image src="/assets/logo-cream.png" alt={brandName} width={140} height={36} className="h-9 w-auto self-start" />
+              <Image src="/tenants/hospitality/media/logo-cream.png" alt={brandName} width={140} height={36} className="h-9 w-auto self-start" />
               <p className="max-w-[320px] text-sm leading-normal text-cream/60">
                 Premium coffee, made for moments worth remembering.
               </p>

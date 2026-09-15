@@ -1,5 +1,6 @@
 import type { IconName } from "@/components/brand/icons";
 import type { StorefrontManifestResponse } from "@/lib/storefront/manifest-types";
+import { TENANT_ASSET_PACKS } from "@/lib/storefront/tenant-assets";
 
 export type StorefrontThemePresetId =
   | "hospitality_baseline"
@@ -26,7 +27,7 @@ export type StorefrontThemePreset = {
 const hospitalityPreset: StorefrontThemePreset = {
   id: "hospitality_baseline",
   dataTheme: "hospitality",
-  logoSrc: "/brand/quotes-logo.png",
+  logoSrc: TENANT_ASSET_PACKS.hospitality_baseline.logoSrc,
   logoAlt: "Storefront home",
   headerChip: "Coffee Co.",
   footerStatement: "Some conversations deserve another coffee.",
@@ -50,7 +51,7 @@ const hospitalityPreset: StorefrontThemePreset = {
 const retailPreset: StorefrontThemePreset = {
   id: "generic_retail_baseline",
   dataTheme: "retail",
-  logoSrc: "/brand/flower-mark.svg",
+  logoSrc: TENANT_ASSET_PACKS.generic_retail_baseline.logoSrc,
   logoAlt: "Storefront home",
   footerStatement: "Fresh stems, arranged with care.",
   primaryNav: [
@@ -59,7 +60,7 @@ const retailPreset: StorefrontThemePreset = {
     { href: "/locations", label: "Locations", icon: "location", hint: "Find a shop" },
   ],
   tabNav: [
-    { href: "/", label: "Home", icon: "coffee" },
+    { href: "/", label: "Home", icon: "heart" },
     { href: "/menu", label: "Shop", icon: "cup" },
     { href: "/order", label: "Order", icon: "bag" },
     { href: "/locations", label: "Visit", icon: "location" },
