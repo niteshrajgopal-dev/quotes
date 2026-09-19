@@ -4,6 +4,7 @@ import { HospitalityPageIntro } from "@/components/hospitality/page-intro";
 import { ButtonLink, TravelArrow } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MenuBoard } from "@/components/menu/menu-board";
+import { MenuLocationPanel } from "@/components/menu/menu-location-panel";
 import { MenuContextNotice, MenuUnavailable } from "@/components/menu/menu-status";
 import { getServerStorefrontLocale } from "@/lib/locale/locale.server";
 import { loadPublishedMenu } from "@/lib/qos/menu.server";
@@ -103,6 +104,11 @@ export default async function MenuPage() {
       <section className="wrap pb-[clamp(48px,7vw,88px)]">
         {menuResult.status === "ok" ? (
           <div className="flex flex-col gap-6">
+            <MenuLocationPanel
+              selectedLocationPublicId={menuResult.branchPublicId}
+              branchName={menuResult.branchName}
+              menuDisplayName={menuResult.menu.displayName}
+            />
             {!isHospitality ? (
               <MenuContextNotice
                 branchName={menuResult.branchName}

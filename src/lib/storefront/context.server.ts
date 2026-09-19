@@ -13,8 +13,7 @@ import {
   type StorefrontThemePreset,
 } from "@/lib/storefront/theme-presets";
 import { readRequestHost } from "@/lib/qos/proxy.server";
-
-export const LOCATION_COOKIE_NAME = "qos.location";
+import { LOCATION_COOKIE_NAME } from "@/lib/storefront/storefront-location";
 
 export type StorefrontContext = {
   apiBaseUrl: string;

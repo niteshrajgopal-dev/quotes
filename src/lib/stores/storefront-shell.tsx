@@ -21,6 +21,7 @@ export type StorefrontShellSnapshot = {
   localeSelectorEnabled: boolean;
   supportedLocales: string[];
   defaultLocale: string;
+  selectedLocationPublicId: string;
   locations: Array<{
     locationPublicId: string;
     slug: string;

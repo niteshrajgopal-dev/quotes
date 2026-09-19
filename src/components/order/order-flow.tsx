@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageLoadState } from "@/components/ui/page-load-state";
 import { Icon } from "@/components/brand/icons";
@@ -14,6 +14,7 @@ import type { MenuLoadResult } from "@/lib/qos/menu-types";
 import { QosCartLineRow } from "@/components/cart/qos-cart-line-row";
 import { OrderSummary } from "@/components/cart/order-summary";
 import { useCart, type Fulfilment } from "@/lib/stores/cart";
+import { useSelectStorefrontLocation } from "@/lib/storefront/use-select-storefront-location";
 import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
 import { formatMoneyMinor } from "@/lib/qos/money";
 import { useHydrated } from "@/lib/use-hydrated";
@@ -36,9 +37,23 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
   const setFulfilment = useCart((state) => state.setFulfilment);
   const locationId = useCart((state) => state.locationId);
   const setLocation = useCart((state) => state.setLocation);
+  const selectLocation = useSelectStorefrontLocation();
+
+  useEffect(() => {
+    if (menuResult.status !== "ok") {
+      return;
+    }
+
+    if (locationId !== menuResult.branchPublicId) {
+      setLocation(menuResult.branchPublicId);
+    }
+  }, [locationId, menuResult, setLocation]);
+
+  const activeLocationPublicId =
+    menuResult.status === "ok" ? menuResult.branchPublicId : locationId;
 
   const chosenLocation = shell.locations.find(
-    (location) => location.locationPublicId === locationId,
+    (location) => location.locationPublicId === activeLocationPublicId,
   );
 
   const canLeaveWhere = fulfilment === "delivery" || Boolean(chosenLocation);
@@ -78,12 +93,14 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
               <h2 className="t-h1">{isRetail ? "Which shop?" : "Which café?"}</h2>
               <ul className="grid gap-4 md:grid-cols-3">
                 {shell.locations.map((location) => {
-                  const selected = locationId === location.locationPublicId;
+                  const selected = activeLocationPublicId === location.locationPublicId;
                   return (
                     <li key={location.locationPublicId}>
                       <button
                         type="button"
-                        onClick={() => setLocation(location.locationPublicId)}
+                        onClick={() =>
+                          selectLocation(location.locationPublicId, activeLocationPublicId)
+                        }
                         aria-pressed={selected}
                         className={cn(
                           "flex h-full w-full flex-col gap-3 rounded-md border p-5 text-left",
