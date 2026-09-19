@@ -9,5 +9,7 @@ export function qosPublicMediaUrl(mediaAssetId: string | null | undefined): stri
     return null;
   }
 
+  // Encode once for the path segment; the route param is decoded by Next.js
+  // before we forward a single-encoded id to upstream.
   return `/api/media/${encodeURIComponent(id)}`;
 }

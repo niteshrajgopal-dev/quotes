@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { Bean } from "@/components/brand/bean";
 import { qosPublicMediaUrl } from "@/lib/qos/media";
@@ -56,12 +55,13 @@ export function MenuProductImage({
         className,
       )}
     >
-      <Image
+      {/* Plain img: proxied /api/media bytes must not go through next/image optimizer. */}
+      <img
         src={src}
         alt={alt}
-        fill
-        className="object-cover"
-        sizes={size === "thumb" ? "64px" : "(max-width: 768px) 50vw, 220px"}
+        className="h-full w-full object-cover"
+        loading="lazy"
+        decoding="async"
         onError={() => setFailed(true)}
       />
     </span>

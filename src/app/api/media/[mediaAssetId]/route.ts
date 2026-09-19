@@ -10,11 +10,13 @@ export async function GET(
   try {
     const { mediaAssetId } = await context.params;
 
-    return proxyWithStorefrontContext(
-      request,
-      `/api/public/media/${encodeURIComponent(mediaAssetId)}`,
-      { forwardSearchParams: true, binaryResponse: true },
-    );
+    // mediaAssetId is decoded from the route param; encode once for upstream.
+    const upstreamPath = `/api/public/media/${encodeURIComponent(mediaAssetId)}`;
+
+    return proxyWithStorefrontContext(request, upstreamPath, {
+      forwardSearchParams: true,
+      binaryResponse: true,
+    });
   } catch (error) {
     return storefrontApiErrorResponse(error, "QOS media integration failed.");
   }

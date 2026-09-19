@@ -161,9 +161,14 @@ export async function proxyQosRequest({
     responseHeaders.append("Set-Cookie", rewriteSetCookieHeader(cookie));
   }
 
-  const responseBody = binaryResponse
-    ? await upstreamResponse.arrayBuffer()
-    : await upstreamResponse.text();
+  if (binaryResponse) {
+    return new NextResponse(upstreamResponse.body, {
+      status: upstreamResponse.status,
+      headers: responseHeaders,
+    });
+  }
+
+  const responseBody = await upstreamResponse.text();
 
   return new NextResponse(responseBody, {
     status: upstreamResponse.status,
