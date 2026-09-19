@@ -9,6 +9,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, EmptyState, Notice } from "@/components/ui/card";
 import { Stepper } from "@/components/ui/tabs";
 import { MenuBoard } from "@/components/menu/menu-board";
+import { MenuLocationPanel } from "@/components/menu/menu-location-panel";
 import { MenuUnavailable } from "@/components/menu/menu-status";
 import type { MenuLoadResult } from "@/lib/qos/menu-types";
 import { QosCartLineRow } from "@/components/cart/qos-cart-line-row";
@@ -98,9 +99,9 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
                     <li key={location.locationPublicId}>
                       <button
                         type="button"
-                        onClick={() =>
-                          selectLocation(location.locationPublicId, activeLocationPublicId)
-                        }
+                        onClick={() => {
+                          void selectLocation(location.locationPublicId, activeLocationPublicId);
+                        }}
                         aria-pressed={selected}
                         className={cn(
                           "flex h-full w-full flex-col gap-3 rounded-md border p-5 text-left",
@@ -179,7 +180,14 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
             ) : null}
           </div>
           {menuResult.status === "ok" ? (
-            <MenuBoard menu={menuResult.menu} openBagOnAdd />
+            <>
+              <MenuLocationPanel
+                selectedLocationPublicId={menuResult.branchPublicId}
+                branchName={menuResult.branchName}
+                menuDisplayName={menuResult.menu.displayName}
+              />
+              <MenuBoard menu={menuResult.menu} openBagOnAdd />
+            </>
           ) : (
             <MenuUnavailable result={menuResult} />
           )}

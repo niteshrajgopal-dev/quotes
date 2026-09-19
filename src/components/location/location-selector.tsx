@@ -42,7 +42,9 @@ export function LocationSelector({
             key={location.locationPublicId}
             type="button"
             aria-pressed={selected}
-            onClick={() => selectLocation(location.locationPublicId, selectedLocationPublicId)}
+            onClick={() => {
+              void selectLocation(location.locationPublicId, selectedLocationPublicId);
+            }}
             className={cn(
               "inline-flex min-h-9 items-center gap-2 rounded-full border px-3 font-medium transition-colors duration-fast ease-brand no-tap-highlight",
               selected

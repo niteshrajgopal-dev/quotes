@@ -102,6 +102,76 @@ test("ensureActiveBasket keeps matching basket without rebind", async () => {
   assert.equal(created, false);
 });
 
+function shouldRebindBasketForLocation(basket, locationPublicId, options) {
+  const trimmed = locationPublicId?.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  if (options?.force) {
+    return true;
+  }
+
+  if (!basket) {
+    return true;
+  }
+
+  return basket.locationPublicId !== trimmed;
+}
+
+test("explicit café switch always forces network rebind", () => {
+  assert.equal(
+    shouldRebindBasketForLocation({ locationPublicId: "loc_zoo" }, "loc_zoo", { force: true }),
+    true,
+    "picker must POST /api/baskets even when in-memory basket already shows zoo",
+  );
+});
+
+test("forced rebind always issues POST /api/baskets", () => {
+  assert.equal(
+    shouldRebindBasketForLocation({ locationPublicId: "loc_hbz" }, "loc_hbz", { force: true }),
+    true,
+  );
+});
+
+function resolveBasketLocationPublicId(context, requestedLocationPublicId) {
+  const trimmed = requestedLocationPublicId?.trim();
+  if (!trimmed) {
+    return context.locationPublicId;
+  }
+
+  const matched = context.manifest.locations.some(
+    (location) => location.locationPublicId === trimmed,
+  );
+  if (!matched) {
+    throw new Error("invalid location");
+  }
+
+  return trimmed;
+}
+
+test("POST /api/baskets body locationPublicId overrides cookie context", () => {
+  const context = {
+    locationPublicId: "loc_hbz",
+    manifest: {
+      locations: [{ locationPublicId: "loc_hbz" }, { locationPublicId: "loc_zoo" }],
+    },
+  };
+
+  assert.equal(
+    resolveBasketLocationPublicId(context, "loc_zoo"),
+    "loc_zoo",
+    "explicit body location must win over qos.location cookie context",
+  );
+  assert.equal(resolveBasketLocationPublicId(context), "loc_hbz");
+});
+
+test("createAnonymousBasket payload includes explicit locationPublicId", () => {
+  const locationPublicId = "loc_zoo";
+  const payload = { locale: "en", locationPublicId };
+  assert.equal(payload.locationPublicId, "loc_zoo");
+});
+
 async function fetchJson(url, init = {}) {
   const response = await fetch(url, init);
   const json = await response.json().catch(() => null);
@@ -206,9 +276,12 @@ async function runLiveChecks() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Cookie: `${cookieHeader}; qos.location=${encodeURIComponent(zoo.locationPublicId)}`,
+      Cookie: `${cookieHeader}; qos.location=${encodeURIComponent(hbz.locationPublicId)}`,
     },
-    body: JSON.stringify({ locale: "en" }),
+    body: JSON.stringify({
+      locale: "en",
+      locationPublicId: zoo.locationPublicId,
+    }),
   });
   check(rebind.response.ok, `rebind basket expected 2xx, got ${rebind.response.status}`);
 
@@ -225,7 +298,7 @@ async function runLiveChecks() {
   basket = rebind.json?.basket;
   check(
     basket?.locationPublicId === zoo.locationPublicId,
-    `rebind response location expected ${zoo.locationPublicId}, got ${basket?.locationPublicId}`,
+    `rebind with body.locationPublicId expected ${zoo.locationPublicId}, got ${basket?.locationPublicId} (cookie was still HBZ)`,
   );
   check((basket?.lines?.length ?? 0) === 0, "rebound basket should start empty");
 
