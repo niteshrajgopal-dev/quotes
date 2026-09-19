@@ -2,6 +2,7 @@ import { qosFetchJson, QosRequestError } from "@/lib/qos/api-client";
 import type {
   AccountBasketResponse,
   AnonymousBasketResponse,
+  BasketContextResponse,
 } from "@/lib/qos/types";
 
 const BASKET_QUERY = "?contractVersion=1";
@@ -128,7 +129,26 @@ export function isRecoverableAnonymousBasketError(error: unknown) {
   );
 }
 
-export async function ensureActiveBasket(locale: "en" | "ar" = "en") {
+export function basketMatchesSelectedLocation(
+  basket: BasketContextResponse,
+  locationPublicId: string | null | undefined,
+) {
+  if (!locationPublicId) {
+    return true;
+  }
+
+  return basket.locationPublicId === locationPublicId;
+}
+
+export async function rebindAnonymousBasketForLocation(locale: "en" | "ar" = "en") {
+  const created = await createAnonymousBasket(locale);
+  return { basket: created.basket, signedIn: false as const };
+}
+
+export async function ensureActiveBasket(
+  locale: "en" | "ar" = "en",
+  locationPublicId?: string | null,
+) {
   const signedIn = await fetchCurrentCustomerSignedIn();
 
   if (signedIn) {
@@ -138,11 +158,14 @@ export async function ensureActiveBasket(locale: "en" | "ar" = "en") {
 
   try {
     const response = await fetchAnonymousBasket();
+    if (!basketMatchesSelectedLocation(response.basket, locationPublicId)) {
+      return rebindAnonymousBasketForLocation(locale);
+    }
+
     return { basket: response.basket, signedIn: false as const };
   } catch (error) {
     if (isRecoverableAnonymousBasketError(error)) {
-      const created = await createAnonymousBasket(locale);
-      return { basket: created.basket, signedIn: false as const };
+      return rebindAnonymousBasketForLocation(locale);
     }
     throw error;
   }

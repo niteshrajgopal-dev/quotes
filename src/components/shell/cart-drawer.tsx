@@ -74,8 +74,8 @@ export function CartDrawer() {
         <p className="text-[14px] text-muted">Loading your QOS basket…</p>
       ) : null}
 
-      {error && !basket ? (
-        <Notice tone="error" title="Basket unavailable">
+      {error ? (
+        <Notice tone="error" title={basket ? "Basket update issue" : "Basket unavailable"}>
           {error}
         </Notice>
       ) : null}

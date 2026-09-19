@@ -3,10 +3,13 @@
 import { create } from "zustand";
 
 import { QosRequestError } from "@/lib/qos/api-client";
+import { readClientStorefrontLocation } from "@/lib/storefront/storefront-location";
 import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import {
+  basketMatchesSelectedLocation,
   ensureActiveBasket,
   fetchCurrentCustomerSignedIn,
+  rebindAnonymousBasketForLocation,
   removeAccountBasketLine,
   removeAnonymousBasketLine,
   upsertAccountBasketLine,
@@ -23,12 +26,13 @@ type QosBasketState = {
   status: BasketStatus;
   error: string | null;
   productLabels: Record<string, string>;
-  hydrate: (locale?: "en" | "ar") => Promise<void>;
+  hydrate: (locale?: "en" | "ar", locationPublicId?: string | null) => Promise<void>;
+  rebindForSelectedLocation: (locationPublicId: string) => Promise<void>;
   upsertProduct: (input: {
     productPublicId: string;
     displayName: string;
     quantity?: number;
-  }) => Promise<void>;
+  }) => Promise<boolean>;
   setLineQuantity: (linePublicId: string, quantity: number) => Promise<void>;
   removeLine: (linePublicId: string) => Promise<void>;
   rememberProductLabel: (productPublicId: string, displayName: string) => void;
@@ -48,16 +52,29 @@ function applyBasket(
   });
 }
 
+function formatBasketMutationError(error: unknown) {
+  if (error instanceof QosRequestError) {
+    if (error.statusCode === 400 && error.field === "productPublicId") {
+      return "This item isn't on the menu for your selected café. Switch branch or refresh your bag.";
+    }
+
+    return error.message;
+  }
+
+  return error instanceof Error ? error.message : "Basket update failed.";
+}
+
 async function mutateBasket(
   get: () => QosBasketState,
   set: (partial: Partial<QosBasketState>) => void,
   mutation: () => Promise<BasketContextResponse>,
-) {
+): Promise<boolean> {
   set({ status: "mutating", error: null });
 
   try {
     const basket = await mutation();
     applyBasket(set, basket, get().signedIn);
+    return true;
   } catch (error) {
     if (error instanceof QosRequestError && error.statusCode === 409) {
       await get().hydrate();
@@ -65,13 +82,14 @@ async function mutateBasket(
         status: "error",
         error: "Basket changed elsewhere. Review the updated bag and try again.",
       });
-      return;
+      return false;
     }
 
     set({
       status: get().basket ? "ready" : "error",
-      error: error instanceof Error ? error.message : "Basket update failed.",
+      error: formatBasketMutationError(error),
     });
+    return false;
   }
 }
 
@@ -82,14 +100,16 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
   error: null,
   productLabels: {},
 
-  hydrate: async (locale) => {
+  hydrate: async (locale, locationPublicId) => {
     set({ status: "loading", error: null });
 
     const activeLocale = locale ?? useStorefrontLocale.getState().locale ?? "en";
+    const activeLocation =
+      locationPublicId ?? readClientStorefrontLocation();
 
     try {
       const signedIn = await fetchCurrentCustomerSignedIn();
-      const result = await ensureActiveBasket(activeLocale);
+      const result = await ensureActiveBasket(activeLocale, activeLocation);
       applyBasket(set, result.basket, signedIn);
     } catch (error) {
       set({
@@ -97,6 +117,41 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
         signedIn: false,
         status: "error",
         error: error instanceof Error ? error.message : "Unable to load basket.",
+      });
+    }
+  },
+
+  rebindForSelectedLocation: async (locationPublicId) => {
+    const trimmed = locationPublicId.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    set({ status: "loading", error: null, productLabels: {} });
+
+    const activeLocale = useStorefrontLocale.getState().locale ?? "en";
+
+    try {
+      const signedIn = await fetchCurrentCustomerSignedIn();
+      if (signedIn) {
+        await get().hydrate(activeLocale, trimmed);
+        return;
+      }
+
+      const current = get().basket;
+      if (current && basketMatchesSelectedLocation(current, trimmed)) {
+        applyBasket(set, current, false);
+        return;
+      }
+
+      const result = await rebindAnonymousBasketForLocation(activeLocale);
+      applyBasket(set, result.basket, false);
+    } catch (error) {
+      set({
+        basket: null,
+        signedIn: false,
+        status: "error",
+        error: error instanceof Error ? error.message : "Unable to rebind basket.",
       });
     }
   },
@@ -119,13 +174,22 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
       basket = get().basket;
     }
     if (!basket) {
-      return;
+      return false;
+    }
+
+    const selectedLocation = readClientStorefrontLocation();
+    if (!get().signedIn && !basketMatchesSelectedLocation(basket, selectedLocation)) {
+      await get().rebindForSelectedLocation(selectedLocation ?? basket.locationPublicId);
+      basket = get().basket;
+      if (!basket) {
+        return false;
+      }
     }
 
     const existingLine = basket.lines.find((line) => line.productPublicId === productPublicId);
     const nextQuantity = existingLine ? existingLine.quantity + quantity : quantity;
 
-    await mutateBasket(get, set, async () => {
+    const succeeded = await mutateBasket(get, set, async () => {
       const signedIn = get().signedIn;
       const current = get().basket!;
       const mutationId = crypto.randomUUID();
@@ -148,6 +212,32 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
       });
       return response.basket;
     });
+
+    if (!succeeded && !get().signedIn && selectedLocation) {
+      const current = get().basket;
+      if (current && !basketMatchesSelectedLocation(current, selectedLocation)) {
+        await get().rebindForSelectedLocation(selectedLocation);
+        const rebound = get().basket;
+        if (!rebound) {
+          return false;
+        }
+
+        const reboundLine = rebound.lines.find((line) => line.productPublicId === productPublicId);
+        const reboundQuantity = reboundLine ? reboundLine.quantity + quantity : quantity;
+
+        return mutateBasket(get, set, async () => {
+          const response = await upsertAnonymousBasketLine({
+            productPublicId,
+            quantity: reboundQuantity,
+            expectedVersion: rebound.version,
+            mutationId: crypto.randomUUID(),
+          });
+          return response.basket;
+        });
+      }
+    }
+
+    return succeeded;
   },
 
   setLineQuantity: async (linePublicId, quantity) => {
