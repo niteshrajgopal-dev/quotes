@@ -11,6 +11,7 @@ import { useCart } from "@/lib/stores/cart";
 import { useQosBasket } from "@/lib/stores/qos-basket";
 import { formatMoneyMinor } from "@/lib/qos/money";
 import type { PublicMenuProduct, PublicMenuResponse } from "@/lib/qos/menu-types";
+import { MenuProductImage } from "@/components/menu/menu-product-image";
 import { cn } from "@/lib/cn";
 
 type CategoryFilter = "all" | string;
@@ -183,10 +184,16 @@ function MenuRow({
   return (
     <li
       className={cn(
-        "group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-cream/14 px-2 py-5 transition-[padding,background] duration-350 ease-[cubic-bezier(.2,.7,.2,1)] last:border-b-0 hover:bg-cream/3 hover:pl-5 md:px-2",
+        "group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-cream/14 px-2 py-5 transition-[padding,background] duration-350 ease-[cubic-bezier(.2,.7,.2,1)] last:border-b-0 hover:bg-cream/3 hover:pl-5 md:px-2",
         unavailable && "opacity-60",
       )}
     >
+      <MenuProductImage
+        mediaAssetId={product.mediaAssetId}
+        alt={product.displayName}
+        size="thumb"
+      />
+
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <h4 className="font-serif text-xl tracking-[-0.02em]">{product.displayName}</h4>

@@ -4,6 +4,7 @@ import { proxyQosRequest } from "@/lib/qos/proxy.server";
 type ProxyWithStorefrontOptions = {
   forwardSearchParams?: boolean;
   includeStorefrontContext?: boolean;
+  binaryResponse?: boolean;
 };
 
 export async function proxyWithStorefrontContext(
@@ -18,6 +19,7 @@ export async function proxyWithStorefrontContext(
     request,
     forwardSearchParams: options.forwardSearchParams ?? false,
     includeStorefrontContext: options.includeStorefrontContext ?? false,
+    binaryResponse: options.binaryResponse ?? false,
     storefrontContext: context,
   });
 }

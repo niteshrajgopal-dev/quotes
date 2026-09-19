@@ -10,6 +10,8 @@ type ProxyQosRequestOptions = {
   includeStorefrontContext?: boolean;
   forwardSearchParams?: boolean;
   storefrontContext?: StorefrontContext;
+  /** Pass image/binary bodies through without UTF-8 text decoding. */
+  binaryResponse?: boolean;
 };
 
 function rewriteSetCookieHeader(cookie: string) {
@@ -124,6 +126,7 @@ export async function proxyQosRequest({
   includeStorefrontContext = false,
   forwardSearchParams = false,
   storefrontContext,
+  binaryResponse = false,
 }: ProxyQosRequestOptions) {
   const upstreamUrl = await buildUpstreamUrl(
     upstreamPath,
@@ -156,6 +159,13 @@ export async function proxyQosRequest({
 
   for (const cookie of upstreamResponse.headers.getSetCookie()) {
     responseHeaders.append("Set-Cookie", rewriteSetCookieHeader(cookie));
+  }
+
+  if (binaryResponse) {
+    return new NextResponse(upstreamResponse.body, {
+      status: upstreamResponse.status,
+      headers: responseHeaders,
+    });
   }
 
   const responseBody = await upstreamResponse.text();
