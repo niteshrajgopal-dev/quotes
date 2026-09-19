@@ -66,14 +66,25 @@ export function MenuBoard({
       productPublicId: product.productPublicId,
       displayName: product.displayName,
     })
-      .then(() => {
-        toast({
-          title: `${product.displayName} added`,
-          body: "Saved to your QOS basket.",
-        });
-        if (openBagOnAdd) {
-          setDrawerOpen(true);
+      .then((added) => {
+        if (added) {
+          toast({
+            title: `${product.displayName} added`,
+            body: "Saved to your QOS basket.",
+          });
+          if (openBagOnAdd) {
+            setDrawerOpen(true);
+          }
+          return;
         }
+
+        toast({
+          title: `Couldn't add ${product.displayName}`,
+          body:
+            useQosBasket.getState().error ??
+            "This item may not be on the menu for your selected café.",
+          tone: "error",
+        });
       })
       .finally(() => setAddingId(null));
   };
