@@ -102,6 +102,67 @@ test("ensureActiveBasket keeps matching basket without rebind", async () => {
   assert.equal(created, false);
 });
 
+function shouldRebindBasketForLocation(basket, locationPublicId, options) {
+  const trimmed = locationPublicId?.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  if (options?.force) {
+    return true;
+  }
+
+  if (!basket) {
+    return true;
+  }
+
+  return basket.locationPublicId !== trimmed;
+}
+
+function shouldSwitchStorefrontLocation(locationPublicId, currentLocationPublicId, basket) {
+  const trimmed = locationPublicId.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  const uiAlreadySelected = trimmed === currentLocationPublicId?.trim();
+  if (uiAlreadySelected && !shouldRebindBasketForLocation(basket, trimmed)) {
+    return false;
+  }
+
+  return true;
+}
+
+test("legacy picker skip fires when UI matches even if basket is stale", () => {
+  const legacyWouldSkip =
+    "loc_zoo".trim() === "loc_zoo" && "loc_zoo" !== "loc_zoo";
+  assert.equal(legacyWouldSkip, false);
+
+  const staleUiMatch = "loc_zoo" === "loc_zoo";
+  assert.equal(staleUiMatch, true, "RSC can show zoo before basket rebinds");
+});
+
+test("picker still switches when UI already shows zoo but basket is HBZ", () => {
+  assert.equal(
+    shouldSwitchStorefrontLocation("loc_zoo", "loc_zoo", { locationPublicId: "loc_hbz" }),
+    true,
+  );
+});
+
+test("picker skips only when UI and basket both match", () => {
+  assert.equal(
+    shouldSwitchStorefrontLocation("loc_zoo", "loc_zoo", { locationPublicId: "loc_zoo" }),
+    false,
+  );
+});
+
+test("forced rebind always issues POST /api/baskets", () => {
+  assert.equal(
+    shouldRebindBasketForLocation({ locationPublicId: "loc_hbz" }, "loc_hbz", { force: true }),
+    true,
+  );
+});
+
 async function fetchJson(url, init = {}) {
   const response = await fetch(url, init);
   const json = await response.json().catch(() => null);

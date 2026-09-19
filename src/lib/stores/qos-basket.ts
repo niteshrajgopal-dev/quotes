@@ -8,6 +8,7 @@ import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import {
   basketMatchesSelectedLocation,
   ensureActiveBasket,
+  shouldRebindBasketForLocation,
   fetchCurrentCustomerSignedIn,
   rebindAnonymousBasketForLocation,
   removeAccountBasketLine,
@@ -27,7 +28,10 @@ type QosBasketState = {
   error: string | null;
   productLabels: Record<string, string>;
   hydrate: (locale?: "en" | "ar", locationPublicId?: string | null) => Promise<void>;
-  rebindForSelectedLocation: (locationPublicId: string) => Promise<void>;
+  rebindForSelectedLocation: (
+    locationPublicId: string,
+    options?: { force?: boolean },
+  ) => Promise<void>;
   upsertProduct: (input: {
     productPublicId: string;
     displayName: string;
@@ -121,9 +125,17 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
     }
   },
 
-  rebindForSelectedLocation: async (locationPublicId) => {
+  rebindForSelectedLocation: async (locationPublicId, options) => {
     const trimmed = locationPublicId.trim();
     if (!trimmed) {
+      return;
+    }
+
+    const current = get().basket;
+    if (!shouldRebindBasketForLocation(current, trimmed, options)) {
+      if (current) {
+        applyBasket(set, current, get().signedIn);
+      }
       return;
     }
 
@@ -135,12 +147,6 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
       const signedIn = await fetchCurrentCustomerSignedIn();
       if (signedIn) {
         await get().hydrate(activeLocale, trimmed);
-        return;
-      }
-
-      const current = get().basket;
-      if (current && basketMatchesSelectedLocation(current, trimmed)) {
-        applyBasket(set, current, false);
         return;
       }
 
@@ -179,7 +185,9 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
 
     const selectedLocation = readClientStorefrontLocation();
     if (!get().signedIn && !basketMatchesSelectedLocation(basket, selectedLocation)) {
-      await get().rebindForSelectedLocation(selectedLocation ?? basket.locationPublicId);
+      await get().rebindForSelectedLocation(selectedLocation ?? basket.locationPublicId, {
+        force: true,
+      });
       basket = get().basket;
       if (!basket) {
         return false;
@@ -216,7 +224,7 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
     if (!succeeded && !get().signedIn && selectedLocation) {
       const current = get().basket;
       if (current && !basketMatchesSelectedLocation(current, selectedLocation)) {
-        await get().rebindForSelectedLocation(selectedLocation);
+        await get().rebindForSelectedLocation(selectedLocation, { force: true });
         const rebound = get().basket;
         if (!rebound) {
           return false;

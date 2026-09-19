@@ -140,6 +140,27 @@ export function basketMatchesSelectedLocation(
   return basket.locationPublicId === locationPublicId;
 }
 
+export function shouldRebindBasketForLocation(
+  basket: Pick<BasketContextResponse, "locationPublicId"> | null,
+  locationPublicId: string | null | undefined,
+  options?: { force?: boolean },
+) {
+  const trimmed = locationPublicId?.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  if (options?.force) {
+    return true;
+  }
+
+  if (!basket) {
+    return true;
+  }
+
+  return basket.locationPublicId !== trimmed;
+}
+
 export async function rebindAnonymousBasketForLocation(locale: "en" | "ar" = "en") {
   const created = await createAnonymousBasket(locale);
   return { basket: created.basket, signedIn: false as const };

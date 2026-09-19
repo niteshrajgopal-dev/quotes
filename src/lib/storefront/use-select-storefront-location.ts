@@ -3,27 +3,21 @@
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
-import { writeClientStorefrontLocation } from "@/lib/storefront/storefront-location";
-import { useCart } from "@/lib/stores/cart";
-import { useQosBasket } from "@/lib/stores/qos-basket";
+import { switchStorefrontLocation } from "@/lib/storefront/switch-storefront-location";
 
 export function useSelectStorefrontLocation() {
   const router = useRouter();
-  const setLocation = useCart((state) => state.setLocation);
-  const rebindForSelectedLocation = useQosBasket((state) => state.rebindForSelectedLocation);
 
   return useCallback(
-    (locationPublicId: string, currentLocationPublicId?: string | null) => {
-      const trimmed = locationPublicId.trim();
-      if (!trimmed || trimmed === currentLocationPublicId) {
-        return;
+    async (locationPublicId: string, currentLocationPublicId?: string | null) => {
+      const switched = await switchStorefrontLocation(
+        locationPublicId,
+        currentLocationPublicId,
+      );
+      if (switched) {
+        router.refresh();
       }
-
-      writeClientStorefrontLocation(trimmed);
-      setLocation(trimmed);
-      void rebindForSelectedLocation(trimmed);
-      router.refresh();
     },
-    [rebindForSelectedLocation, router, setLocation],
+    [router],
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { StorefrontBasketLocationSync } from "@/components/qos/storefront-basket-location-sync";
 import { useQosBasket } from "@/lib/stores/qos-basket";
 import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 
@@ -18,5 +19,10 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
     void hydrate(locale);
   }, [hydrate, locale, localeHydrated]);
 
-  return children;
+  return (
+    <>
+      <StorefrontBasketLocationSync />
+      {children}
+    </>
+  );
 }
