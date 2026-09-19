@@ -119,40 +119,11 @@ function shouldRebindBasketForLocation(basket, locationPublicId, options) {
   return basket.locationPublicId !== trimmed;
 }
 
-function shouldSwitchStorefrontLocation(locationPublicId, currentLocationPublicId, basket) {
-  const trimmed = locationPublicId.trim();
-  if (!trimmed) {
-    return false;
-  }
-
-  const uiAlreadySelected = trimmed === currentLocationPublicId?.trim();
-  if (uiAlreadySelected && !shouldRebindBasketForLocation(basket, trimmed)) {
-    return false;
-  }
-
-  return true;
-}
-
-test("legacy picker skip fires when UI matches even if basket is stale", () => {
-  const legacyWouldSkip =
-    "loc_zoo".trim() === "loc_zoo" && "loc_zoo" !== "loc_zoo";
-  assert.equal(legacyWouldSkip, false);
-
-  const staleUiMatch = "loc_zoo" === "loc_zoo";
-  assert.equal(staleUiMatch, true, "RSC can show zoo before basket rebinds");
-});
-
-test("picker still switches when UI already shows zoo but basket is HBZ", () => {
+test("explicit café switch always forces network rebind", () => {
   assert.equal(
-    shouldSwitchStorefrontLocation("loc_zoo", "loc_zoo", { locationPublicId: "loc_hbz" }),
+    shouldRebindBasketForLocation({ locationPublicId: "loc_zoo" }, "loc_zoo", { force: true }),
     true,
-  );
-});
-
-test("picker skips only when UI and basket both match", () => {
-  assert.equal(
-    shouldSwitchStorefrontLocation("loc_zoo", "loc_zoo", { locationPublicId: "loc_zoo" }),
-    false,
+    "picker must POST /api/baskets even when in-memory basket already shows zoo",
   );
 });
 
@@ -161,6 +132,44 @@ test("forced rebind always issues POST /api/baskets", () => {
     shouldRebindBasketForLocation({ locationPublicId: "loc_hbz" }, "loc_hbz", { force: true }),
     true,
   );
+});
+
+function resolveBasketLocationPublicId(context, requestedLocationPublicId) {
+  const trimmed = requestedLocationPublicId?.trim();
+  if (!trimmed) {
+    return context.locationPublicId;
+  }
+
+  const matched = context.manifest.locations.some(
+    (location) => location.locationPublicId === trimmed,
+  );
+  if (!matched) {
+    throw new Error("invalid location");
+  }
+
+  return trimmed;
+}
+
+test("POST /api/baskets body locationPublicId overrides cookie context", () => {
+  const context = {
+    locationPublicId: "loc_hbz",
+    manifest: {
+      locations: [{ locationPublicId: "loc_hbz" }, { locationPublicId: "loc_zoo" }],
+    },
+  };
+
+  assert.equal(
+    resolveBasketLocationPublicId(context, "loc_zoo"),
+    "loc_zoo",
+    "explicit body location must win over qos.location cookie context",
+  );
+  assert.equal(resolveBasketLocationPublicId(context), "loc_hbz");
+});
+
+test("createAnonymousBasket payload includes explicit locationPublicId", () => {
+  const locationPublicId = "loc_zoo";
+  const payload = { locale: "en", locationPublicId };
+  assert.equal(payload.locationPublicId, "loc_zoo");
 });
 
 async function fetchJson(url, init = {}) {
@@ -267,9 +276,12 @@ async function runLiveChecks() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Cookie: `${cookieHeader}; qos.location=${encodeURIComponent(zoo.locationPublicId)}`,
+      Cookie: `${cookieHeader}; qos.location=${encodeURIComponent(hbz.locationPublicId)}`,
     },
-    body: JSON.stringify({ locale: "en" }),
+    body: JSON.stringify({
+      locale: "en",
+      locationPublicId: zoo.locationPublicId,
+    }),
   });
   check(rebind.response.ok, `rebind basket expected 2xx, got ${rebind.response.status}`);
 
@@ -286,7 +298,7 @@ async function runLiveChecks() {
   basket = rebind.json?.basket;
   check(
     basket?.locationPublicId === zoo.locationPublicId,
-    `rebind response location expected ${zoo.locationPublicId}, got ${basket?.locationPublicId}`,
+    `rebind with body.locationPublicId expected ${zoo.locationPublicId}, got ${basket?.locationPublicId} (cookie was still HBZ)`,
   );
   check((basket?.lines?.length ?? 0) === 0, "rebound basket should start empty");
 

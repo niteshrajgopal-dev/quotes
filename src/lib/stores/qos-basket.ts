@@ -150,7 +150,7 @@ export const useQosBasket = create<QosBasketState>((set, get) => ({
         return;
       }
 
-      const result = await rebindAnonymousBasketForLocation(activeLocale);
+      const result = await rebindAnonymousBasketForLocation(activeLocale, trimmed);
       applyBasket(set, result.basket, false);
     } catch (error) {
       set({

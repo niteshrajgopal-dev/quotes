@@ -20,13 +20,26 @@ export async function fetchAnonymousBasket() {
   return qosFetchJson<AnonymousBasketResponse>(`/api/baskets/current${BASKET_QUERY}`);
 }
 
-export async function createAnonymousBasket(locale: "en" | "ar" = "en") {
+export type CreateAnonymousBasketInput = {
+  locale?: "en" | "ar";
+  locationPublicId?: string | null;
+};
+
+export async function createAnonymousBasket(input: CreateAnonymousBasketInput = {}) {
+  const locale = input.locale ?? "en";
+  const payload: { locale: "en" | "ar"; locationPublicId?: string } = { locale };
+  const locationPublicId = input.locationPublicId?.trim();
+
+  if (locationPublicId) {
+    payload.locationPublicId = locationPublicId;
+  }
+
   return qosFetchJson<AnonymousBasketResponse>(`/api/baskets${BASKET_QUERY}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ locale }),
+    body: JSON.stringify(payload),
   });
 }
 
@@ -161,8 +174,11 @@ export function shouldRebindBasketForLocation(
   return basket.locationPublicId !== trimmed;
 }
 
-export async function rebindAnonymousBasketForLocation(locale: "en" | "ar" = "en") {
-  const created = await createAnonymousBasket(locale);
+export async function rebindAnonymousBasketForLocation(
+  locale: "en" | "ar" = "en",
+  locationPublicId?: string | null,
+) {
+  const created = await createAnonymousBasket({ locale, locationPublicId });
   return { basket: created.basket, signedIn: false as const };
 }
 
@@ -180,13 +196,13 @@ export async function ensureActiveBasket(
   try {
     const response = await fetchAnonymousBasket();
     if (!basketMatchesSelectedLocation(response.basket, locationPublicId)) {
-      return rebindAnonymousBasketForLocation(locale);
+      return rebindAnonymousBasketForLocation(locale, locationPublicId);
     }
 
     return { basket: response.basket, signedIn: false as const };
   } catch (error) {
     if (isRecoverableAnonymousBasketError(error)) {
-      return rebindAnonymousBasketForLocation(locale);
+      return rebindAnonymousBasketForLocation(locale, locationPublicId);
     }
     throw error;
   }
