@@ -121,6 +121,13 @@ export async function removeAccountBasketLine(
   );
 }
 
+export function isRecoverableAnonymousBasketError(error: unknown) {
+  return (
+    error instanceof QosRequestError &&
+    (error.statusCode === 401 || error.statusCode === 404 || error.statusCode === 410)
+  );
+}
+
 export async function ensureActiveBasket(locale: "en" | "ar" = "en") {
   const signedIn = await fetchCurrentCustomerSignedIn();
 
@@ -133,7 +140,7 @@ export async function ensureActiveBasket(locale: "en" | "ar" = "en") {
     const response = await fetchAnonymousBasket();
     return { basket: response.basket, signedIn: false as const };
   } catch (error) {
-    if (error instanceof QosRequestError && (error.statusCode === 404 || error.statusCode === 401)) {
+    if (isRecoverableAnonymousBasketError(error)) {
       const created = await createAnonymousBasket(locale);
       return { basket: created.basket, signedIn: false as const };
     }
