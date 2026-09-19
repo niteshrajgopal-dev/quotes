@@ -37,6 +37,7 @@ export function toStorefrontShellSnapshot(
     localeSelectorEnabled: context.manifest.features.localeSelector,
     supportedLocales: context.manifest.supportedLocales,
     defaultLocale: context.manifest.defaultLocale,
+    selectedLocationPublicId: context.locationPublicId,
     locations: context.manifest.locations,
     themeCssVariables: themeTokens
       ? buildManifestThemeCssVariables(themeTokens)

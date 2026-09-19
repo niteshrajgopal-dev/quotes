@@ -1,4 +1,5 @@
 import { resolveStorefrontContextFromHeaders } from "@/lib/storefront/context.server";
+import { resolvePublishedCollection } from "@/lib/storefront/storefront-location";
 import { readQosApiBaseUrl } from "@/lib/qos/config.server";
 import type {
   MenuLoadResult,
@@ -31,8 +32,9 @@ export async function loadPublishedMenu(
       (location) => location.locationPublicId === context.locationPublicId,
     );
 
-    const collection = context.manifest.publishedCollections.find(
-      (entry) => entry.locationPublicId === context.locationPublicId,
+    const collection = resolvePublishedCollection(
+      context.manifest.publishedCollections,
+      context.locationPublicId,
     );
 
     const publicMenuKey = collection?.publicMenuKey?.trim();
