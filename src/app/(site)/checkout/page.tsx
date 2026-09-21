@@ -13,7 +13,9 @@ import { useHydrated } from "@/lib/use-hydrated";
 export default function CheckoutPage() {
   const hydrated = useHydrated();
   const basket = useQosBasket((state) => state.basket);
+  const basketStatus = useQosBasket((state) => state.status);
   const itemCount = useQosBasket(selectBasketItemCount);
+  const basketLoading = basketStatus === "loading" || basketStatus === "mutating";
 
   return (
     <section className="wrap pb-[clamp(48px,7vw,88px)]">
@@ -35,7 +37,7 @@ export default function CheckoutPage() {
         </ol>
       </nav>
 
-      {!hydrated ? (
+      {!hydrated || basketLoading ? (
         <PageLoadState label="Loading your bag…" />
       ) : itemCount === 0 || !basket ? (
         <EmptyState

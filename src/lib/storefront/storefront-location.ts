@@ -14,6 +14,13 @@ export function readClientStorefrontLocation(): string | null {
   return value || null;
 }
 
+/** Client branch selection: explicit qos.location cookie, else optional shell fallback. */
+export function resolveClientStorefrontLocation(
+  shellFallback?: string | null,
+): string | null {
+  return readClientStorefrontLocation() ?? shellFallback?.trim() ?? null;
+}
+
 export function writeClientStorefrontLocation(locationPublicId: string) {
   const trimmed = locationPublicId.trim();
   if (!trimmed) {
