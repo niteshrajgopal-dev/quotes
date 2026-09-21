@@ -16,7 +16,6 @@ import { useQosBasket } from "@/lib/stores/qos-basket";
 
 export function QosCheckoutHandoff() {
   const basket = useQosBasket((state) => state.basket);
-  const hydrate = useQosBasket((state) => state.hydrate);
   const signedIn = useCustomerSession(selectCustomerSignedIn);
   const displayName = useCustomerSession(selectCustomerDisplayName);
   const sessionStatus = useCustomerSession((state) => state.status);
@@ -33,7 +32,6 @@ export function QosCheckoutHandoff() {
       setError(null);
 
       try {
-        await hydrate();
         await refreshCustomer();
       } finally {
         if (!cancelled) {
@@ -47,7 +45,7 @@ export function QosCheckoutHandoff() {
     return () => {
       cancelled = true;
     };
-  }, [hydrate, refreshCustomer]);
+  }, [refreshCustomer]);
 
   async function onStartCheckout() {
     if (!basket || basket.lines.length === 0) {

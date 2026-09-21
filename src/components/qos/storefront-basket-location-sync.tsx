@@ -11,6 +11,10 @@ import { useHydrated } from "@/lib/use-hydrated";
 /**
  * Keeps the anonymous basket aligned with qos.location after RSC refresh or
  * any path that updates the branch cookie/menu without going through the picker.
+ *
+ * Uses a non-forced rebind so a full reload does not POST a fresh empty basket
+ * when the cookie and current basket already share the same branch. Only the
+ * explicit qos.location cookie triggers sync — shell defaults must not wipe bags.
  */
 export function StorefrontBasketLocationSync() {
   const shell = useStorefrontShell();
@@ -26,9 +30,8 @@ export function StorefrontBasketLocationSync() {
       return;
     }
 
-    const selectedLocation =
-      readClientStorefrontLocation() ?? shell.selectedLocationPublicId;
-    if (!shouldRebindBasketForLocation(basket, selectedLocation)) {
+    const cookieLocation = readClientStorefrontLocation();
+    if (!cookieLocation || !shouldRebindBasketForLocation(basket, cookieLocation)) {
       return;
     }
 
@@ -37,7 +40,7 @@ export function StorefrontBasketLocationSync() {
     }
 
     rebindingRef.current = true;
-    void rebindForSelectedLocation(selectedLocation, { force: true }).finally(() => {
+    void rebindForSelectedLocation(cookieLocation).finally(() => {
       rebindingRef.current = false;
     });
   }, [

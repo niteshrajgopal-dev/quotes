@@ -17,6 +17,7 @@
     "verify:qos-91": "node scripts/verify-qos-91.mjs",
     "verify:qos-93": "node scripts/verify-qos-93.mjs",
     "verify:qos-94": "node scripts/verify-qos-94.mjs",
+    "verify:qos-101": "node scripts/verify-qos-101.mjs",
     "verify:qos-97": "node scripts/verify-qos-97.mjs",
     "verify:storefront-location": "node scripts/verify-storefront-location.mjs",
     "verify:sticky": "node scripts/check-sticky.mjs"
