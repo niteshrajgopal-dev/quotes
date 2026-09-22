@@ -59,3 +59,8 @@ export function useStorefrontShell() {
 export function useOptionalStorefrontShell() {
   return useContext(StorefrontShellContext);
 }
+
+/** SSR-safe locale from the shell snapshot (cookie on the server). */
+export function useStorefrontChromeLocale(): StorefrontLocale {
+  return useStorefrontShell().locale;
+}

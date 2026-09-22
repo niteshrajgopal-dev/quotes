@@ -321,48 +321,59 @@ export function useHospitalityLandingMotion(
           const ft = qa("[data-feature-title]");
           const fc = qa("[data-feature-copy]");
           const ings = qa("[data-feature-ing]");
-          gsap.set(ft.slice(1), { yPercent: 110 });
-          gsap.set(fc.slice(1), { opacity: 0, y: 16 });
 
-          const f = gsap.timeline({
-            scrollTrigger: {
-              trigger: "[data-feature]",
-              start: "top top",
-              end: () => `+=${pinLen(window.innerHeight * 2.6)}`,
-              pin: true,
-              scrub: 0.6,
-              anticipatePin: 1,
-            },
-          });
+          if (ft.length > 0 && fc.length > 0) {
+            gsap.set(ft.slice(1), { yPercent: 110 });
+            gsap.set(fc.slice(1), { opacity: 0, y: 16 });
 
-          f.from("[data-feature-cup]", { y: 200 * K, scale: 0.85, ease: E.out3, duration: 1 }, 0)
-            .from(ft[0], { yPercent: 110, duration: 0.7, ease: E.expo }, 0)
-            .from([fc[0], "[data-feature-cta]"], { opacity: 0, y: 20, duration: 0.6 }, 0.3)
-            .to("[data-feature-halo]", { opacity: 1, scale: 1, duration: 1, ease: E.io4 }, 1)
-            .to(ings, { opacity: 1, x: 0, duration: 0.5, stagger: 0.12, ease: E.out3 }, 1)
-            .from(ings, { x: 40 * K, duration: 0.5, stagger: 0.12, ease: E.out3 }, 1)
-            .to("[data-feature-bean]", { opacity: 1, duration: 0.4, stagger: 0.1 }, 1)
-            .from("[data-feature-bean]", { y: 60 * K, duration: 0.8, stagger: 0.1, ease: E.out3 }, 1)
-            .to(ft[0], { yPercent: -110, duration: 0.6, ease: E.io4 }, 1)
-            .to(ft[1], { yPercent: 0, duration: 0.6, ease: E.io4 }, 1)
-            .to(fc[0], { opacity: 0, y: -16, duration: 0.4 }, 1)
-            .to(fc[1], { opacity: 1, y: 0, duration: 0.5 }, 1.15)
-            .to("[data-feature-cup]", { rotate: 4 * K, y: -20 * K, duration: 0.8, ease: E.io4 }, 1)
-            .to("[data-feature-bg]", { backgroundColor: "#CBB792", duration: 1, ease: E.io4 }, 2)
-            .to("[data-feature-halo]", { opacity: 0, duration: 0.6 }, 2)
-            .to(ft[1], { yPercent: -110, duration: 0.6, ease: E.io4 }, 2)
-            .to(ft[2], { yPercent: 0, duration: 0.6, ease: E.io4 }, 2)
-            .to(fc[1], { opacity: 0, y: -16, duration: 0.4 }, 2)
-            .to(fc[2], { opacity: 1, y: 0, duration: 0.5 }, 2.15)
-            .to("[data-feature-detail]", { opacity: 1, y: 0, color: "#2F2322", duration: 0.6 }, 2.2)
-            .from("[data-feature-detail]", { y: 20, duration: 0.6 }, 2.2)
-            .to("[data-feature-cup]", { rotate: 0, y: 0, scale: 1.06, duration: 0.8, ease: E.io4 }, 2)
-            .to(
-              "[data-feature-bean]",
-              { y: -80 * K, rotate: "+=40", duration: 1, ease: "none" },
-              2,
-            )
-            .to({}, { duration: 0.5 });
+            const f = gsap.timeline({
+              scrollTrigger: {
+                trigger: "[data-feature]",
+                start: "top top",
+                end: () => `+=${pinLen(window.innerHeight * 2.6)}`,
+                pin: true,
+                scrub: 0.6,
+                anticipatePin: 1,
+              },
+            });
+
+            f.from("[data-feature-cup]", { y: 200 * K, scale: 0.85, ease: E.out3, duration: 1 }, 0)
+              .from(ft[0], { yPercent: 110, duration: 0.7, ease: E.expo }, 0)
+              .from([fc[0], "[data-feature-cta]"], { opacity: 0, y: 20, duration: 0.6 }, 0.3)
+              .to("[data-feature-halo]", { opacity: 1, scale: 1, duration: 1, ease: E.io4 }, 1)
+              .to(ings, { opacity: 1, x: 0, duration: 0.5, stagger: 0.12, ease: E.out3 }, 1)
+              .from(ings, { x: 40 * K, duration: 0.5, stagger: 0.12, ease: E.out3 }, 1)
+              .to("[data-feature-bean]", { opacity: 1, duration: 0.4, stagger: 0.1 }, 1)
+              .from("[data-feature-bean]", { y: 60 * K, duration: 0.8, stagger: 0.1, ease: E.out3 }, 1);
+
+            if (ft[1] && fc[1]) {
+              f.to(ft[0], { yPercent: -110, duration: 0.6, ease: E.io4 }, 1)
+                .to(ft[1], { yPercent: 0, duration: 0.6, ease: E.io4 }, 1)
+                .to(fc[0], { opacity: 0, y: -16, duration: 0.4 }, 1)
+                .to(fc[1], { opacity: 1, y: 0, duration: 0.5 }, 1.15);
+            }
+
+            f.to("[data-feature-cup]", { rotate: 4 * K, y: -20 * K, duration: 0.8, ease: E.io4 }, 1);
+
+            if (ft[2] && fc[2]) {
+              f.to("[data-feature-bg]", { backgroundColor: "#CBB792", duration: 1, ease: E.io4 }, 2)
+                .to("[data-feature-halo]", { opacity: 0, duration: 0.6 }, 2)
+                .to(ft[1], { yPercent: -110, duration: 0.6, ease: E.io4 }, 2)
+                .to(ft[2], { yPercent: 0, duration: 0.6, ease: E.io4 }, 2)
+                .to(fc[1], { opacity: 0, y: -16, duration: 0.4 }, 2)
+                .to(fc[2], { opacity: 1, y: 0, duration: 0.5 }, 2.15);
+            }
+
+            f.to("[data-feature-detail]", { opacity: 1, y: 0, color: "#2F2322", duration: 0.6 }, 2.2)
+              .from("[data-feature-detail]", { y: 20, duration: 0.6 }, 2.2)
+              .to("[data-feature-cup]", { rotate: 0, y: 0, scale: 1.06, duration: 0.8, ease: E.io4 }, 2)
+              .to(
+                "[data-feature-bean]",
+                { y: -80 * K, rotate: "+=40", duration: 1, ease: "none" },
+                2,
+              )
+              .to({}, { duration: 0.5 });
+          }
 
           gsap.from("[data-loc-card]", {
             y: 40,

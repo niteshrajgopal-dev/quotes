@@ -72,7 +72,7 @@ export function HospitalityLanding({
 
   const curated = menuProducts.slice(0, 3);
   const featured = menuProducts.find((p) =>
-    p.displayName.toLowerCase().includes("latte"),
+    (p.displayName ?? "").toLowerCase().includes("latte"),
   ) ?? menuProducts[0];
   const featuredDescription = featured?.description ?? "";
   const featuredDescriptionParts = featuredDescription
