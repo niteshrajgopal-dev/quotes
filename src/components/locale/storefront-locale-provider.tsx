@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 import { localeDirection, type StorefrontLocale } from "@/lib/locale/storefront-locale";
 import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
@@ -16,7 +16,7 @@ export function StorefrontLocaleProvider({
   const hydrated = useStorefrontLocale((state) => state.hydrated);
   const hydrate = useStorefrontLocale((state) => state.hydrate);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     hydrate(initialLocale);
   }, [hydrate, initialLocale]);
 

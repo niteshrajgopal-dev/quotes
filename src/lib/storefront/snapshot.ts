@@ -27,6 +27,7 @@ export function toStorefrontShellSnapshot(
   const assets = resolveTenantAssetPack(context.themePreset.id);
 
   return {
+    locale,
     brandName: context.brandName,
     hostname: context.hostname,
     themePresetId: context.themePreset.id,

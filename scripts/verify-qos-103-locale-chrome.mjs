@@ -14,8 +14,21 @@ const QUOTES = process.env.QUOTES_BASE_URL ?? "https://quotes.dev.qosapp.com";
 const AR_NAV = ["القائمة", "الطلب"];
 const AR_MENU = ["ابحث في القائمة", "كل شيء", "أضف"];
 const AR_ORDER = ["أين", "ماذا ستطلب", "اختر المشروبات"];
-const AR_HOME_MARKETING = ["حبوب تستحق", "لكل فنجان", "من المنشأ"];
-const AR_ORDER_FOOTER = ["استكشف", "المواقع", "عارض متجر"];
+const AR_HOME_MARKETING = ["حبوب تستحق الانتظار", "تسوّق الحبوب", "عرض القائمة الكاملة"];
+const AR_ORDER_FOOTER = ["استكشف", "المواقع", "بعض المحادثات تستحق", "نظام التصميم", "راسلنا", "اتصل بالمقهى"];
+
+const EN_HOME_MARKETING_LEFTOVERS = [
+  "Beans worth the wait",
+  "Shop the beans",
+  "See the full menu",
+];
+
+const EN_ORDER_FOOTER_LEFTOVERS = [
+  "Some conversations deserve another coffee.",
+  "Design system",
+  "Message us",
+  "Call the café",
+];
 
 async function fetchHtml(path) {
   const response = await fetch(`${QUOTES}${path}`, {
@@ -27,6 +40,10 @@ async function fetchHtml(path) {
 
 function includesAny(text, needles) {
   return needles.some((needle) => text.includes(needle));
+}
+
+function excludesAll(text, needles) {
+  return needles.every((needle) => !text.includes(needle));
 }
 
 test("menu page renders Arabic browse chrome without Customise", async () => {
@@ -42,17 +59,21 @@ test("order page renders Arabic order flow chrome and footer", async () => {
   assert.equal(response.ok, true, `expected /order 200, got ${response.status}`);
   assert.ok(includesAny(text, AR_ORDER), "order chrome not Arabic");
   assert.ok(includesAny(text, AR_ORDER_FOOTER), "order footer chrome not Arabic");
-  assert.ok(!text.includes(">Explore<"), 'order footer still contains English "Explore"');
+  assert.ok(excludesAll(text, EN_ORDER_FOOTER_LEFTOVERS), "order footer still contains English leftovers");
 });
 
-test("home page renders Arabic marketing copy and nav chrome", async () => {
+test("home page SSR renders Arabic marketing copy and nav chrome", async () => {
   const { response, text } = await fetchHtml("/");
   assert.equal(response.ok, true, `expected / 200, got ${response.status}`);
+  assert.ok(text.includes('lang="ar"') || text.includes("lang=ar"), "missing lang=ar on html");
   assert.ok(
     text.includes("استكشف القائمة") || text.includes("اطلب الآن"),
     "home hero chrome not Arabic",
   );
   assert.ok(includesAny(text, AR_NAV), "nav chrome not Arabic on home");
-  assert.ok(includesAny(text, AR_HOME_MARKETING), "home marketing copy not Arabic");
-  assert.ok(!text.includes("Beans worth the wait"), 'home still contains English marketing copy');
+  assert.ok(includesAny(text, AR_HOME_MARKETING), "home marketing copy not Arabic in SSR HTML");
+  assert.ok(
+    excludesAll(text, EN_HOME_MARKETING_LEFTOVERS),
+    "home SSR still contains English marketing leftovers from PR #10 path",
+  );
 });
