@@ -54,7 +54,8 @@ function resolveCopyKey(
     return "";
   }
 
-  const entry = CONTENT_COPY[presetId][key];
+  const presetCopy = CONTENT_COPY[presetId];
+  const entry = presetCopy?.[key];
   if (entry) {
     return locale === "ar" ? entry.ar : entry.en;
   }

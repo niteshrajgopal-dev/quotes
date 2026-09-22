@@ -13,7 +13,8 @@ import { formatMoneyMinor } from "@/lib/qos/money";
 import type { PublicMenuProduct, PublicMenuResponse } from "@/lib/qos/menu-types";
 import { MenuProductImage } from "@/components/menu/menu-product-image";
 import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
-import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
+import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
+import { useStorefrontChromeLocale } from "@/lib/stores/storefront-shell";
 import { cn } from "@/lib/cn";
 
 type CategoryFilter = "all" | string;
@@ -30,7 +31,7 @@ export function MenuBoard({
   openBagOnAdd?: boolean;
 }) {
   const { toast } = useToast();
-  const locale = useStorefrontLocale((state) => state.locale);
+  const locale = useStorefrontChromeLocale();
   const upsertProduct = useQosBasket((state) => state.upsertProduct);
   const setDrawerOpen = useCart((state) => state.setDrawerOpen);
 
@@ -173,6 +174,7 @@ export function MenuBoard({
                     product={product}
                     currency={menu.currency}
                     locale={menu.locale}
+                    storefrontLocale={locale}
                     adding={addingId === product.productPublicId}
                     onQuickAdd={() => quickAdd(product)}
                   />
@@ -190,16 +192,17 @@ function MenuRow({
   product,
   currency,
   locale,
+  storefrontLocale,
   adding,
   onQuickAdd,
 }: {
   product: PublicMenuProduct;
   currency: string;
   locale: PublicMenuResponse["locale"];
+  storefrontLocale: StorefrontLocale;
   adding: boolean;
   onQuickAdd: () => void;
 }) {
-  const storefrontLocale = useStorefrontLocale((state) => state.locale);
   const unavailable = !product.eligibility.available;
 
   return (

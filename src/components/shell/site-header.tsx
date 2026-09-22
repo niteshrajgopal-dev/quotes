@@ -17,8 +17,10 @@ import { useHydrated } from "@/lib/use-hydrated";
 import { CustomerAccountMenu } from "@/components/auth/customer-account-menu";
 import { LocaleSelector } from "@/components/locale/locale-selector";
 import { storefrontMessage } from "@/lib/locale/messages";
-import { useStorefrontShell } from "@/lib/stores/storefront-shell";
-import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
+import {
+  useStorefrontChromeLocale,
+  useStorefrontShell,
+} from "@/lib/stores/storefront-shell";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -26,7 +28,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const hydrated = useHydrated();
   const shell = useStorefrontShell();
-  const locale = useStorefrontLocale((state) => state.locale);
+  const locale = useStorefrontChromeLocale();
   const isHospitality = shell.themePresetId === "hospitality_baseline";
   const isHome = pathname === "/";
   const overlayHome = isHospitality && isHome;

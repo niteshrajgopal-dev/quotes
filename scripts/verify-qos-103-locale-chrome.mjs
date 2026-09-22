@@ -65,6 +65,10 @@ test("order page renders Arabic order flow chrome and footer", async () => {
 test("home page SSR renders Arabic marketing copy and nav chrome", async () => {
   const { response, text } = await fetchHtml("/");
   assert.equal(response.ok, true, `expected / 200, got ${response.status}`);
+  assert.ok(
+    !/couldn.t load/i.test(text),
+    'home SSR returned Next.js 500 "This page couldn\'t load" error page',
+  );
   assert.ok(text.includes('lang="ar"') || text.includes("lang=ar"), "missing lang=ar on html");
   assert.ok(
     text.includes("استكشف القائمة") || text.includes("اطلب الآن"),
@@ -76,4 +80,5 @@ test("home page SSR renders Arabic marketing copy and nav chrome", async () => {
     excludesAll(text, EN_HOME_MARKETING_LEFTOVERS),
     "home SSR still contains English marketing leftovers from PR #10 path",
   );
+  assert.ok(text.includes("data-hero") || text.includes("HospitalityLanding"), "home hospitality shell missing");
 });

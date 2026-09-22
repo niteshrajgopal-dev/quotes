@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PageLoadState } from "@/components/ui/page-load-state";
 import { Icon } from "@/components/brand/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -19,16 +18,18 @@ import { useSelectStorefrontLocation } from "@/lib/storefront/use-select-storefr
 import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
 import { formatMoneyMinor } from "@/lib/qos/money";
 import { useHydrated } from "@/lib/use-hydrated";
-import { useStorefrontShell } from "@/lib/stores/storefront-shell";
+import {
+  useStorefrontChromeLocale,
+  useStorefrontShell,
+} from "@/lib/stores/storefront-shell";
 import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
 import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
-import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import { cn } from "@/lib/cn";
 
 export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
   const router = useRouter();
   const shell = useStorefrontShell();
-  const locale = useStorefrontLocale((state) => state.locale);
+  const locale = useStorefrontChromeLocale();
   const isRetail = shell.themePresetId === "generic_retail_baseline";
   const isHospitality = shell.themePresetId === "hospitality_baseline";
   const hydrated = useHydrated();
@@ -85,10 +86,6 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
     setStep((current) => Math.max(current - 1, 0));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
-  if (!hydrated) {
-    return <PageLoadState label={storefrontMessage(locale, "loadingBasket")} />;
-  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -257,7 +254,7 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
         </section>
       ) : null}
 
-      {step < steps.length - 1 ? (
+      {hydrated && step < steps.length - 1 ? (
         <div
           className={cn(
             "sticky bottom-[calc(env(safe-area-inset-bottom)+68px)] z-40 -mx-[var(--mx)] border-t px-[var(--mx)] py-3 backdrop-blur-[10px] md:bottom-4 md:mx-0 md:rounded-md md:border md:px-4",
@@ -274,7 +271,7 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
                   : storefrontMessage(locale, "emptyBasket")}
               </p>
               <p className="ltr-isolate font-mono text-[16px] tabular-nums">
-                {basket
+                {hydrated && basket
                   ? formatMoneyMinor(
                       basket.provisionalSubtotalMinor,
                       basket.currency,
