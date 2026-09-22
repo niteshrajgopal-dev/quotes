@@ -5,12 +5,15 @@ import { usePathname } from "next/navigation";
 import { TenantMark, TenantMarkDivider } from "@/components/brand/tenant-brand";
 import { Icon } from "@/components/brand/icons";
 import { SOCIALS } from "@/lib/fixtures/quotes-design-reference/brand";
+import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import { SECONDARY_NAV } from "./nav";
 import { useStorefrontShell } from "@/lib/stores/storefront-shell";
 
 export function SiteFooter() {
   const pathname = usePathname();
   const shell = useStorefrontShell();
+  const locale = useStorefrontLocale((state) => state.locale);
   const isHospitality = shell.themePresetId === "hospitality_baseline";
   const showSocials = isHospitality;
 
@@ -33,7 +36,9 @@ export function SiteFooter() {
 
         <div className="grid gap-10 border-t border-[var(--border-on-dark)] pt-10 sm:grid-cols-2 lg:grid-cols-4">
           <nav aria-label="Footer — shop">
-            <h2 className="t-overline mb-4 text-latte">Explore</h2>
+            <h2 className="t-overline mb-4 text-latte">
+              {storefrontMessage(locale, "footerExplore")}
+            </h2>
             <ul className="flex flex-col gap-2.5">
               {shell.primaryNav.map((item) => (
                 <li key={item.href}>
@@ -49,7 +54,9 @@ export function SiteFooter() {
           </nav>
 
           <nav aria-label="Footer — locations">
-            <h2 className="t-overline mb-4 text-latte">Locations</h2>
+            <h2 className="t-overline mb-4 text-latte">
+              {storefrontMessage(locale, "footerLocations")}
+            </h2>
             <ul className="flex flex-col gap-3">
               {shell.locations.map((location) => (
                 <li key={location.locationPublicId}>
@@ -66,7 +73,9 @@ export function SiteFooter() {
 
           {showSocials ? (
             <div>
-              <h2 className="t-overline mb-4 text-latte">Follow &amp; connect</h2>
+              <h2 className="t-overline mb-4 text-latte">
+                {storefrontMessage(locale, "footerFollowConnect")}
+              </h2>
               <ul className="flex flex-col gap-2.5">
                 {SOCIALS.map((social) => (
                   <li key={social.label}>
@@ -89,7 +98,9 @@ export function SiteFooter() {
           )}
 
           <div>
-            <h2 className="t-overline mb-4 text-latte">System</h2>
+            <h2 className="t-overline mb-4 text-latte">
+              {storefrontMessage(locale, "footerSystem")}
+            </h2>
             <ul className="flex flex-col gap-2.5">
               {SECONDARY_NAV.map((item) => (
                 <li key={item.href}>
@@ -109,11 +120,14 @@ export function SiteFooter() {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <p className="t-caption text-cream/55">
-            {shell.brandName} · served from {shell.hostname}
+            {storefrontMessageWithValues(locale, "footerServedFrom", {
+              brand: shell.brandName,
+              hostname: shell.hostname,
+            })}
           </p>
           <p className="t-caption text-cream/45">
-            <Icon name={isHospitality ? "bean" : "heart"} className="mr-1 inline h-3 w-3 opacity-60" />
-            QOS storefront renderer
+            <Icon name={isHospitality ? "bean" : "heart"} className="me-1 inline h-3 w-3 opacity-60" />
+            {storefrontMessage(locale, "footerRenderer")}
           </p>
         </div>
       </div>
