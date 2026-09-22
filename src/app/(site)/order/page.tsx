@@ -4,6 +4,7 @@ import { HospitalityPageIntro } from "@/components/hospitality/page-intro";
 import { OrderFlow } from "@/components/order/order-flow";
 import { resolveStorefrontContextFromHeaders } from "@/lib/storefront/context.server";
 import { isHospitalityTheme } from "@/lib/storefront/hospitality-home-copy";
+import { storefrontMessage } from "@/lib/locale/messages";
 import { getServerStorefrontLocale } from "@/lib/locale/locale.server";
 import { loadPublishedMenu } from "@/lib/qos/menu.server";
 
@@ -24,9 +25,9 @@ export default async function OrderPage() {
     <>
       {isHospitality ? (
         <HospitalityPageIntro
-          kicker="Order"
-          title="Five steps, about a minute."
-          lead="Choose a café, build the round, and it will be on the counter when you get there."
+          kicker={storefrontMessage(locale, "orderKicker")}
+          title={storefrontMessage(locale, "orderTitle")}
+          lead={storefrontMessage(locale, "orderLead")}
         />
       ) : (
         <section className="wrap pt-[clamp(32px,5vw,64px)] pb-0">

@@ -1,3 +1,4 @@
+import { localizeShellNav } from "@/lib/locale/localize-nav";
 import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
 import { resolveFooterStatement } from "@/lib/storefront/content-blocks";
 import type { StorefrontContext } from "@/lib/storefront/context.server";
@@ -42,8 +43,8 @@ export function toStorefrontShellSnapshot(
       locale,
       context.themePreset.footerStatement,
     ),
-    primaryNav: context.primaryNav,
-    tabNav: context.tabNav,
+    primaryNav: localizeShellNav(context.primaryNav, locale),
+    tabNav: localizeShellNav(context.tabNav, locale),
     localeSelectorEnabled: resolveLocaleSelectorEnabled(context.manifest),
     supportedLocales: context.manifest.supportedLocales,
     defaultLocale: context.manifest.defaultLocale,

@@ -3,15 +3,29 @@ import { resolveLocalizedCopy } from "@/lib/storefront/localized-copy";
 import type { StorefrontManifestContentBlock } from "@/lib/storefront/manifest-types";
 import type { StorefrontThemePresetId } from "@/lib/storefront/theme-presets";
 
-const CONTENT_COPY: Record<StorefrontThemePresetId, Record<string, string>> = {
+const CONTENT_COPY: Record<
+  StorefrontThemePresetId,
+  Record<string, { en: string; ar: string }>
+> = {
   hospitality_baseline: {
-    "home.hero.title": "Coffee worth slowing down for.",
-    "home.hero.subtitle":
-      "We roast in small batches, pour it in our cafés, and post it anywhere in the country the next morning.",
+    "home.hero.title": {
+      en: "Coffee worth slowing down for.",
+      ar: "قهوة تستحق التمهّل.",
+    },
+    "home.hero.subtitle": {
+      en: "We roast in small batches, pour it in our cafés, and post it anywhere in the country the next morning.",
+      ar: "نحمص بكميات صغيرة، نقدّمها في مقاهينا، ونرسلها في كل أنحاء البلاد صباح اليوم التالي.",
+    },
   },
   generic_retail_baseline: {
-    "home.hero.title": "Fresh flowers for every moment.",
-    "home.hero.subtitle": "Seasonal bouquets and stems, ready for pickup or delivery.",
+    "home.hero.title": {
+      en: "Fresh flowers for every moment.",
+      ar: "ورود طازجة لكل لحظة.",
+    },
+    "home.hero.subtitle": {
+      en: "Seasonal bouquets and stems, ready for pickup or delivery.",
+      ar: "باقات وورود موسمية، جاهزة للاستلام أو التوصيل.",
+    },
   },
 };
 
@@ -26,12 +40,21 @@ function readPropString(props: Record<string, unknown>, key: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function resolveCopyKey(presetId: StorefrontThemePresetId, key: string) {
+function resolveCopyKey(
+  presetId: StorefrontThemePresetId,
+  key: string,
+  locale: StorefrontLocale,
+) {
   if (!key) {
     return "";
   }
 
-  return CONTENT_COPY[presetId][key] ?? formatLabelKey(key);
+  const entry = CONTENT_COPY[presetId][key];
+  if (entry) {
+    return locale === "ar" ? entry.ar : entry.en;
+  }
+
+  return formatLabelKey(key);
 }
 
 function formatLabelKey(labelKey: string) {
@@ -54,14 +77,14 @@ function resolveCopyField(
   const localized = resolveLocalizedCopy(
     props[field],
     locale,
-    resolveCopyKey(presetId, readPropString(props, keyField) || fallbackKey),
+    resolveCopyKey(presetId, readPropString(props, keyField) || fallbackKey, locale),
   );
 
   if (localized) {
     return localized;
   }
 
-  return resolveCopyKey(presetId, readPropString(props, keyField) || fallbackKey);
+  return resolveCopyKey(presetId, readPropString(props, keyField) || fallbackKey, locale);
 }
 
 export function resolveVisibleContentBlocks(
@@ -119,8 +142,8 @@ export function resolveHeroContentBlock(
 
   return {
     id: block.id,
-    title: title || resolveCopyKey(presetId, "home.hero.title"),
-    subtitle: subtitle || resolveCopyKey(presetId, "home.hero.subtitle"),
+    title: title || resolveCopyKey(presetId, "home.hero.title", locale),
+    subtitle: subtitle || resolveCopyKey(presetId, "home.hero.subtitle", locale),
   };
 }
 

@@ -6,19 +6,28 @@ import { Hero } from "@/components/hero/Hero";
 import { TravelArrow } from "@/components/ui/button";
 import { resolveHeroContentBlock } from "@/lib/storefront/content-blocks";
 import { resolveStorefrontContextFromHeaders } from "@/lib/storefront/context.server";
+import { storefrontMessage } from "@/lib/locale/messages";
 import { getServerStorefrontLocale } from "@/lib/locale/locale.server";
 import type { StorefrontManifestLocation } from "@/lib/storefront/manifest-types";
 import { loadPublishedMenu } from "@/lib/qos/menu.server";
 
 export const dynamic = "force-dynamic";
 
-function HomeLocations({ locations }: { locations: StorefrontManifestLocation[] }) {
+function HomeLocations({
+  locations,
+  locale,
+}: {
+  locations: StorefrontManifestLocation[];
+  locale: Awaited<ReturnType<typeof getServerStorefrontLocale>>;
+}) {
   if (locations.length === 0) return null;
 
   return (
     <section className="border-t border-[rgba(28,26,26,.12)] bg-[#f4f1ed]">
       <div className="wrap py-[clamp(40px,6vw,72px)]">
-        <h2 className="t-h1 mb-8 font-[family-name:var(--font-instrument-serif)] text-[#1c1a1a]">Visit us</h2>
+        <h2 className="t-h1 mb-8 font-[family-name:var(--font-instrument-serif)] text-[#1c1a1a]">
+          {storefrontMessage(locale, "visitUs")}
+        </h2>
         <ul className="grid gap-5 md:grid-cols-3">
           {locations.map((location) => (
             <li key={location.locationPublicId}>
@@ -30,7 +39,7 @@ function HomeLocations({ locations }: { locations: StorefrontManifestLocation[] 
                   {location.name}
                 </h3>
                 <span className="mt-auto inline-flex items-center gap-2 text-[13.5px] font-medium text-[#1c1a1a]">
-                  Opening hours
+                  {storefrontMessage(locale, "openingHours")}
                   <TravelArrow className="text-[#1c1a1a]" />
                 </span>
               </Link>
@@ -56,7 +65,7 @@ export default async function HomePage() {
       <>
         <Hero brandName={context.brandName} />
         <Collections />
-        <HomeLocations locations={context.manifest.locations} />
+        <HomeLocations locations={context.manifest.locations} locale={locale} />
       </>
     );
   }
@@ -70,11 +79,8 @@ export default async function HomePage() {
   return (
     <HospitalityLanding
       brandName={context.brandName}
-      heroTitle={hero?.title ?? "Coffee worth quoting."}
-      heroSubtitle={
-        hero?.subtitle ??
-        "Crafted with character. Made for moments worth remembering."
-      }
+      heroTitle={hero?.title ?? storefrontMessage(locale, "homeHeroTitle")}
+      heroSubtitle={hero?.subtitle ?? storefrontMessage(locale, "homeHeroSubtitle")}
       locale={locale}
       menuProducts={menuProducts}
       locations={context.manifest.locations}
