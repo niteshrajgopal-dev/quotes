@@ -245,7 +245,9 @@ function MenuRow({
         </Button>
         <Link
           href={`/order?product=${product.productPublicId}`}
-          aria-label={`Customise ${product.displayName}`}
+          aria-label={storefrontMessageWithValues(storefrontLocale, "customiseProduct", {
+            name: product.displayName,
+          })}
           className="grid h-10 w-10 place-items-center rounded-full border border-cream/25 text-cream transition-colors group-hover:border-cream group-hover:bg-cream group-hover:text-espresso"
         >
           →

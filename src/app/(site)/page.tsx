@@ -71,10 +71,8 @@ export default async function HomePage() {
   }
 
   const menuResult = await loadPublishedMenu(locale);
-  const menuProducts =
-    menuResult.status === "ok"
-      ? menuResult.menu.sections.flatMap((section) => section.products)
-      : [];
+  const menuSections = menuResult.status === "ok" ? menuResult.menu.sections : [];
+  const menuProducts = menuSections.flatMap((section) => section.products);
 
   return (
     <HospitalityLanding
@@ -83,6 +81,7 @@ export default async function HomePage() {
       heroSubtitle={hero?.subtitle ?? storefrontMessage(locale, "homeHeroSubtitle")}
       locale={locale}
       menuProducts={menuProducts}
+      menuSections={menuSections}
       locations={context.manifest.locations}
     />
   );
