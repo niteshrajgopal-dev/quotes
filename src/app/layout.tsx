@@ -1,7 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { IBM_Plex_Mono, Instrument_Serif, Inter, Manrope, Young_Serif } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
+import {
+  LOCALE_COOKIE_NAME,
+  localeDirection,
+  parseStorefrontLocale,
+} from "@/lib/locale/storefront-locale";
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -52,12 +58,17 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const cookieStore = await cookies();
+  const locale = parseStorefrontLocale(cookieStore.get(LOCALE_COOKIE_NAME)?.value);
+  const dir = localeDirection(locale);
+
   return (
     <html
-      lang="en"
+      lang={locale}
+      dir={dir}
       className={`${inter.variable} ${youngSerif.variable} ${plexMono.variable} ${instrumentSerif.variable} ${manrope.variable}`}
     >
       <body className="min-h-dvh">

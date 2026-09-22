@@ -1,12 +1,22 @@
 import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
 import { resolveFooterStatement } from "@/lib/storefront/content-blocks";
 import type { StorefrontContext } from "@/lib/storefront/context.server";
+import type { StorefrontManifestResponse } from "@/lib/storefront/manifest-types";
 import {
   buildManifestThemeCssVariables,
   resolveManifestThemeTokens,
 } from "@/lib/storefront/theme-tokens";
 import { resolveTenantAssetPack } from "@/lib/storefront/tenant-assets";
 import type { StorefrontShellSnapshot } from "@/lib/stores/storefront-shell";
+
+export function resolveLocaleSelectorEnabled(manifest: StorefrontManifestResponse) {
+  if (manifest.features.localeSelector) {
+    return true;
+  }
+
+  const supported = manifest.supportedLocales ?? [];
+  return supported.includes("en") && supported.includes("ar");
+}
 
 export function toStorefrontShellSnapshot(
   context: StorefrontContext,
@@ -34,7 +44,7 @@ export function toStorefrontShellSnapshot(
     ),
     primaryNav: context.primaryNav,
     tabNav: context.tabNav,
-    localeSelectorEnabled: context.manifest.features.localeSelector,
+    localeSelectorEnabled: resolveLocaleSelectorEnabled(context.manifest),
     supportedLocales: context.manifest.supportedLocales,
     defaultLocale: context.manifest.defaultLocale,
     selectedLocationPublicId: context.locationPublicId,
