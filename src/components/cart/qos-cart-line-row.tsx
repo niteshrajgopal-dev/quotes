@@ -2,7 +2,9 @@
 
 import { Bean } from "@/components/brand/bean";
 import { QuantityStepper } from "@/components/ui/field";
+import { storefrontMessage } from "@/lib/locale/messages";
 import { formatMoneyMinor } from "@/lib/qos/money";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import type { BasketLineResponse } from "@/lib/qos/types";
 import { useQosBasket } from "@/lib/stores/qos-basket";
 import { cn } from "@/lib/cn";
@@ -22,6 +24,7 @@ export function QosCartLineRow({
   readOnly?: boolean;
   tone?: "light" | "dark";
 }) {
+  const uiLocale = useStorefrontLocale((state) => state.locale);
   const productLabels = useQosBasket((state) => state.productLabels);
   const setLineQuantity = useQosBasket((state) => state.setLineQuantity);
   const removeLine = useQosBasket((state) => state.removeLine);
@@ -100,7 +103,7 @@ export function QosCartLineRow({
               disabled={busy}
               className="rounded-sm px-2 py-2 text-[13px] text-muted underline decoration-line underline-offset-4 transition-colors duration-fast ease-brand hover:text-error disabled:opacity-50"
             >
-              Remove
+              {storefrontMessage(uiLocale, "remove")}
             </button>
           </div>
         )}

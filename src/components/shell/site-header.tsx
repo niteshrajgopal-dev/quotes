@@ -16,7 +16,9 @@ import { useLoyalty } from "@/lib/stores/loyalty";
 import { useHydrated } from "@/lib/use-hydrated";
 import { CustomerAccountMenu } from "@/components/auth/customer-account-menu";
 import { LocaleSelector } from "@/components/locale/locale-selector";
+import { storefrontMessage } from "@/lib/locale/messages";
 import { useStorefrontShell } from "@/lib/stores/storefront-shell";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -24,6 +26,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const hydrated = useHydrated();
   const shell = useStorefrontShell();
+  const locale = useStorefrontLocale((state) => state.locale);
   const isHospitality = shell.themePresetId === "hospitality_baseline";
   const isHome = pathname === "/";
   const overlayHome = isHospitality && isHome;
@@ -111,13 +114,21 @@ export function SiteHeader() {
             ))}
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            {shell.localeSelectorEnabled ? (
+              <LocaleSelector
+                compact
+                onDark={isHospitality}
+                supportedLocales={shell.supportedLocales}
+                className="hidden md:inline-flex"
+              />
+            ) : null}
             {overlayHome ? (
               <Link
                 href="/order"
                 className="inline-flex min-h-11 items-center rounded-pill bg-cream px-5 text-[13px] font-semibold text-espresso no-tap-highlight transition-colors hover:bg-latte active:scale-[0.97]"
               >
-                Order Now
+                {storefrontMessage(locale, "orderNow")}
               </Link>
             ) : (
               <>
@@ -133,7 +144,7 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={() => setDrawerOpen(true)}
-                  aria-label={`Open bag, ${itemCount} items`}
+                  aria-label={`${storefrontMessage(locale, "openBag")}, ${itemCount} ${storefrontMessage(locale, itemCount === 1 ? "item" : "items")}`}
                   className={cn(
                     "relative inline-flex min-h-11 items-center gap-2 rounded-pill px-3.5 text-[13px] font-semibold no-tap-highlight transition-colors",
                     isHospitality
@@ -142,7 +153,7 @@ export function SiteHeader() {
                   )}
                 >
                   <Icon name="bag" className="h-4 w-4" strokeWidth={1.8} />
-                  <span className="hidden sm:inline">Bag</span>
+                  <span className="hidden sm:inline">{storefrontMessage(locale, "bag")}</span>
                   <span
                     className={cn(
                       "grid h-5 min-w-5 place-items-center rounded-full px-1 font-mono text-[10px] tabular-nums",
@@ -185,7 +196,9 @@ export function SiteHeader() {
         description={shell.footerStatement}
         footer={
           <div className="flex flex-col gap-3">
-            {shell.localeSelectorEnabled ? <LocaleSelector /> : null}
+            {shell.localeSelectorEnabled ? (
+              <LocaleSelector supportedLocales={shell.supportedLocales} />
+            ) : null}
             <CustomerAccountMenu compact returnTo="/checkout" onNavigate={closeNav} />
             {hydrated && member ? (
               <StampProgress stamps={stamps} />
@@ -233,7 +246,7 @@ export function SiteHeader() {
                 <span className="block text-[16px] font-medium">{item.label}</span>
                 {item.hint ? <span className="t-caption block">{item.hint}</span> : null}
               </span>
-              <Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-latte" strokeWidth={2} />
+              <Icon name="arrow" className="ms-auto h-4 w-4 shrink-0 text-latte" strokeWidth={2} />
             </Link>
           ))}
         </nav>

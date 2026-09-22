@@ -90,18 +90,19 @@ export function Sheet({
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        data-side={side}
         className={cn(
-          "relative z-10 flex flex-col bg-bg shadow-lg",
+          "sheet-panel relative z-10 flex flex-col bg-bg shadow-lg",
           isBottom
             ? "animate-sheet-bottom mt-auto max-h-[88dvh] w-full rounded-t-lg border-t border-line"
-            : "animate-sheet-right ml-auto h-full w-full max-w-md border-l border-line",
+            : "animate-sheet-right ms-auto h-full w-full max-w-md border-s border-line",
           // On small screens a right sheet becomes a bottom sheet.
           !isBottom &&
-            "max-sm:animate-sheet-bottom max-sm:mt-auto max-sm:h-auto max-sm:max-h-[88dvh] max-sm:rounded-t-lg max-sm:border-t max-sm:border-l-0",
+            "max-sm:animate-sheet-bottom max-sm:mt-auto max-sm:h-auto max-sm:max-h-[88dvh] max-sm:rounded-t-lg max-sm:border-t max-sm:border-s-0",
         )}
       >
         <header className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
-          <div>
+          <div className="min-w-0 text-start">
             <h2 className="t-h2">{title}</h2>
             {description ? <p className="t-caption mt-1">{description}</p> : null}
           </div>
@@ -109,7 +110,7 @@ export function Sheet({
             type="button"
             onClick={onClose}
             aria-label={`Close ${title.toLowerCase()}`}
-            className="-mr-2 -mt-1 grid h-11 w-11 shrink-0 place-items-center rounded-sm text-espresso transition-colors duration-fast ease-brand hover:bg-latte-50"
+            className="-me-2 -mt-1 grid h-11 w-11 shrink-0 place-items-center rounded-sm text-espresso transition-colors duration-fast ease-brand hover:bg-latte-50"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" className="h-4.5 w-4.5">
               <path d="M6 6l12 12M18 6 6 18" />

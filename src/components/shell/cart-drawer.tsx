@@ -8,13 +8,16 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState, Notice } from "@/components/ui/card";
 import { QosCartLineRow } from "@/components/cart/qos-cart-line-row";
 import { OrderSummary } from "@/components/cart/order-summary";
+import { storefrontMessage } from "@/lib/locale/messages";
 import { useCart } from "@/lib/stores/cart";
 import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import { useHydrated } from "@/lib/use-hydrated";
 
 export function CartDrawer() {
   const router = useRouter();
   const hydrated = useHydrated();
+  const locale = useStorefrontLocale((state) => state.locale);
 
   const open = useCart((state) => state.drawerOpen);
   const setDrawerOpen = useCart((state) => state.setDrawerOpen);
@@ -35,15 +38,18 @@ export function CartDrawer() {
 
   if (!hydrated) return null;
 
+  const itemLabel =
+    itemCount === 1
+      ? storefrontMessage(locale, "item")
+      : storefrontMessage(locale, "items");
+
   return (
     <Sheet
       open={open}
       onClose={close}
-      title="Your bag"
+      title={storefrontMessage(locale, "yourBag")}
       description={
-        itemCount > 0
-          ? `${itemCount} item${itemCount === 1 ? "" : "s"} · QOS basket`
-          : undefined
+        itemCount > 0 ? `${itemCount} ${itemLabel} · QOS basket` : undefined
       }
       footer={
         basket && basket.lines.length > 0 ? (
@@ -57,37 +63,44 @@ export function CartDrawer() {
                 router.push("/checkout");
               }}
             >
-              Checkout
+              {storefrontMessage(locale, "checkout")}
             </Button>
             <button
               type="button"
               onClick={close}
               className="min-h-11 rounded-sm text-[13.5px] text-muted transition-colors duration-fast hover:text-fg"
             >
-              Keep browsing
+              {storefrontMessage(locale, "keepBrowsing")}
             </button>
           </div>
         ) : null
       }
     >
       {status === "loading" ? (
-        <p className="text-[14px] text-muted">Loading your QOS basket…</p>
+        <p className="text-[14px] text-muted">{storefrontMessage(locale, "loadingBasket")}</p>
       ) : null}
 
       {error ? (
-        <Notice tone="error" title={basket ? "Basket update issue" : "Basket unavailable"}>
+        <Notice
+          tone="error"
+          title={
+            basket
+              ? storefrontMessage(locale, "basketUpdateIssue")
+              : storefrontMessage(locale, "basketUnavailable")
+          }
+        >
           {error}
         </Notice>
       ) : null}
 
       {!basket || basket.lines.length === 0 ? (
         <EmptyState
-          title="Nothing in the bag yet"
-          body="Add something from the published café menu — it saves to your QOS basket."
+          title={storefrontMessage(locale, "nothingInBagTitle")}
+          body={storefrontMessage(locale, "nothingInBagBody")}
           action={
             <div className="flex flex-wrap justify-center gap-2">
               <ButtonLink href="/menu" variant="secondary" size="sm" onClick={close}>
-                Café menu
+                {storefrontMessage(locale, "cafeMenu")}
               </ButtonLink>
             </div>
           }
@@ -96,12 +109,11 @@ export function CartDrawer() {
       ) : (
         <div className="flex flex-col gap-5">
           {!signedIn ? (
-            <Notice tone="info" title="Sign in before checkout">
-              You&apos;re browsing with an anonymous basket. Sign in to pay with your verified
-              customer account.
+            <Notice tone="info" title={storefrontMessage(locale, "signInBeforeCheckoutTitle")}>
+              {storefrontMessage(locale, "signInBeforeCheckoutBody")}
               <div className="mt-3">
                 <ButtonLink href={buildSignInHref("/checkout")} size="sm" onClick={close}>
-                  Sign in
+                  {storefrontMessage(locale, "signIn")}
                 </ButtonLink>
               </div>
             </Notice>

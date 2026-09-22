@@ -11,7 +11,7 @@ import {
 type StorefrontLocaleState = {
   locale: StorefrontLocale;
   hydrated: boolean;
-  hydrate: () => void;
+  hydrate: (initialLocale?: StorefrontLocale) => void;
   setLocale: (locale: StorefrontLocale) => void;
 };
 
@@ -19,13 +19,18 @@ export const useStorefrontLocale = create<StorefrontLocaleState>((set, get) => (
   locale: "en",
   hydrated: false,
 
-  hydrate: () => {
+  hydrate: (initialLocale) => {
     if (get().hydrated) {
       return;
     }
 
+    const locale =
+      typeof document === "undefined"
+        ? initialLocale ?? "en"
+        : readClientStorefrontLocale();
+
     set({
-      locale: readClientStorefrontLocale(),
+      locale,
       hydrated: true,
     });
   },
