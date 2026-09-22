@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageLoadState } from "@/components/ui/page-load-state";
 import { Icon } from "@/components/brand/icons";
@@ -20,17 +20,28 @@ import { useQosBasket, selectBasketItemCount } from "@/lib/stores/qos-basket";
 import { formatMoneyMinor } from "@/lib/qos/money";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useStorefrontShell } from "@/lib/stores/storefront-shell";
+import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
+import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import { cn } from "@/lib/cn";
-
-const STEPS = ["Where", "Menu", "Bag"] as const;
 
 export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
   const router = useRouter();
   const shell = useStorefrontShell();
+  const locale = useStorefrontLocale((state) => state.locale);
   const isRetail = shell.themePresetId === "generic_retail_baseline";
   const isHospitality = shell.themePresetId === "hospitality_baseline";
   const hydrated = useHydrated();
   const [step, setStep] = useState(0);
+
+  const steps = useMemo(
+    () => [
+      storefrontMessage(locale, "orderStepWhere"),
+      storefrontMessage(locale, "orderStepMenu"),
+      storefrontMessage(locale, "orderStepBag"),
+    ],
+    [locale],
+  );
 
   const basket = useQosBasket((state) => state.basket);
   const itemCount = useQosBasket(selectBasketItemCount);
@@ -61,12 +72,12 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
   const canLeaveMenu = itemCount > 0;
 
   const advance = () => {
-    if (step === STEPS.length - 1) {
+    if (step === steps.length - 1) {
       router.push("/checkout");
       return;
     }
 
-    setStep((current) => Math.min(current + 1, STEPS.length - 1));
+    setStep((current) => Math.min(current + 1, steps.length - 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -76,22 +87,29 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
   };
 
   if (!hydrated) {
-    return <PageLoadState label="Loading your bag…" />;
+    return <PageLoadState label={storefrontMessage(locale, "loadingBasket")} />;
   }
 
   return (
     <div className="flex flex-col gap-8">
-      <Stepper steps={[...STEPS]} current={step} onStepSelect={(index) => setStep(index)} />
+      <Stepper steps={steps} current={step} onStepSelect={(index) => setStep(index)} />
 
       {step === 0 ? (
-        <section aria-label="Choose how to get your order" className="flex flex-col gap-6">
+        <section
+          aria-label={storefrontMessage(locale, "chooseHowToGetOrder")}
+          className="flex flex-col gap-6"
+        >
           {!isRetail ? (
-            <SegmentedFulfilment value={fulfilment} onChange={setFulfilment} />
+            <SegmentedFulfilment value={fulfilment} onChange={setFulfilment} locale={locale} />
           ) : null}
 
           {fulfilment === "pickup" || isRetail ? (
             <>
-              <h2 className="t-h1">{isRetail ? "Which shop?" : "Which café?"}</h2>
+              <h2 className="t-h1">
+                {isRetail
+                  ? storefrontMessage(locale, "whichShop")
+                  : storefrontMessage(locale, "whichCafe")}
+              </h2>
               <ul className="grid gap-4 md:grid-cols-3">
                 {shell.locations.map((location) => {
                   const selected = activeLocationPublicId === location.locationPublicId;
@@ -123,7 +141,7 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
                               selected ? "text-latte" : "text-muted",
                             )}
                           >
-                            Branch
+                            {storefrontMessage(locale, "branch")}
                           </span>
                         </span>
                         <span className={cn("font-serif text-[20px]", selected && "text-cream")}>
@@ -135,7 +153,7 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
                             selected ? "text-cream/65" : "text-muted",
                           )}
                         >
-                          Published branch from the storefront release.
+                          {storefrontMessage(locale, "branchPublished")}
                         </span>
                       </button>
                     </li>
@@ -144,24 +162,26 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
               </ul>
 
               {chosenLocation ? (
-                <Notice tone="success" title={`${chosenLocation.name}.`}>
-                  Your basket and checkout will use this branch.
+                <Notice
+                  tone="success"
+                  title={storefrontMessageWithValues(locale, "branchSelectedTitle", {
+                    name: chosenLocation.name,
+                  })}
+                >
+                  {storefrontMessage(locale, "branchSelectedBody")}
                 </Notice>
               ) : (
-                <Notice tone="info">
-                  Pick a branch to continue with the published menu.
-                </Notice>
+                <Notice tone="info">{storefrontMessage(locale, "pickBranchNotice")}</Notice>
               )}
             </>
           ) : (
             <>
-              <h2 className="t-h1">Beans by post</h2>
+              <h2 className="t-h1">{storefrontMessage(locale, "beansByPost")}</h2>
               <p className="max-w-[58ch] text-[16px] leading-relaxed text-mocha">
-                Delivery covers retail bags from the design-reference shop. The signed-in QOS
-                checkout path uses the published café menu.
+                {storefrontMessage(locale, "beansByPostBody")}
               </p>
               <ButtonLink href="/shop" size="md">
-                Design-reference shop
+                {storefrontMessage(locale, "designReferenceShop")}
               </ButtonLink>
             </>
           )}
@@ -169,9 +189,12 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
       ) : null}
 
       {step === 1 ? (
-        <section aria-label="Choose your drinks" className="flex flex-col gap-6">
+        <section
+          aria-label={storefrontMessage(locale, "chooseDrinksSection")}
+          className="flex flex-col gap-6"
+        >
           <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <h2 className="t-h1">What are you having?</h2>
+            <h2 className="t-h1">{storefrontMessage(locale, "whatAreYouHaving")}</h2>
             {chosenLocation ? (
               <Badge tone="neutral">
                 <Icon name="location" className="h-3 w-3" strokeWidth={2} />
@@ -195,15 +218,18 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
       ) : null}
 
       {step === 2 ? (
-        <section aria-label="Review your bag" className="flex flex-col gap-6">
-          <h2 className="t-h1">Your bag</h2>
+        <section
+          aria-label={storefrontMessage(locale, "reviewBagSection")}
+          className="flex flex-col gap-6"
+        >
+          <h2 className="t-h1">{storefrontMessage(locale, "yourBag")}</h2>
           {!basket || basket.lines.length === 0 ? (
             <EmptyState
-              title="Nothing in the bag"
-              body="Go back a step and pick something from the menu."
+              title={storefrontMessage(locale, "nothingInBagOrder")}
+              body={storefrontMessage(locale, "nothingInBagBody")}
               action={
                 <Button variant="secondary" size="sm" onClick={goBack}>
-                  Back to the menu
+                  {storefrontMessage(locale, "backToMenu")}
                 </Button>
               }
             />
@@ -220,10 +246,10 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
                 ))}
               </ul>
               <Card className="flex h-fit flex-col gap-5">
-                <h3 className="t-label">Summary</h3>
+                <h3 className="t-label">{storefrontMessage(locale, "summary")}</h3>
                 <OrderSummary />
                 <Button size="md" onClick={() => router.push("/checkout")}>
-                  Continue to checkout
+                  {storefrontMessage(locale, "continueToCheckout")}
                 </Button>
               </Card>
             </div>
@@ -231,7 +257,7 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
         </section>
       ) : null}
 
-      {step < STEPS.length - 1 ? (
+      {step < steps.length - 1 ? (
         <div
           className={cn(
             "sticky bottom-[calc(env(safe-area-inset-bottom)+68px)] z-40 -mx-[var(--mx)] border-t px-[var(--mx)] py-3 backdrop-blur-[10px] md:bottom-4 md:mx-0 md:rounded-md md:border md:px-4",
@@ -244,23 +270,23 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
             <div className="min-w-0">
               <p className="t-label">
                 {itemCount > 0
-                  ? `${itemCount} item${itemCount === 1 ? "" : "s"}`
-                  : "Empty bag"}
+                  ? `${itemCount} ${storefrontMessage(locale, itemCount === 1 ? "item" : "items")}`
+                  : storefrontMessage(locale, "emptyBasket")}
               </p>
-              <p className="font-mono text-[16px] tabular-nums">
+              <p className="ltr-isolate font-mono text-[16px] tabular-nums">
                 {basket
                   ? formatMoneyMinor(
                       basket.provisionalSubtotalMinor,
                       basket.currency,
                       basket.locale,
                     )
-                  : formatMoneyMinor(0, "AED", "en")}
+                  : formatMoneyMinor(0, "AED", locale)}
               </p>
             </div>
             <div className="flex shrink-0 gap-2">
               {step > 0 ? (
                 <Button variant="secondary" size="md" onClick={goBack}>
-                  Back
+                  {storefrontMessage(locale, "back")}
                 </Button>
               ) : null}
               <Button
@@ -268,7 +294,11 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
                 onClick={advance}
                 disabled={step === 0 ? !canLeaveWhere : !canLeaveMenu}
               >
-                {step === 0 ? "Choose drinks" : step === 1 ? "Review bag" : "Checkout"}
+                {step === 0
+                  ? storefrontMessage(locale, "chooseDrinks")
+                  : step === 1
+                    ? storefrontMessage(locale, "reviewBag")
+                    : storefrontMessage(locale, "checkout")}
               </Button>
             </div>
           </div>
@@ -281,18 +311,20 @@ export function OrderFlow({ menuResult }: { menuResult: MenuLoadResult }) {
 function SegmentedFulfilment({
   value,
   onChange,
+  locale,
 }: {
   value: Fulfilment;
   onChange: (value: Fulfilment) => void;
+  locale: StorefrontLocale;
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="t-label">Fulfilment</span>
+      <span className="t-label">{storefrontMessage(locale, "fulfilment")}</span>
       <div className="flex flex-wrap gap-2">
         {(
           [
-            { value: "pickup", label: "Collect from a café" },
-            { value: "delivery", label: "Post me beans" },
+            { value: "pickup", label: storefrontMessage(locale, "fulfilmentPickup") },
+            { value: "delivery", label: storefrontMessage(locale, "fulfilmentDelivery") },
           ] as const
         ).map((option) => (
           <button

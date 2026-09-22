@@ -15,6 +15,7 @@
     "verify:qos-78": "node scripts/verify-qos-78.mjs",
     "verify:qos-41": "node scripts/verify-qos-41.mjs",
     "verify:qos-75-locale": "node scripts/verify-qos-75-locale.mjs",
+    "verify:qos-103": "node scripts/verify-qos-103-locale-chrome.mjs",
     "verify:qos-91": "node scripts/verify-qos-91.mjs",
     "verify:qos-93": "node scripts/verify-qos-93.mjs",
     "verify:qos-94": "node scripts/verify-qos-94.mjs",

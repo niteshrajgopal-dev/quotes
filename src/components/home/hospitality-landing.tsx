@@ -12,7 +12,9 @@ import {
 } from "@/lib/storefront/hospitality-assets";
 import type { StorefrontManifestLocation } from "@/lib/storefront/manifest-types";
 import { formatMoneyMinor } from "@/lib/qos/money";
+import { storefrontMessage } from "@/lib/locale/messages";
 import type { PublicMenuLocale, PublicMenuProduct } from "@/lib/qos/menu-types";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 
 const STATEMENTS = [
   {
@@ -83,12 +85,22 @@ type HospitalityLandingProps = {
 
 export function HospitalityLanding({
   brandName,
+  heroTitle,
+  heroSubtitle,
   locale,
   menuProducts,
   locations,
 }: HospitalityLandingProps) {
   const rootRef = useRef<HTMLElement>(null);
+  const storefrontLocale = useStorefrontLocale((state) => state.locale);
   useHospitalityLandingMotion(rootRef);
+
+  const titleLineOne = heroTitle.includes(" ")
+    ? heroTitle.slice(0, heroTitle.lastIndexOf(" "))
+    : heroTitle;
+  const titleLineTwo = heroTitle.includes(" ")
+    ? heroTitle.slice(heroTitle.lastIndexOf(" ") + 1)
+    : "";
 
   const curated = menuProducts.slice(0, 3);
   const featured = menuProducts.find((p) =>
@@ -142,34 +154,34 @@ export function HospitalityLanding({
               className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-latte"
             >
               <span className="block h-px w-7 bg-latte" />
-              Premium coffee
+              {storefrontMessage(storefrontLocale, "homeHeroKicker")}
             </div>
             <h1 className="t-display-hero text-balance">
               <span data-hero-line className="block overflow-hidden">
                 <span data-hero-word className="block">
-                  Coffee worth
+                  {titleLineOne}
                 </span>
               </span>
-              <span data-hero-line className="block overflow-hidden">
-                <span data-hero-word className="block text-latte">
-                  quoting.
+              {titleLineTwo ? (
+                <span data-hero-line className="block overflow-hidden">
+                  <span data-hero-word className="block text-latte">
+                    {titleLineTwo}
+                  </span>
                 </span>
-              </span>
+              ) : null}
             </h1>
             <p
               data-hero-sub
               className="max-w-[420px] text-pretty text-[clamp(16px,1.3vw,19px)] leading-[1.55] text-cream/78"
             >
-              Crafted with character.
-              <br />
-              Made for moments worth remembering.
+              {heroSubtitle}
             </p>
             <div data-hero-ctas className="flex flex-wrap gap-3">
               <MotionButtonLink href="/menu" variant="inverse-fill">
-                Explore the Menu
+                {storefrontMessage(storefrontLocale, "exploreMenu")}
               </MotionButtonLink>
               <MotionButtonLink href="/locations" variant="inverse-outline">
-                Find a Location
+                {storefrontMessage(storefrontLocale, "findLocation")}
               </MotionButtonLink>
             </div>
           </div>
@@ -284,7 +296,7 @@ export function HospitalityLanding({
               : null}
           </div>
           <MotionButtonLink data-curated-cta href="/menu" variant="inverse-outline" size="sm">
-            Explore our full menu
+            {storefrontMessage(storefrontLocale, "exploreFullMenu")}
           </MotionButtonLink>
         </div>
       </section>
@@ -361,7 +373,7 @@ export function HospitalityLanding({
             size="sm"
             className="absolute left-1/2 top-[64%] -translate-x-1/2 opacity-0"
           >
-            Order Now
+            {storefrontMessage(storefrontLocale, "orderNow")}
           </MotionButtonLink>
         </div>
         {[1, 2, 3].map((n) => (
@@ -812,10 +824,12 @@ export function HospitalityLanding({
               </p>
             </div>
             <div className="flex flex-col gap-3 text-sm">
-              <span className="mb-1.5 text-[11px] uppercase tracking-[0.18em] text-latte">Explore</span>
-              <Link href="/menu">Menu</Link>
-              <Link href="/locations">Locations</Link>
-              <Link href="/journal">Journal</Link>
+              <span className="mb-1.5 text-[11px] uppercase tracking-[0.18em] text-latte">
+                {storefrontMessage(storefrontLocale, "footerExplore")}
+              </span>
+              <Link href="/menu">{storefrontMessage(storefrontLocale, "navMenu")}</Link>
+              <Link href="/locations">{storefrontMessage(storefrontLocale, "navLocations")}</Link>
+              <Link href="/journal">{storefrontMessage(storefrontLocale, "navJournal")}</Link>
             </div>
             <div className="flex flex-col gap-3 text-sm">
               <span className="mb-1.5 text-[11px] uppercase tracking-[0.18em] text-latte">Follow</span>

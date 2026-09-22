@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { MenuBoard } from "@/components/menu/menu-board";
 import { MenuLocationPanel } from "@/components/menu/menu-location-panel";
 import { MenuContextNotice, MenuUnavailable } from "@/components/menu/menu-status";
+import { storefrontMessage } from "@/lib/locale/messages";
 import { getServerStorefrontLocale } from "@/lib/locale/locale.server";
 import { loadPublishedMenu } from "@/lib/qos/menu.server";
 import { resolveStorefrontContextFromHeaders } from "@/lib/storefront/context.server";
@@ -28,17 +29,17 @@ export default async function MenuPage() {
     <>
       {isHospitality ? (
         <HospitalityPageIntro
-          kicker="The menu"
-          title="Everything on the bar today."
-          lead="Search, browse by category, and add straight to your bag. Menus vary slightly by location."
+          kicker={storefrontMessage(locale, "menuKicker")}
+          title={storefrontMessage(locale, "menuTitle")}
+          lead={storefrontMessage(locale, "menuLead")}
         >
           <div className="mt-8 flex flex-wrap gap-3">
             <ButtonLink href="/order" size="lg" className="group">
-              Order ahead
+              {storefrontMessage(locale, "orderAhead")}
               <TravelArrow />
             </ButtonLink>
             <ButtonLink href="/locations" variant="secondary" size="lg">
-              Find a café
+              {storefrontMessage(locale, "findCafe")}
             </ButtonLink>
           </div>
         </HospitalityPageIntro>

@@ -1,19 +1,25 @@
+"use client";
+
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, Notice } from "@/components/ui/card";
+import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import type { MenuLoadResult } from "@/lib/qos/menu-types";
 
 export function MenuUnavailable({ result }: { result: MenuLoadResult }) {
+  const locale = useStorefrontLocale((state) => state.locale);
+
   if (result.status === "ok") {
     return null;
   }
 
   return (
     <EmptyState
-      title="Published menu unavailable"
+      title={storefrontMessage(locale, "menuUnavailableTitle")}
       body={result.error}
       action={
         <ButtonLink href="/locations" variant="secondary" size="sm">
-          View locations
+          {storefrontMessage(locale, "viewLocations")}
         </ButtonLink>
       }
     />
@@ -33,11 +39,15 @@ export function MenuContextNotice({
   locale: string;
   currency: string;
 }) {
+  const storefrontLocale = useStorefrontLocale((state) => state.locale);
+
   return (
     <Notice tone="info">
-      Showing <span className="font-medium text-fg">{menuDisplayName}</span> for{" "}
-      <span className="font-medium text-fg">{branchName}</span> · release{" "}
-      {releaseVersion} · {locale.toUpperCase()} · {currency}
+      {storefrontMessageWithValues(storefrontLocale, "branchMenuShowing", {
+        menu: menuDisplayName,
+        branch: branchName,
+      })}{" "}
+      · release {releaseVersion} · {locale.toUpperCase()} · {currency}
     </Notice>
   );
 }

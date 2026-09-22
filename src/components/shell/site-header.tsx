@@ -138,7 +138,7 @@ export function SiteHeader() {
                     className="hidden items-center gap-2 rounded-pill px-3 py-2 text-[13px] text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream md:inline-flex"
                   >
                     <Image src={shell.markSrc} alt="" width={12} height={12} className="h-3 w-3" />
-                    Bean card
+                    {storefrontMessage(locale, "navBeanCard")}
                   </Link>
                 ) : null}
                 <button
@@ -173,7 +173,7 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setNavOpen(true)}
-              aria-label="Open menu"
+              aria-label={storefrontMessage(locale, "openMenu")}
               aria-expanded={navOpen}
               className={cn(
                 "grid h-11 w-11 place-items-center rounded-pill border no-tap-highlight transition-colors md:hidden",
@@ -203,7 +203,7 @@ export function SiteHeader() {
             {hydrated && member ? (
               <StampProgress stamps={stamps} />
             ) : isHospitality ? (
-              <p className="t-caption">Join the bean card — eight cups, one free coffee.</p>
+              <p className="t-caption">{storefrontMessage(locale, "joinBeanCard")}</p>
             ) : null}
             <div className="flex flex-wrap gap-2">
               {SECONDARY_NAV.map((item) => (

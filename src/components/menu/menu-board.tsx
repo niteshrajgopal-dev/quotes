@@ -12,6 +12,8 @@ import { useQosBasket } from "@/lib/stores/qos-basket";
 import { formatMoneyMinor } from "@/lib/qos/money";
 import type { PublicMenuProduct, PublicMenuResponse } from "@/lib/qos/menu-types";
 import { MenuProductImage } from "@/components/menu/menu-product-image";
+import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
+import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import { cn } from "@/lib/cn";
 
 type CategoryFilter = "all" | string;
@@ -28,6 +30,7 @@ export function MenuBoard({
   openBagOnAdd?: boolean;
 }) {
   const { toast } = useToast();
+  const locale = useStorefrontLocale((state) => state.locale);
   const upsertProduct = useQosBasket((state) => state.upsertProduct);
   const setDrawerOpen = useCart((state) => state.setDrawerOpen);
 
@@ -69,8 +72,10 @@ export function MenuBoard({
       .then((added) => {
         if (added) {
           toast({
-            title: `${product.displayName} added`,
-            body: "Saved to your QOS basket.",
+            title: storefrontMessageWithValues(locale, "menuItemAdded", {
+              name: product.displayName,
+            }),
+            body: storefrontMessage(locale, "menuItemSaved"),
           });
           if (openBagOnAdd) {
             setDrawerOpen(true);
@@ -79,10 +84,12 @@ export function MenuBoard({
         }
 
         toast({
-          title: `Couldn't add ${product.displayName}`,
+          title: storefrontMessageWithValues(locale, "menuItemCouldntAdd", {
+            name: product.displayName,
+          }),
           body:
             useQosBasket.getState().error ??
-            "This item may not be on the menu for your selected café.",
+            storefrontMessage(locale, "menuItemNotOnMenu"),
           tone: "error",
         });
       })
@@ -93,22 +100,22 @@ export function MenuBoard({
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-4">
         <label className="relative block">
-          <span className="sr-only">Search the menu</span>
+          <span className="sr-only">{storefrontMessage(locale, "searchMenu")}</span>
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search the published menu…"
+            placeholder={storefrontMessage(locale, "searchMenuPlaceholder")}
             className="min-h-12 w-full rounded-sm border border-line bg-surface pr-4 pl-4 text-[15px] transition-colors duration-fast ease-brand hover:border-latte placeholder:text-muted/70"
           />
         </label>
 
         <FilterRail<CategoryFilter>
-          label="Menu categories"
+          label={storefrontMessage(locale, "menuCategories")}
           value={category}
           onChange={setCategory}
           options={[
-            { value: "all", label: "Everything", count: productTotal },
+            { value: "all", label: storefrontMessage(locale, "menuEverything"), count: productTotal },
             ...menu.sections.map((section) => ({
               value: section.publicId,
               label: section.displayName,
@@ -120,8 +127,8 @@ export function MenuBoard({
 
       {visibleSections.length === 0 ? (
         <EmptyState
-          title="Nothing matches that"
-          body={`No menu item matches “${query}”. Try another search or clear the filters.`}
+          title={storefrontMessage(locale, "menuNothingMatches")}
+          body={storefrontMessageWithValues(locale, "menuNothingMatchesBody", { query })}
           action={
             <Button
               variant="secondary"
@@ -131,7 +138,7 @@ export function MenuBoard({
                 setCategory("all");
               }}
             >
-              Clear filters
+              {storefrontMessage(locale, "clearFilters")}
             </Button>
           }
         />
@@ -153,7 +160,9 @@ export function MenuBoard({
                     ) : null}
                   </div>
                   <span className="hidden text-sm text-cream/60 sm:inline">
-                    {products.length} items
+                    {storefrontMessageWithValues(locale, "sectionItems", {
+                      count: products.length,
+                    })}
                   </span>
                 </div>
               </div>
@@ -190,6 +199,7 @@ function MenuRow({
   adding: boolean;
   onQuickAdd: () => void;
 }) {
+  const storefrontLocale = useStorefrontLocale((state) => state.locale);
   const unavailable = !product.eligibility.available;
 
   return (
@@ -217,7 +227,7 @@ function MenuRow({
         ) : null}
         {unavailable ? (
           <div className="mt-2">
-            <Badge tone="warning">Unavailable</Badge>
+            <Badge tone="warning">{storefrontMessage(storefrontLocale, "unavailable")}</Badge>
           </div>
         ) : null}
       </div>
@@ -229,9 +239,9 @@ function MenuRow({
           onClick={onQuickAdd}
           disabled={unavailable || adding}
           loading={adding}
-          loadingLabel="Adding"
+          loadingLabel={storefrontMessage(storefrontLocale, "adding")}
         >
-          Add
+          {storefrontMessage(storefrontLocale, "add")}
         </Button>
         <Link
           href={`/order?product=${product.productPublicId}`}
