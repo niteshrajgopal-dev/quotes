@@ -2,9 +2,11 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 
+import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
 import type { StorefrontShellNavItem } from "@/lib/storefront/theme-presets";
 
 export type StorefrontShellSnapshot = {
+  locale: StorefrontLocale;
   brandName: string;
   hostname: string;
   themePresetId: string;

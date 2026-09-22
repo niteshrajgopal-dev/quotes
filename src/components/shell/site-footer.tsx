@@ -6,14 +6,34 @@ import { TenantMark, TenantMarkDivider } from "@/components/brand/tenant-brand";
 import { Icon } from "@/components/brand/icons";
 import { SOCIALS } from "@/lib/fixtures/quotes-design-reference/brand";
 import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
-import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
+import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
 import { SECONDARY_NAV } from "./nav";
 import { useStorefrontShell } from "@/lib/stores/storefront-shell";
+
+function localizedSocialHandle(locale: StorefrontLocale, label: string, fallback: string) {
+  if (label === "WhatsApp") {
+    return storefrontMessage(locale, "footerMessageUs");
+  }
+
+  if (label === "Phone") {
+    return storefrontMessage(locale, "footerCallCafe");
+  }
+
+  return fallback;
+}
+
+function localizedSecondaryNavLabel(locale: StorefrontLocale, href: string, fallback: string) {
+  if (href === "/design-system") {
+    return storefrontMessage(locale, "footerDesignSystem");
+  }
+
+  return fallback;
+}
 
 export function SiteFooter() {
   const pathname = usePathname();
   const shell = useStorefrontShell();
-  const locale = useStorefrontLocale((state) => state.locale);
+  const locale = shell.locale;
   const isHospitality = shell.themePresetId === "hospitality_baseline";
   const showSocials = isHospitality;
 
@@ -86,7 +106,7 @@ export function SiteFooter() {
                     >
                       {social.label}
                       <span className="font-mono text-[11px] tracking-[0.06em] text-cream/45">
-                        {social.handle}
+                        {localizedSocialHandle(locale, social.label, social.handle)}
                       </span>
                     </a>
                   </li>
@@ -108,7 +128,7 @@ export function SiteFooter() {
                     href={item.href}
                     className="text-[14px] text-cream/70 transition-colors duration-fast ease-brand hover:text-cream"
                   >
-                    {item.label}
+                    {localizedSecondaryNavLabel(locale, item.href, item.label)}
                   </Link>
                 </li>
               ))}

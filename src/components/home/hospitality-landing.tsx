@@ -19,7 +19,6 @@ import {
   hospitalityOriginSteps,
 } from "@/lib/locale/hospitality-marketing";
 import type { PublicMenuLocale, PublicMenuProduct, PublicMenuSection } from "@/lib/qos/menu-types";
-import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 
 const PRODUCT_IMAGES = [
   "/tenants/hospitality/media/product-spanish-latte.png",
@@ -59,11 +58,10 @@ export function HospitalityLanding({
   locations,
 }: HospitalityLandingProps) {
   const rootRef = useRef<HTMLElement>(null);
-  const storefrontLocale = useStorefrontLocale((state) => state.locale);
   useHospitalityLandingMotion(rootRef);
-  const drinkStatements = hospitalityDrinkStatements(storefrontLocale);
-  const originSteps = hospitalityOriginSteps(storefrontLocale);
-  const featureIngredients = hospitalityFeatureIngredients(storefrontLocale);
+  const drinkStatements = hospitalityDrinkStatements(locale);
+  const originSteps = hospitalityOriginSteps(locale);
+  const featureIngredients = hospitalityFeatureIngredients(locale);
 
   const titleLineOne = heroTitle.includes(" ")
     ? heroTitle.slice(0, heroTitle.lastIndexOf(" "))
@@ -140,7 +138,7 @@ export function HospitalityLanding({
               className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-latte"
             >
               <span className="block h-px w-7 bg-latte" />
-              {storefrontMessage(storefrontLocale, "homeHeroKicker")}
+              {storefrontMessage(locale, "homeHeroKicker")}
             </div>
             <h1 className="t-display-hero text-balance">
               <span data-hero-line className="block overflow-hidden">
@@ -164,10 +162,10 @@ export function HospitalityLanding({
             </p>
             <div data-hero-ctas className="flex flex-wrap gap-3">
               <MotionButtonLink href="/menu" variant="inverse-fill">
-                {storefrontMessage(storefrontLocale, "exploreMenu")}
+                {storefrontMessage(locale, "exploreMenu")}
               </MotionButtonLink>
               <MotionButtonLink href="/locations" variant="inverse-outline">
-                {storefrontMessage(storefrontLocale, "findLocation")}
+                {storefrontMessage(locale, "findLocation")}
               </MotionButtonLink>
             </div>
           </div>
@@ -221,7 +219,7 @@ export function HospitalityLanding({
           aria-hidden
           className="pointer-events-none absolute left-0 top-0 select-none whitespace-nowrap font-serif text-[clamp(84px,15vw,250px)] leading-none tracking-[-0.02em] text-latte opacity-55"
         >
-          {storefrontMessage(storefrontLocale, "homeCuratedMarquee")}
+          {storefrontMessage(locale, "homeCuratedMarquee")}
         </div>
         <div className="relative mx-auto mt-[clamp(60px,10vw,160px)] flex max-w-[1100px] flex-col items-center gap-10">
           <div
@@ -270,7 +268,7 @@ export function HospitalityLanding({
                         </span>
                         <Link
                           href={`/order?product=${product.productPublicId}`}
-                          aria-label={storefrontMessageWithValues(storefrontLocale, "addProduct", {
+                          aria-label={storefrontMessageWithValues(locale, "addProduct", {
                             name: product.displayName,
                           })}
                           className="grid h-[30px] w-[30px] place-items-center rounded-full bg-latte text-lg leading-none text-espresso"
@@ -284,7 +282,7 @@ export function HospitalityLanding({
               : null}
           </div>
           <MotionButtonLink data-curated-cta href="/menu" variant="inverse-outline" size="sm">
-            {storefrontMessage(storefrontLocale, "exploreFullMenu")}
+            {storefrontMessage(locale, "exploreFullMenu")}
           </MotionButtonLink>
         </div>
       </section>
@@ -297,7 +295,7 @@ export function HospitalityLanding({
         <div data-drinks-title className="absolute left-1/2 top-[clamp(88px,13vh,130px] flex -translate-x-1/2 items-center gap-2.5 whitespace-nowrap">
           <Image src="/tenants/hospitality/media/logo-cream.png" alt={brandName} width={112} height={28} className="h-[clamp(20px,2vw,28px)] w-auto" />
           <span className="text-[clamp(14px,1.3vw,18px)] uppercase tracking-[0.14em] text-cream/60">
-            {storefrontMessage(storefrontLocale, "homeBrandIs")}
+            {storefrontMessage(locale, "homeBrandIs")}
           </span>
         </div>
         <div className="absolute left-1/2 top-1/2 h-[min(70vh,760px)] w-[min(100%,1200px)] -translate-x-1/2 -translate-y-1/2">
@@ -361,7 +359,7 @@ export function HospitalityLanding({
             size="sm"
             className="absolute left-1/2 top-[64%] -translate-x-1/2 opacity-0"
           >
-            {storefrontMessage(storefrontLocale, "orderNow")}
+            {storefrontMessage(locale, "orderNow")}
           </MotionButtonLink>
         </div>
         {[1, 2, 3].map((n) => (
@@ -411,10 +409,10 @@ export function HospitalityLanding({
           >
             <div className="flex flex-col gap-[18px]">
               <h2 className="text-balance font-serif text-[clamp(28px,3.4vw,52px)] leading-none tracking-[-0.02em]">
-                {storefrontMessage(storefrontLocale, "homeBandTitle")}
+                {storefrontMessage(locale, "homeBandTitle")}
               </h2>
               <MotionButtonLink href="/shop" variant="inverse-fill">
-                {storefrontMessage(storefrontLocale, "homeShopBeans")}
+                {storefrontMessage(locale, "homeShopBeans")}
               </MotionButtonLink>
             </div>
             <div
@@ -456,13 +454,13 @@ export function HospitalityLanding({
           data-statement-line="1"
           className="whitespace-nowrap pl-[6vw] font-serif text-[clamp(72px,13vw,220px)] leading-[0.95] tracking-[-0.03em]"
         >
-          {storefrontMessage(storefrontLocale, "homeEveryCupLine1")}
+          {storefrontMessage(locale, "homeEveryCupLine1")}
         </div>
         <div
           data-statement-line="2"
           className="whitespace-nowrap pl-[26vw] font-serif text-[clamp(72px,13vw,220px)] leading-[0.95] tracking-[-0.03em] text-mocha"
         >
-          {storefrontMessage(storefrontLocale, "homeEveryCupLine2")}
+          {storefrontMessage(locale, "homeEveryCupLine2")}
           <span className="text-latte">.</span>
         </div>
         <div
@@ -481,7 +479,7 @@ export function HospitalityLanding({
           data-statement-copy
           className="mx-[6vw] mt-16 max-w-[460px] text-pretty text-[clamp(16px,1.2vw,18px)] leading-normal text-mocha"
         >
-          {storefrontMessage(storefrontLocale, "homeEveryCupBody")}
+          {storefrontMessage(locale, "homeEveryCupBody")}
         </p>
       </section>
 
@@ -494,17 +492,17 @@ export function HospitalityLanding({
           <div className="col-span-12 flex flex-col gap-6 md:sticky md:top-[20vh] lg:col-span-5">
             <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-mocha">
               <span className="block h-px w-6 bg-mocha" />
-              {storefrontMessage(storefrontLocale, "homeCraftKicker")}
+              {storefrontMessage(locale, "homeCraftKicker")}
             </div>
             <h2 className="t-section-title">
               <span data-reveal-line className="mb-[-0.08em] block overflow-hidden pb-[0.08em]">
                 <span data-reveal-word className="block">
-                  {storefrontMessage(storefrontLocale, "homeOriginLine1")}
+                  {storefrontMessage(locale, "homeOriginLine1")}
                 </span>
               </span>
               <span data-reveal-line className="mb-[-0.08em] block overflow-hidden pb-[0.08em]">
                 <span data-reveal-word className="block">
-                  {storefrontMessage(storefrontLocale, "homeOriginLine2")}
+                  {storefrontMessage(locale, "homeOriginLine2")}
                   <span className="text-latte">.</span>
                 </span>
               </span>
@@ -548,25 +546,25 @@ export function HospitalityLanding({
           <div className="flex flex-col gap-6 md:sticky md:top-[20vh]">
             <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-latte">
               <span className="block h-px w-6 bg-latte" />
-              {storefrontMessage(storefrontLocale, "homeMenuSectionKicker")}
+              {storefrontMessage(locale, "homeMenuSectionKicker")}
             </div>
             <h2 className="t-section-title">
               <span data-reveal-line className="mb-[-0.08em] block overflow-hidden pb-[0.08em]">
                 <span data-reveal-word className="block">
-                  {storefrontMessage(storefrontLocale, "homeMenuLine1")}
+                  {storefrontMessage(locale, "homeMenuLine1")}
                 </span>
               </span>
               <span data-reveal-line className="mb-[-0.08em] block overflow-hidden pb-[0.08em]">
                 <span data-reveal-word className="block text-latte">
-                  {storefrontMessage(storefrontLocale, "homeMenuLine2")}.
+                  {storefrontMessage(locale, "homeMenuLine2")}.
                 </span>
               </span>
             </h2>
             <p className="max-w-[380px] text-base leading-normal text-cream/72">
-              {storefrontMessage(storefrontLocale, "homeMenuSectionBlurb")}
+              {storefrontMessage(locale, "homeMenuSectionBlurb")}
             </p>
             <MotionButtonLink href="/menu" variant="inverse-outline">
-              {storefrontMessage(storefrontLocale, "homeSeeFullMenu")}
+              {storefrontMessage(locale, "homeSeeFullMenu")}
             </MotionButtonLink>
           </div>
           <div data-menu-list className="flex flex-col border-t border-cream/14">
@@ -586,7 +584,7 @@ export function HospitalityLanding({
                 </span>
                 <span className="flex items-center gap-3.5 whitespace-nowrap text-[13px] text-cream/60">
                   <span>
-                    {storefrontMessageWithValues(storefrontLocale, "sectionItems", {
+                    {storefrontMessageWithValues(locale, "sectionItems", {
                       count: category.count,
                     })}
                   </span>
@@ -614,7 +612,7 @@ export function HospitalityLanding({
           <div className="flex min-w-0 flex-col gap-5">
             <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-latte">
               <span className="block h-px w-6 bg-latte" />
-              {storefrontMessage(storefrontLocale, "homeFeaturedKicker")}
+              {storefrontMessage(locale, "homeFeaturedKicker")}
             </div>
             <div className="relative h-[1em] overflow-hidden text-[clamp(30px,3.6vw,60px)]">
               {featureTitles.map((title, i) => (
@@ -640,7 +638,7 @@ export function HospitalityLanding({
             </div>
             <div data-feature-cta className="mt-2 flex items-center gap-3">
               <MotionButtonLink href="/order" variant="inverse-fill">
-                {storefrontMessageWithValues(storefrontLocale, "homeOrderThe", {
+                {storefrontMessageWithValues(locale, "homeOrderThe", {
                   name: featured?.displayName ?? "",
                 })}
               </MotionButtonLink>
@@ -693,13 +691,13 @@ export function HospitalityLanding({
               className="mt-5 grid grid-cols-[auto_auto] justify-end gap-x-6 gap-y-1.5 text-right text-[13px] opacity-0"
             >
               <span className="text-cream/55">
-                {storefrontMessage(storefrontLocale, "homeFeatureRoast")}
+                {storefrontMessage(locale, "homeFeatureRoast")}
               </span>
-              <span>{storefrontMessage(storefrontLocale, "homeFeatureRoastValue")}</span>
+              <span>{storefrontMessage(locale, "homeFeatureRoastValue")}</span>
               <span className="text-cream/55">
-                {storefrontMessage(storefrontLocale, "homeFeatureOrigin")}
+                {storefrontMessage(locale, "homeFeatureOrigin")}
               </span>
-              <span>{storefrontMessage(storefrontLocale, "homeFeatureOriginValue")}</span>
+              <span>{storefrontMessage(locale, "homeFeatureOriginValue")}</span>
             </div>
           </div>
         </div>
@@ -715,7 +713,7 @@ export function HospitalityLanding({
             <h2 className="t-section-title">
               <span data-reveal-line className="mb-[-0.08em] block overflow-hidden pb-[0.08em]">
                 <span data-reveal-word className="block">
-                  {storefrontMessageWithValues(storefrontLocale, "homeFindYourBrand", {
+                  {storefrontMessageWithValues(locale, "homeFindYourBrand", {
                     name: brandName.split(" ")[0],
                   })}
                   <span className="text-latte">.</span>
@@ -723,7 +721,7 @@ export function HospitalityLanding({
               </span>
             </h2>
             <p className="max-w-[340px] text-[15px] leading-normal text-mocha">
-              {storefrontMessage(storefrontLocale, "homeLocationsBlurb")}
+              {storefrontMessage(locale, "homeLocationsBlurb")}
             </p>
           </div>
           <div
@@ -754,13 +752,13 @@ export function HospitalityLanding({
                     </span>
                   </div>
                   <p className="text-sm leading-normal text-mocha">
-                    {storefrontMessage(storefrontLocale, "homePublishedBranch")}
+                    {storefrontMessage(locale, "homePublishedBranch")}
                   </p>
                   <Link
                     href={`/locations#${location.slug}`}
                     className="inline-flex items-center gap-2.5 self-start border-b border-espresso pb-0.5 text-sm font-semibold transition-colors hover:border-latte hover:text-mocha"
                   >
-                    {storefrontMessage(storefrontLocale, "homeGetDirections")}{" "}
+                    {storefrontMessage(locale, "homeGetDirections")}{" "}
                     <span aria-hidden>→</span>
                   </Link>
                 </div>
@@ -789,19 +787,19 @@ export function HospitalityLanding({
           />
           <div className="relative flex flex-col gap-4">
             <div className="text-xs font-medium uppercase tracking-[0.18em] text-latte">
-              {storefrontMessageWithValues(storefrontLocale, "homeRewardsKicker", {
+              {storefrontMessageWithValues(locale, "homeRewardsKicker", {
                 brand: brandName,
               })}
             </div>
             <h2 className="text-balance font-serif text-[clamp(32px,3.6vw,56px)] leading-none tracking-[-0.02em]">
-              {storefrontMessage(storefrontLocale, "homeRewardsTitle")}
+              {storefrontMessage(locale, "homeRewardsTitle")}
             </h2>
             <p className="max-w-[440px] text-pretty text-[15px] leading-normal text-cream/72">
-              {storefrontMessage(storefrontLocale, "homeRewardsBody")}
+              {storefrontMessage(locale, "homeRewardsBody")}
             </p>
           </div>
           <MotionButtonLink href="/loyalty" variant="inverse-outline" className="relative whitespace-nowrap">
-            {storefrontMessage(storefrontLocale, "homeJoinRewards")}
+            {storefrontMessage(locale, "homeJoinRewards")}
           </MotionButtonLink>
         </div>
       </section>
@@ -812,20 +810,20 @@ export function HospitalityLanding({
             <div className="flex flex-col gap-5">
               <Image src="/tenants/hospitality/media/logo-cream.png" alt={brandName} width={140} height={36} className="h-9 w-auto self-start" />
               <p className="max-w-[320px] text-sm leading-normal text-cream/60">
-                {storefrontMessage(storefrontLocale, "homeFooterTagline")}
+                {storefrontMessage(locale, "homeFooterTagline")}
               </p>
             </div>
             <div className="flex flex-col gap-3 text-sm">
               <span className="mb-1.5 text-[11px] uppercase tracking-[0.18em] text-latte">
-                {storefrontMessage(storefrontLocale, "footerExplore")}
+                {storefrontMessage(locale, "footerExplore")}
               </span>
-              <Link href="/menu">{storefrontMessage(storefrontLocale, "navMenu")}</Link>
-              <Link href="/locations">{storefrontMessage(storefrontLocale, "navLocations")}</Link>
-              <Link href="/journal">{storefrontMessage(storefrontLocale, "navJournal")}</Link>
+              <Link href="/menu">{storefrontMessage(locale, "navMenu")}</Link>
+              <Link href="/locations">{storefrontMessage(locale, "navLocations")}</Link>
+              <Link href="/journal">{storefrontMessage(locale, "navJournal")}</Link>
             </div>
             <div className="flex flex-col gap-3 text-sm">
               <span className="mb-1.5 text-[11px] uppercase tracking-[0.18em] text-latte">
-                {storefrontMessage(storefrontLocale, "footerFollow")}
+                {storefrontMessage(locale, "footerFollow")}
               </span>
               <a href="https://instagram.com" rel="noreferrer noopener">
                 Instagram
@@ -844,8 +842,8 @@ export function HospitalityLanding({
           <div className="flex flex-wrap justify-between gap-5 border-t border-cream/12 pt-5 text-xs text-cream/50">
             <span>© 2026 {brandName}</span>
             <div className="flex gap-5">
-              <Link href="/journal">{storefrontMessage(storefrontLocale, "privacy")}</Link>
-              <Link href="/journal">{storefrontMessage(storefrontLocale, "terms")}</Link>
+              <Link href="/journal">{storefrontMessage(locale, "privacy")}</Link>
+              <Link href="/journal">{storefrontMessage(locale, "terms")}</Link>
             </div>
           </div>
         </div>

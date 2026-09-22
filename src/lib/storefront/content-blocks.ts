@@ -1,3 +1,4 @@
+import { storefrontMessage } from "@/lib/locale/messages";
 import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
 import { resolveLocalizedCopy } from "@/lib/storefront/localized-copy";
 import type { StorefrontManifestContentBlock } from "@/lib/storefront/manifest-types";
@@ -15,6 +16,10 @@ const CONTENT_COPY: Record<
     "home.hero.subtitle": {
       en: "We roast in small batches, pour it in our cafés, and post it anywhere in the country the next morning.",
       ar: "نحمص بكميات صغيرة، نقدّمها في مقاهينا، ونرسلها في كل أنحاء البلاد صباح اليوم التالي.",
+    },
+    "footer.statement": {
+      en: "Some conversations deserve another coffee.",
+      ar: "بعض المحادثات تستحق فنجانًا آخر.",
     },
   },
   generic_retail_baseline: {
@@ -153,12 +158,18 @@ export function resolveFooterStatement(
   locale: StorefrontLocale,
   fallback: string,
 ) {
+  const localizedFallback =
+    resolveCopyKey(presetId, "footer.statement", locale) ||
+    storefrontMessage(locale, "footerTagline");
+
   const block = findFooterContentBlock(contentBlocks);
   if (!block) {
-    return fallback;
+    return localizedFallback || fallback;
   }
 
   return (
-    resolveLocalizedCopy(block.props.statement, locale, fallback) || fallback
+    resolveLocalizedCopy(block.props.statement, locale, localizedFallback || fallback) ||
+    localizedFallback ||
+    fallback
   );
 }
