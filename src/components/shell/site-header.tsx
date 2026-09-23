@@ -64,6 +64,21 @@ export function SiteHeader() {
           scrolled ? "pt-2" : overlayHome ? "pt-[22px]" : "pt-3",
         )}
       >
+        {shell.localeSelectorEnabled ? (
+          <div
+            data-locale-selector-anchor
+            className={cn(
+              "pointer-events-auto absolute z-[60] end-[clamp(16px,4vw,48px)]",
+              overlayHome && !scrolled ? "top-2" : "top-1.5",
+            )}
+          >
+            <LocaleSelector
+              mini
+              onDark={isHospitality}
+              supportedLocales={shell.supportedLocales}
+            />
+          </div>
+        ) : null}
         <motion.nav
           data-nav-bar
           layout
@@ -117,14 +132,6 @@ export function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            {shell.localeSelectorEnabled ? (
-              <LocaleSelector
-                compact
-                onDark={isHospitality}
-                supportedLocales={shell.supportedLocales}
-                className="hidden md:inline-flex"
-              />
-            ) : null}
             {overlayHome ? (
               <Link
                 href="/order"
@@ -198,9 +205,6 @@ export function SiteHeader() {
         description={shell.footerStatement}
         footer={
           <div className="flex flex-col gap-3">
-            {shell.localeSelectorEnabled ? (
-              <LocaleSelector supportedLocales={shell.supportedLocales} />
-            ) : null}
             <CustomerAccountMenu compact returnTo="/checkout" onNavigate={closeNav} />
             {hydrated && member ? (
               <StampProgress stamps={stamps} />
