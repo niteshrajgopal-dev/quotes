@@ -7,11 +7,18 @@ import { FilterRail } from "@/components/ui/tabs";
 import { Icon } from "@/components/brand/icons";
 import { CoffeeCard } from "@/components/product/coffee-card";
 import { COFFEES, ROASTS, type Roast } from "@/lib/fixtures/quotes-design-reference/catalog";
+import {
+  shopRoastLabel,
+  storefrontMessage,
+  storefrontMessageWithValues,
+} from "@/lib/locale/messages";
+import { useStorefrontChromeLocale } from "@/lib/stores/storefront-shell";
 
 type RoastFilter = "all" | Roast;
 type Sort = "featured" | "price-asc" | "price-desc";
 
 export function ShopGrid() {
+  const locale = useStorefrontChromeLocale();
   const [roast, setRoast] = useState<RoastFilter>("all");
   const [sort, setSort] = useState<Sort>("featured");
   const [query, setQuery] = useState("");
@@ -43,11 +50,16 @@ export function ShopGrid() {
   const roastCount = (value: Roast) =>
     COFFEES.filter((coffee) => coffee.roast === value).length;
 
+  const countLabel =
+    results.length === 1
+      ? storefrontMessageWithValues(locale, "shopCountOne", { count: results.length })
+      : storefrontMessageWithValues(locale, "shopCountMany", { count: results.length });
+
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
         <label className="relative block flex-1">
-          <span className="sr-only">Search coffee</span>
+          <span className="sr-only">{storefrontMessage(locale, "shopSearchLabel")}</span>
           <Icon
             name="search"
             className="pointer-events-none absolute top-1/2 left-3.5 h-4.5 w-4.5 -translate-y-1/2 text-muted"
@@ -57,48 +69,52 @@ export function ShopGrid() {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search origin, or a tasting note like “jasmine”"
+            placeholder={storefrontMessage(locale, "shopSearchPlaceholder")}
             className="min-h-12 w-full rounded-sm border border-line bg-surface pr-4 pl-11 text-[15px] transition-colors duration-fast ease-brand hover:border-latte placeholder:text-muted/70"
           />
         </label>
 
         <label className="flex items-center gap-3 lg:shrink-0">
-          <span className="t-label shrink-0">Sort</span>
+          <span className="t-label shrink-0">{storefrontMessage(locale, "shopSort")}</span>
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as Sort)}
             className="min-h-12 rounded-sm border border-line bg-surface px-3.5 pr-8 text-[14px] transition-colors duration-fast ease-brand hover:border-latte"
           >
-            <option value="featured">Featured first</option>
-            <option value="price-asc">Price · low to high</option>
-            <option value="price-desc">Price · high to low</option>
+            <option value="featured">{storefrontMessage(locale, "shopSortFeatured")}</option>
+            <option value="price-asc">{storefrontMessage(locale, "shopSortPriceAsc")}</option>
+            <option value="price-desc">{storefrontMessage(locale, "shopSortPriceDesc")}</option>
           </select>
         </label>
       </div>
 
       <FilterRail<RoastFilter>
-        label="Roast level"
+        label={storefrontMessage(locale, "shopRoastLevel")}
         value={roast}
         onChange={setRoast}
         options={[
-          { value: "all", label: "All roasts", count: COFFEES.length },
+          { value: "all", label: storefrontMessage(locale, "shopAllRoasts"), count: COFFEES.length },
           ...ROASTS.filter((value) => roastCount(value) > 0).map((value) => ({
             value,
-            label: value,
+            label: shopRoastLabel(locale, value),
             count: roastCount(value),
           })),
         ]}
       />
 
       <p aria-live="polite" className="t-caption">
-        {results.length} coffee{results.length === 1 ? "" : "s"}
-        {roast === "all" ? "" : ` · ${roast} roast`}
+        {countLabel}
+        {roast === "all"
+          ? ""
+          : ` · ${storefrontMessageWithValues(locale, "shopRoastSuffix", {
+              roast: shopRoastLabel(locale, roast),
+            })}`}
       </p>
 
       {results.length === 0 ? (
         <EmptyState
-          title="No coffee matches that"
-          body={`Nothing on the shelf matches “${query}”. Try an origin like “Ethiopia”, or a note like “chocolate”.`}
+          title={storefrontMessage(locale, "shopNoMatches")}
+          body={storefrontMessageWithValues(locale, "shopNoMatchesBody", { query })}
           action={
             <Button
               variant="secondary"
@@ -108,7 +124,7 @@ export function ShopGrid() {
                 setRoast("all");
               }}
             >
-              Clear filters
+              {storefrontMessage(locale, "clearFilters")}
             </Button>
           }
         />

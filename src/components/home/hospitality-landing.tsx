@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { useHospitalityLandingMotion } from "@/components/home/use-hospitality-landing-motion";
 import { MotionButtonLink } from "@/components/ui/motion-button";
+import { MenuProductImage } from "@/components/menu/menu-product-image";
 import {
   hospitalityVenuePhoto,
   hospitalityVenueTag,
@@ -19,24 +20,6 @@ import {
   hospitalityOriginSteps,
 } from "@/lib/locale/hospitality-marketing";
 import type { PublicMenuLocale, PublicMenuProduct, PublicMenuSection } from "@/lib/qos/menu-types";
-
-const PRODUCT_IMAGES = [
-  "/tenants/hospitality/media/product-spanish-latte.png",
-  "/tenants/hospitality/media/product-flat-white.png",
-  "/tenants/hospitality/media/product-cold-brew.png",
-  "/tenants/hospitality/media/product-espresso.png",
-  "/tenants/hospitality/media/product-iced-latte.png",
-] as const;
-
-function productImageFor(name: string, index: number): string {
-  const lower = name.toLowerCase();
-  if (lower.includes("latte")) return "/tenants/hospitality/media/product-spanish-latte.png";
-  if (lower.includes("flat white")) return "/tenants/hospitality/media/product-flat-white.png";
-  if (lower.includes("cold brew")) return "/tenants/hospitality/media/product-cold-brew.png";
-  if (lower.includes("espresso")) return "/tenants/hospitality/media/product-espresso.png";
-  if (lower.includes("iced")) return "/tenants/hospitality/media/product-iced-latte.png";
-  return PRODUCT_IMAGES[index % PRODUCT_IMAGES.length];
-}
 
 type HospitalityLandingProps = {
   brandName: string;
@@ -227,7 +210,7 @@ export function HospitalityLanding({
             className="grid w-full grid-cols-1 gap-[clamp(14px,2vw,28px)] sm:grid-cols-3"
           >
             {curated.length > 0
-              ? curated.map((product, index) => (
+              ? curated.map((product) => (
                   <motion.div
                     key={product.productPublicId}
                     data-curated-item
@@ -238,12 +221,11 @@ export function HospitalityLanding({
                       data-curated-cup
                       className="absolute top-0 left-1/2 z-2 aspect-[3/4] w-[clamp(150px,15vw,220px)] -translate-x-1/2 overflow-hidden rounded-md drop-shadow-[0_40px_50px_-20px_rgba(0,0,0,.6)]"
                     >
-                      <Image
-                        src={productImageFor(product.displayName, index)}
+                      <MenuProductImage
+                        mediaAssetId={product.mediaAssetId}
                         alt={product.displayName}
-                        fill
-                        className="object-cover"
-                        sizes="220px"
+                        size="detail"
+                        className="h-full w-full border-0"
                       />
                     </div>
                     <div
@@ -259,7 +241,7 @@ export function HospitalityLanding({
                         </p>
                       ) : null}
                       <div className="mt-1.5 flex items-center gap-3">
-                        <span className="font-mono text-base tabular-nums">
+                        <span className="ltr-isolate font-mono text-base tabular-nums">
                           {formatMoneyMinor(
                             product.price.amountMinor,
                             product.price.currency,
@@ -643,7 +625,10 @@ export function HospitalityLanding({
                 })}
               </MotionButtonLink>
               {featured ? (
-                <span data-feature-price className="font-mono text-[15px] tabular-nums text-cream/80">
+                <span
+                  data-feature-price
+                  className="ltr-isolate font-mono text-[15px] tabular-nums text-cream/80"
+                >
                   {formatMoneyMinor(featured.price.amountMinor, featured.price.currency, locale)}
                 </span>
               ) : null}
@@ -654,12 +639,11 @@ export function HospitalityLanding({
             className="relative flex justify-center drop-shadow-[0_70px_60px_rgba(0,0,0,.45)]"
           >
             <div data-feature-cup className="relative aspect-[3/4] w-[clamp(200px,22vw,320px)] overflow-hidden rounded-md max-md:w-[38vw]">
-              <Image
-                src="/tenants/hospitality/media/product-spanish-latte.png"
-                alt={featured?.displayName ?? "Spanish Latte"}
-                fill
-                className="object-cover"
-                sizes="320px"
+              <MenuProductImage
+                mediaAssetId={featured?.mediaAssetId ?? null}
+                alt={featured?.displayName ?? ""}
+                size="detail"
+                className="h-full w-full max-w-none border-0"
               />
             </div>
             {[1, 2, 3].map((n) => (
