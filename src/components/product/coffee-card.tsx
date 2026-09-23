@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -5,7 +7,9 @@ import { BagPlate } from "@/components/ui/plate";
 import { Icon } from "@/components/brand/icons";
 import { formatPrice } from "@/lib/fixtures/quotes-design-reference/brand";
 import type { Coffee } from "@/lib/fixtures/quotes-design-reference/catalog";
+import { shopRoastLabel, storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/messages";
 import { shopCoffeeImage } from "@/lib/storefront/hospitality-assets";
+import { useStorefrontChromeLocale } from "@/lib/stores/storefront-shell";
 import { cn } from "@/lib/cn";
 
 export function CoffeeCard({
@@ -19,6 +23,7 @@ export function CoffeeCard({
   index?: number;
   variant?: "light" | "dark";
 }) {
+  const locale = useStorefrontChromeLocale();
   const from = coffee.sizes[0];
   const soldOut = coffee.stock === "sold-out";
 
@@ -39,11 +44,17 @@ export function CoffeeCard({
             />
             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
               {coffee.limited ? (
-                <Badge tone="latte">Limited</Badge>
+                <Badge tone="latte">{storefrontMessage(locale, "shopLimited")}</Badge>
               ) : null}
-              {coffee.decaf ? <Badge tone="info">Decaf</Badge> : null}
-              {coffee.stock === "low-stock" ? <Badge tone="warning">Low stock</Badge> : null}
-              {soldOut ? <Badge tone="espresso">Sold out</Badge> : null}
+              {coffee.decaf ? (
+                <Badge tone="info">{storefrontMessage(locale, "shopDecaf")}</Badge>
+              ) : null}
+              {coffee.stock === "low-stock" ? (
+                <Badge tone="warning">{storefrontMessage(locale, "shopLowStock")}</Badge>
+              ) : null}
+              {soldOut ? (
+                <Badge tone="espresso">{storefrontMessage(locale, "shopSoldOut")}</Badge>
+              ) : null}
             </div>
           </div>
 
@@ -52,7 +63,7 @@ export function CoffeeCard({
               <h3 className="font-serif text-[clamp(22px,2vw,26px)] tracking-[-0.02em]">
                 {coffee.name}
               </h3>
-              <span className="font-mono text-[15px] tabular-nums text-cream/90">
+              <span className="ltr-isolate font-mono text-[15px] tabular-nums text-cream/90">
                 {soldOut ? "—" : formatPrice(from.price)}
               </span>
             </div>
@@ -68,9 +79,15 @@ export function CoffeeCard({
               ))}
             </div>
             <div className="flex items-center justify-between gap-3 border-t border-cream/10 pt-4">
-              <span className="text-[13px] text-cream/60">{coffee.roast} roast</span>
+              <span className="text-[13px] text-cream/60">
+                {storefrontMessageWithValues(locale, "shopRoastSuffix", {
+                  roast: shopRoastLabel(locale, coffee.roast),
+                })}
+              </span>
               <span className="inline-flex items-center gap-2 text-[13.5px] font-medium">
-                {soldOut ? "Details" : "Choose"}
+                {soldOut
+                  ? storefrontMessage(locale, "shopDetails")
+                  : storefrontMessage(locale, "shopChoose")}
                 <Icon
                   name="arrow"
                   className="h-4 w-4 text-latte transition-transform duration-std ease-brand group-hover:translate-x-1"

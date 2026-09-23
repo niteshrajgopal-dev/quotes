@@ -206,6 +206,45 @@ const MESSAGES = {
     homeJoinRewards: "Join Rewards",
     homeFooterTagline: "Premium coffee, made for moments worth remembering.",
     homeFindYourBrand: "Find your {name}",
+    shopKicker: "Shop",
+    shopTitle: "Six coffees, honestly described.",
+    shopLead:
+      "Everything here was roasted this week in Ancoats. Tasting notes are what we actually taste on the cupping table, not what reads well on a bag.",
+    shopHowRoastTitle: "How we roast",
+    shopHowRoastSub:
+      "Two roast days a week, on a 15kg drum, profiled per lot rather than per bag size.",
+    shopPlateTuesdayKicker: "Tuesday · light",
+    shopPlateTuesdayCaption: "Single origins profiled to keep acidity and florals intact.",
+    shopPlateFridayKicker: "Friday · dark",
+    shopPlateFridayCaption: "Blends developed longer for body under milk.",
+    shopPlatePostedKicker: "Same week · posted",
+    shopPlatePostedCaption: "Bagged with a one-way valve, tracked 24-hour, degassed on arrival.",
+    shopSearchLabel: "Search coffee",
+    shopSearchPlaceholder: "Search origin, or a tasting note like “jasmine”",
+    shopSort: "Sort",
+    shopSortFeatured: "Featured first",
+    shopSortPriceAsc: "Price · low to high",
+    shopSortPriceDesc: "Price · high to low",
+    shopRoastLevel: "Roast level",
+    shopAllRoasts: "All roasts",
+    shopCountOne: "{count} coffee",
+    shopCountMany: "{count} coffees",
+    shopRoastSuffix: "{roast} roast",
+    shopNoMatches: "No coffee matches that",
+    shopNoMatchesBody:
+      "Nothing on the shelf matches “{query}”. Try an origin like “Ethiopia”, or a note like “chocolate”.",
+    shopLimited: "Limited",
+    shopDecaf: "Decaf",
+    shopLowStock: "Low stock",
+    shopSoldOut: "Sold out",
+    shopChoose: "Choose",
+    shopDetails: "Details",
+    shopBackNextHarvest: "Back next harvest",
+    shopRoastLight: "Light",
+    shopRoastLightMedium: "Light–Medium",
+    shopRoastMedium: "Medium",
+    shopRoastMediumDark: "Medium–Dark",
+    shopRoastDark: "Dark",
   },
   ar: {
     localeLabel: "اللغة",
@@ -408,6 +447,44 @@ const MESSAGES = {
     homeJoinRewards: "انضم للمكافآت",
     homeFooterTagline: "قهوة فاخرة، لحظات تستحق التذكّر.",
     homeFindYourBrand: "اعثر على {name}",
+    shopKicker: "المتجر",
+    shopTitle: "ست قهوات، موصوفة بصدق.",
+    shopLead:
+      "كل ما هنا حُمّص هذا الأسبوع في أنكوتس. نكهات التذوق هي ما نتذوقه فعلًا على طاولة الكوبينغ، لا ما يقرأ جيدًا على الكيس.",
+    shopHowRoastTitle: "كيف نحمص",
+    shopHowRoastSub: "يومان للتحميص أسبوعيًا، على أسطوانة 15 كجم، ملف لكل دفعة لا لكل حجم كيس.",
+    shopPlateTuesdayKicker: "الثلاثاء · خفيف",
+    shopPlateTuesdayCaption: "أصول واحدة مُلفّة للحفاظ على الحموضة والزهر.",
+    shopPlateFridayKicker: "الجمعة · داكن",
+    shopPlateFridayCaption: "خلطات مطوّلة للقوام تحت الحليب.",
+    shopPlatePostedKicker: "نفس الأسبوع · يُرسل",
+    shopPlatePostedCaption: "معبأة بصمام أحادي، تتبع 24 ساعة، تُزال الغازات عند الوصول.",
+    shopSearchLabel: "ابحث في القهوة",
+    shopSearchPlaceholder: "ابحث عن المنشأ، أو نكهة تذوق مثل «ياسمين»",
+    shopSort: "ترتيب",
+    shopSortFeatured: "المميز أولًا",
+    shopSortPriceAsc: "السعر · من الأقل للأعلى",
+    shopSortPriceDesc: "السعر · من الأعلى للأقل",
+    shopRoastLevel: "درجة التحميص",
+    shopAllRoasts: "كل درجات التحميص",
+    shopCountOne: "{count} قهوة",
+    shopCountMany: "{count} قهوات",
+    shopRoastSuffix: "تحميص {roast}",
+    shopNoMatches: "لا توجد قهوة مطابقة",
+    shopNoMatchesBody:
+      "لا شيء على الرف يطابق «{query}». جرّب منشأًا مثل «إثيوبيا»، أو نكهة مثل «شوكولاتة».",
+    shopLimited: "محدود",
+    shopDecaf: "منزوع الكافيين",
+    shopLowStock: "مخزون منخفض",
+    shopSoldOut: "نفد",
+    shopChoose: "اختر",
+    shopDetails: "التفاصيل",
+    shopBackNextHarvest: "العودة في الحصاد القادم",
+    shopRoastLight: "خفيف",
+    shopRoastLightMedium: "خفيف–متوسط",
+    shopRoastMedium: "متوسط",
+    shopRoastMediumDark: "متوسط–داكن",
+    shopRoastDark: "داكن",
   },
 } as const;
 
@@ -427,4 +504,16 @@ export function storefrontMessageWithValues(
     message = message.replaceAll(`{${token}}`, String(value));
   }
   return message;
+}
+
+const SHOP_ROAST_KEYS = {
+  Light: "shopRoastLight",
+  "Light–Medium": "shopRoastLightMedium",
+  Medium: "shopRoastMedium",
+  "Medium–Dark": "shopRoastMediumDark",
+  Dark: "shopRoastDark",
+} as const satisfies Record<string, StorefrontMessageKey>;
+
+export function shopRoastLabel(locale: StorefrontLocale, roast: keyof typeof SHOP_ROAST_KEYS) {
+  return storefrontMessage(locale, SHOP_ROAST_KEYS[roast]);
 }
