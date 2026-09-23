@@ -58,19 +58,22 @@ export function SiteHeader() {
     <>
       <header
         data-nav
+        data-locale-chrome={shell.localeSelectorEnabled ? "band" : undefined}
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex justify-center px-[clamp(16px,4vw,48px)] transition-[padding] duration-500",
-          overlayHome ? "pt-3" : "pt-2",
-          scrolled ? "pt-2" : overlayHome ? "pt-[22px]" : "pt-3",
+          "fixed inset-x-0 top-0 z-50 flex flex-col items-center px-[clamp(16px,4vw,48px)] transition-[padding,gap] duration-500",
+          shell.localeSelectorEnabled
+            ? "gap-2 pt-[max(6px,env(safe-area-inset-top))]"
+            : cn(
+                "justify-center gap-0",
+                overlayHome ? "pt-3" : "pt-2",
+                scrolled ? "pt-2" : overlayHome ? "pt-[22px]" : "pt-3",
+              ),
         )}
       >
         {shell.localeSelectorEnabled ? (
           <div
             data-locale-selector-anchor
-            className={cn(
-              "pointer-events-auto absolute z-[60] end-[clamp(16px,4vw,48px)]",
-              overlayHome && !scrolled ? "top-2" : "top-1.5",
-            )}
+            className="flex w-full max-w-[980px] justify-end"
           >
             <LocaleSelector
               mini
