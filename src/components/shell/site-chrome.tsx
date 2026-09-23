@@ -23,7 +23,9 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         className={
           isRetailHome
             ? ""
-            : "pb-[calc(env(safe-area-inset-bottom)+72px)] pt-[88px] md:pb-0 [&:has([data-hero])]:pt-0"
+            : shell.localeSelectorEnabled
+              ? "pb-[calc(env(safe-area-inset-bottom)+72px)] pt-[calc(126px+env(safe-area-inset-top))] md:pb-0 md:pt-[126px] [&:has([data-hero])]:pt-0"
+              : "pb-[calc(env(safe-area-inset-bottom)+72px)] pt-[88px] md:pb-0 [&:has([data-hero])]:pt-0"
         }
       >
         {children}
