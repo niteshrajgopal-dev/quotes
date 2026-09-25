@@ -209,7 +209,7 @@ function MenuRow({
   return (
     <li
       className={cn(
-        "group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-cream/14 px-2 py-5 transition-[padding,background] duration-350 ease-[cubic-bezier(.2,.7,.2,1)] last:border-b-0 hover:bg-cream/3 hover:ps-5 md:px-2",
+        "group grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-4 border-b border-cream/14 px-2 py-5 transition-[padding,background] duration-350 ease-[cubic-bezier(.2,.7,.2,1)] last:border-b-0 hover:bg-cream/3 hover:ps-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:px-2",
         unavailable && "opacity-60",
       )}
     >
@@ -217,6 +217,7 @@ function MenuRow({
         mediaAssetId={product.mediaAssetId}
         alt={product.displayName}
         size="thumb"
+        className="md:h-16 md:w-16 h-12 w-12"
       />
 
       <div className="min-w-0">
