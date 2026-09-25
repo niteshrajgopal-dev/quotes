@@ -11,11 +11,8 @@ function check(condition, message) {
 }
 
 // Mock implementation for testing (inline for standalone script)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function normalizeProductName(name, locale) {
-  if (locale === "ar") {
-    return name;
-  }
-
   if (!name || name.trim() === "") {
     return name;
   }
@@ -133,24 +130,24 @@ check(normalizeProductName("   ", "en") === "   ", "Whitespace should remain unc
 check(normalizeProductName("A", "en") === "A", "Single letter should remain unchanged");
 console.log("  · Empty strings and edge cases ✓");
 
-// Test: Arabic locale (should not transform)
+// Test: Arabic locale (normalizes Latin text, preserves Arabic text)
 check(
-  normalizeProductName("MALAYSIA", "ar") === "MALAYSIA",
-  "Arabic locale should not transform MALAYSIA",
+  normalizeProductName("MALAYSIA", "ar") === "Malaysia",
+  "Arabic locale should normalize Latin uppercase MALAYSIA",
 );
 check(
-  normalizeProductName("INDONESIA", "ar") === "INDONESIA",
-  "Arabic locale should not transform INDONESIA",
+  normalizeProductName("INDONESIA", "ar") === "Indonesia",
+  "Arabic locale should normalize Latin uppercase INDONESIA",
 );
 check(
   normalizeProductName("محمص", "ar") === "محمص",
   "Arabic text should remain unchanged",
 );
 check(
-  normalizeProductName("MALAYSIA محمص", "ar") === "MALAYSIA محمص",
-  "Mixed Arabic/Latin should not transform in AR locale",
+  normalizeProductName("MALAYSIA محمص", "ar") === "Malaysia محمص",
+  "Mixed Arabic/Latin should normalize only Latin part in AR locale",
 );
-console.log("  · Arabic locale preservation ✓");
+console.log("  · Arabic locale: Latin normalized, Arabic preserved ✓");
 
 // Test: Single ALL-CAPS letter words (should remain)
 check(normalizeProductName("A B C", "en") === "A B C", "Single letters should remain unchanged");

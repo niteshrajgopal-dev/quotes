@@ -6,7 +6,7 @@ import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
  *
  * Rules:
  * - Only applies to Latin uppercase words (A-Z)
- * - Skips Arabic locale (AR) entirely
+ * - Works in both EN and AR locales (normalizes Latin text only, Arabic text unaffected)
  * - Preserves words containing digits (e.g., V60, B12)
  * - Preserves short acronyms (e.g., UK, USA, EU)
  * - Converts words like MALAYSIA → Malaysia
@@ -14,14 +14,11 @@ import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
  * - Handles punctuation and hyphens correctly
  *
  * @param name - The product display name from the catalogue
- * @param locale - The storefront locale (en or ar)
+ * @param locale - The storefront locale (en or ar) - currently unused but kept for future use
  * @returns The normalized display name
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function normalizeProductName(name: string, locale: StorefrontLocale): string {
-  if (locale === "ar") {
-    return name;
-  }
-
   if (!name || name.trim() === "") {
     return name;
   }
