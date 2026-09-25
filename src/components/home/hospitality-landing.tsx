@@ -217,11 +217,11 @@ export function HospitalityLanding({
                     key={product.productPublicId}
                     data-curated-item
                     whileHover={{ y: -4 }}
-                    className="relative flex flex-col items-center pt-[clamp(70px,8vw,120px)]"
+                    className="relative flex flex-col items-center pt-[clamp(90px,10vw,140px)]"
                   >
                     <div
                       data-curated-cup
-                      className="absolute top-0 left-1/2 z-2 aspect-[3/4] w-[clamp(150px,15vw,220px)] -translate-x-1/2 overflow-hidden rounded-md drop-shadow-[0_40px_50px_-20px_rgba(0,0,0,.6)]"
+                      className="absolute top-0 left-1/2 z-2 aspect-[3/4] w-[clamp(130px,13vw,200px)] -translate-x-1/2 overflow-hidden rounded-md drop-shadow-[0_40px_50px_-20px_rgba(0,0,0,.6)]"
                     >
                       <MenuProductImage
                         mediaAssetId={product.mediaAssetId}
@@ -232,7 +232,7 @@ export function HospitalityLanding({
                     </div>
                     <div
                       data-curated-card
-                      className="relative flex w-full flex-col items-center gap-2.5 rounded-md border border-cream/8 bg-mocha/55 px-[22px] pb-[22px] pt-[clamp(80px,7vw,110px)] text-center"
+                      className="relative flex w-full flex-col items-center gap-2.5 rounded-md border border-cream/8 bg-mocha/55 px-[22px] pb-[22px] pt-[clamp(100px,9vw,130px)] text-center"
                     >
                       <h3 className="font-serif text-[clamp(22px,2vw,28px)] tracking-[-0.02em]">
                         {normalizeProductName(product.displayName, locale as StorefrontLocale)}
