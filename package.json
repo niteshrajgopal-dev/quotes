@@ -18,7 +18,7 @@
     "verify:qos-103": "node scripts/verify-qos-103-locale-chrome.mjs",
     "verify:qos-106": "node scripts/verify-qos-106-locale-content.mjs",
     "verify:qos-107": "node scripts/verify-qos-107-locale-toggle.mjs",
-    "verify:qos-16": "node scripts/verify-qos-16.mjs",
+    "verify:qos-109": "node scripts/verify-qos-109.mjs",
     "verify:qos-91": "node scripts/verify-qos-91.mjs",
     "verify:qos-93": "node scripts/verify-qos-93.mjs",
     "verify:qos-94": "node scripts/verify-qos-94.mjs",

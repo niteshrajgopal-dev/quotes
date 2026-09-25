@@ -5,8 +5,8 @@ import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
  * This is a render-time transformation only and does not modify catalogue data.
  *
  * Rules:
- * - Only applies to Latin uppercase words (A-Z)
- * - Works in both EN and AR locales (normalizes Latin text only, Arabic text unaffected)
+ * - Only applies in EN locale (AR locale returns the name unchanged)
+ * - Only affects Latin uppercase words (A-Z)
  * - Preserves words containing digits (e.g., V60, B12)
  * - Preserves short acronyms (e.g., UK, USA, EU)
  * - Converts words like MALAYSIA → Malaysia
@@ -14,11 +14,14 @@ import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
  * - Handles punctuation and hyphens correctly
  *
  * @param name - The product display name from the catalogue
- * @param locale - The storefront locale (en or ar) - currently unused but kept for future use
- * @returns The normalized display name
+ * @param locale - The storefront locale (en or ar)
+ * @returns The normalized display name (unchanged if AR locale)
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function normalizeProductName(name: string, locale: StorefrontLocale): string {
+  if (locale === "ar") {
+    return name;
+  }
+
   if (!name || name.trim() === "") {
     return name;
   }
@@ -34,7 +37,6 @@ export function normalizeProductName(name: string, locale: StorefrontLocale): st
         "US",
         "USA",
         "EU",
-        "UAE",
         "UAE",
         "CEO",
         "CFO",

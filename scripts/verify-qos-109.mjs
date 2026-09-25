@@ -1,7 +1,7 @@
 /**
- * QOS-16 unit tests for normalizeProductName utility.
+ * QOS-109 unit tests for normalizeProductName utility.
  *
- *   node scripts/verify-qos-16.mjs
+ *   node scripts/verify-qos-109.mjs
  */
 
 const failures = [];
@@ -11,8 +11,11 @@ function check(condition, message) {
 }
 
 // Mock implementation for testing (inline for standalone script)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function normalizeProductName(name, locale) {
+  if (locale === "ar") {
+    return name;
+  }
+
   if (!name || name.trim() === "") {
     return name;
   }
@@ -49,7 +52,7 @@ function normalizeProductName(name, locale) {
   });
 }
 
-console.log("QOS-16 normalizeProductName verification");
+console.log("QOS-109 normalizeProductName verification");
 
 // Test: ALL-CAPS words converted to Title Case
 check(
@@ -130,24 +133,28 @@ check(normalizeProductName("   ", "en") === "   ", "Whitespace should remain unc
 check(normalizeProductName("A", "en") === "A", "Single letter should remain unchanged");
 console.log("  · Empty strings and edge cases ✓");
 
-// Test: Arabic locale (normalizes Latin text, preserves Arabic text)
+// Test: Arabic locale (returns unchanged - no normalization)
 check(
-  normalizeProductName("MALAYSIA", "ar") === "Malaysia",
-  "Arabic locale should normalize Latin uppercase MALAYSIA",
+  normalizeProductName("MALAYSIA", "ar") === "MALAYSIA",
+  "Arabic locale should NOT normalize (returns MALAYSIA unchanged)",
 );
 check(
-  normalizeProductName("INDONESIA", "ar") === "Indonesia",
-  "Arabic locale should normalize Latin uppercase INDONESIA",
+  normalizeProductName("INDONESIA", "ar") === "INDONESIA",
+  "Arabic locale should NOT normalize (returns INDONESIA unchanged)",
 );
 check(
   normalizeProductName("محمص", "ar") === "محمص",
-  "Arabic text should remain unchanged",
+  "Arabic text should remain unchanged in AR locale",
 );
 check(
-  normalizeProductName("MALAYSIA محمص", "ar") === "Malaysia محمص",
-  "Mixed Arabic/Latin should normalize only Latin part in AR locale",
+  normalizeProductName("MALAYSIA محمص", "ar") === "MALAYSIA محمص",
+  "Mixed Arabic/Latin should remain unchanged in AR locale",
 );
-console.log("  · Arabic locale: Latin normalized, Arabic preserved ✓");
+check(
+  normalizeProductName("Pipe Tabaco - MALAYSIA", "ar") === "Pipe Tabaco - MALAYSIA",
+  "Complete product name should remain unchanged in AR locale",
+);
+console.log("  · Arabic locale: no normalization applied ✓");
 
 // Test: Single ALL-CAPS letter words (should remain)
 check(normalizeProductName("A B C", "en") === "A B C", "Single letters should remain unchanged");
@@ -165,4 +172,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log("\nAll QOS-16 checks passed.");
+console.log("\nAll QOS-109 checks passed.");
