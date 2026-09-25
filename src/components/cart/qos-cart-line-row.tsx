@@ -8,6 +8,7 @@ import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
 import type { BasketLineResponse } from "@/lib/qos/types";
 import { useQosBasket } from "@/lib/stores/qos-basket";
 import { cn } from "@/lib/cn";
+import { normalizeProductName } from "@/lib/storefront/normalize-product-name";
 
 export function QosCartLineRow({
   line,
@@ -61,7 +62,7 @@ export function QosCartLineRow({
                 tone === "dark" && "text-cream",
               )}
             >
-              {displayName}
+              {normalizeProductName(displayName, uiLocale)}
             </p>
             {tone === "light" ? (
               <p className="ltr-isolate t-caption mt-0.5 font-mono">{line.productPublicId}</p>

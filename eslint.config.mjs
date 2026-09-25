@@ -6,6 +6,7 @@ export default defineConfig([
   globalIgnores([
     ".next/**",
     ".agents/**",
+    ".claude/**",
     "node_modules/**",
     "design/**",
     "design_handoff/**",

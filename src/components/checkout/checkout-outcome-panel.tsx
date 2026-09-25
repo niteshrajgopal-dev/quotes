@@ -11,6 +11,7 @@ import { formatMoneyMinor } from "@/lib/qos/money";
 import type { CheckoutPaymentOutcomeResponse } from "@/lib/qos/types";
 import { useCart } from "@/lib/stores/cart";
 import { useStorefrontLocale } from "@/lib/stores/storefront-locale";
+import { normalizeProductName } from "@/lib/storefront/normalize-product-name";
 
 function badgeToneForStatus(
   status: CheckoutPaymentOutcomeResponse["status"],
@@ -169,7 +170,7 @@ export function CheckoutOutcomePanel({
                 >
                   <div className="min-w-0">
                     <p className="text-[14.5px] font-medium leading-snug">
-                      {line.displayNameEn}
+                      {normalizeProductName(line.displayNameEn, locale)}
                     </p>
                     <p className="t-caption ltr-isolate mt-0.5 font-mono">
                       {line.quantity} ×{" "}
