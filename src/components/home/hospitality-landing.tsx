@@ -20,6 +20,8 @@ import {
   hospitalityOriginSteps,
 } from "@/lib/locale/hospitality-marketing";
 import type { PublicMenuLocale, PublicMenuProduct, PublicMenuSection } from "@/lib/qos/menu-types";
+import { normalizeProductName } from "@/lib/storefront/normalize-product-name";
+import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
 
 type HospitalityLandingProps = {
   brandName: string;
@@ -233,7 +235,7 @@ export function HospitalityLanding({
                       className="relative flex w-full flex-col items-center gap-2.5 rounded-md border border-cream/8 bg-mocha/55 px-[22px] pb-[22px] pt-[clamp(80px,7vw,110px)] text-center"
                     >
                       <h3 className="font-serif text-[clamp(22px,2vw,28px)] tracking-[-0.02em]">
-                        {product.displayName}
+                        {normalizeProductName(product.displayName, locale as StorefrontLocale)}
                       </h3>
                       {product.description ? (
                         <p className="max-w-[240px] text-[13px] leading-normal text-cream/65">

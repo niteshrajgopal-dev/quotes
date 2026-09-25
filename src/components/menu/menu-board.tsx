@@ -16,6 +16,7 @@ import { storefrontMessage, storefrontMessageWithValues } from "@/lib/locale/mes
 import type { StorefrontLocale } from "@/lib/locale/storefront-locale";
 import { useStorefrontChromeLocale } from "@/lib/stores/storefront-shell";
 import { cn } from "@/lib/cn";
+import { normalizeProductName } from "@/lib/storefront/normalize-product-name";
 
 type CategoryFilter = "all" | string;
 
@@ -220,7 +221,9 @@ function MenuRow({
 
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h4 className="font-serif text-xl tracking-[-0.02em]">{product.displayName}</h4>
+          <h4 className="font-serif text-base tracking-[-0.02em]">
+            {normalizeProductName(product.displayName, storefrontLocale)}
+          </h4>
           <span className="ltr-isolate font-mono text-sm tabular-nums text-cream/80">
             {formatMoneyMinor(product.price.amountMinor, currency, locale)}
           </span>
